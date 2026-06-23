@@ -1,0 +1,158 @@
+.learn { background: var(--bg); padding-bottom: 16px; }
+
+.learn__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+}
+.learn__header-icon { font-size: 24px; }
+.learn__title { font-size: 20px; font-weight: 800; color: var(--text-dark); }
+.learn__sub { font-size: 13px; color: var(--text-medium); }
+
+.learn__hero {
+  background: var(--bg-teal-banner);
+  padding: 32px 16px;
+  text-align: center;
+}
+.learn__hero-title { font-size: 22px; font-weight: 800; color: var(--text-dark); line-height: 1.3; margin-bottom: 8px; }
+.learn__hero-sub { font-size: 13px; color: var(--text-medium); }
+
+.learn__topics-scroll {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  scrollbar-width: none;
+}
+.learn__topics-scroll::-webkit-scrollbar { display: none; }
+
+.learn__topic-card {
+  flex-shrink: 0;
+  width: 110px;
+  background: var(--bg-card);
+  border: 2px solid transparent;
+  border-radius: var(--radius-lg);
+  padding: 12px 10px;
+  text-align: center;
+  cursor: pointer;
+  font-family: var(--font);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  transition: all 0.2s;
+}
+.learn__topic-card.active { border-color: var(--primary); }
+.learn__topic-card.completed { opacity: 0.75; }
+.learn__topic-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+.learn__topic-icon { font-size: 28px; margin-bottom: 8px; }
+.learn__topic-name { font-size: 11px; font-weight: 700; color: var(--text-dark); line-height: 1.3; margin-bottom: 4px; }
+.learn__topic-sub { font-size: 10px; color: var(--text-medium); line-height: 1.3; }
+.learn__topic-badge { position: absolute; top: 6px; right: 6px; font-size: 14px; }
+
+.learn__videos-scroll {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  scrollbar-width: none;
+}
+.learn__videos-scroll::-webkit-scrollbar { display: none; }
+
+.learn__video-card {
+  flex-shrink: 0;
+  width: 140px;
+  cursor: pointer;
+}
+.learn__video-thumb {
+  position: relative;
+  background: linear-gradient(135deg, var(--teal-light), var(--bg-banner));
+  border-radius: var(--radius-md);
+  height: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+.learn__video-duration {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.learn__video-play {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  background: rgba(255,255,255,0.9);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: var(--teal);
+  font-weight: 700;
+}
+.learn__video-title { font-size: 11px; font-weight: 600; color: var(--text-dark); line-height: 1.4; margin-bottom: 4px; }
+.learn__video-type { font-size: 10px; color: var(--text-medium); }
+
+.learn__bottom-grid { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; }
+
+.learn__card-title { font-size: 15px; font-weight: 700; color: var(--text-dark); margin-bottom: 2px; }
+.learn__card-sub { font-size: 12px; color: var(--text-medium); margin-bottom: 12px; }
+
+.learn__guide-item {
+  display: block;
+  width: 100%;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  padding: 10px 0;
+  text-align: left;
+  font-size: 13px;
+  color: var(--text-dark);
+  cursor: pointer;
+  font-family: var(--font);
+  font-weight: 500;
+}
+.learn__guide-item:last-child { border-bottom: none; }
+
+.learn__quiz-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  padding: 10px 0;
+  text-align: left;
+  font-size: 13px;
+  color: var(--text-dark);
+  cursor: pointer;
+  font-family: var(--font);
+  font-weight: 500;
+}
+.learn__quiz-item:last-of-type { border-bottom: none; }
+
+.learn__badges { display: flex; gap: 8px; margin-top: 8px; }
+.learn__badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  opacity: 0.4;
+}
+.learn__badge.earned { opacity: 1; background: var(--bg-banner); }
