@@ -28,7 +28,7 @@ class TaskItem extends StatelessWidget {
         opacity: task.done ? 0.6 : 1.0,
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             border: Border(bottom: BorderSide(color: AppColors.border, width: 1)),
           ),
           child: Row(
@@ -36,7 +36,7 @@ class TaskItem extends StatelessWidget {
               Container(
                 width: 38,
                 height: 38,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: AppColors.bg,
                   shape: BoxShape.circle,
                 ),

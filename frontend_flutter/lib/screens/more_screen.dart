@@ -1,9 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_theme.dart';
-import '../data/mock_data.dart';
+import '../providers/auth_provider.dart';
+import '../providers/patient_providers.dart';
 import '../utils/responsive.dart';
 import '../widgets/progress_ring.dart';
+import 'medications_screen.dart';
+import 'messages_screen.dart';
+import 'symptoms_screen.dart';
+import 'wearables_screen.dart';
+import 'food_ai_screen.dart';
+import 'screening_screen.dart';
+import 'habits_screen.dart';
+import 'journal_screen.dart';
+import 'return_to_work_screen.dart';
 
 class MoreScreen extends StatelessWidget {
   const MoreScreen({super.key});
@@ -20,9 +31,6 @@ class MoreScreen extends StatelessWidget {
         backgroundColor: AppColors.bgCard,
         automaticallyImplyLeading: false,
         title: Text('More', style: GoogleFonts.inter(fontSize: 20 * fs, fontWeight: FontWeight.w800, color: AppColors.textDark)),
-        actions: [
-          Padding(padding: const EdgeInsets.only(right: 12), child: Icon(Icons.settings_rounded, color: AppColors.textDark, size: 22)),
-        ],
       ),
       body: Align(
         alignment: Alignment.topCenter,
@@ -86,58 +94,58 @@ class MoreScreen extends StatelessWidget {
     );
   }
 
+  // (emoji, title, subtitle, screen-builder or null for "coming soon")
   List<Widget> _menuSections(BuildContext context, double fs) {
-    final sections = [
-      {
-        'title': 'Health & Recovery',
-        'items': [
-          ('❤️', 'Health Profile', 'Update your medical info'),
-          ('💊', 'Medications', '4 active medications'),
-          ('🩺', 'Symptoms Tracker', 'Log how you feel'),
-          ('⌚', 'Wearables', 'Connected devices'),
-        ],
-      },
-      {
-        'title': 'Support & Community',
-        'items': [
-          ('🎧', 'Contact Care Team', 'Secure messaging'),
-          ('📞', 'Emergency Contacts', 'Dr. Surgeon: 0400 000 000'),
-          ('👥', 'Patient Community', 'Connect with others'),
-          ('🔔', 'Notifications', 'Manage alerts'),
-        ],
-      },
-      {
-        'title': 'App Settings',
-        'items': [
-          ('🌐', 'Language', 'English'),
-          ('🔒', 'Privacy & Security', 'Manage your data'),
-          ('❓', 'Help & FAQ', 'Get support'),
-          ('⭐', 'Rate the App', 'Share your feedback'),
-        ],
-      },
+    final sections = <(String, List<(String, String, String, WidgetBuilder?)>)>[
+      ('Health & Recovery', [
+        ('💊', 'Medications', 'Your regimen & reminders', (_) => const MedicationsScreen()),
+        ('🩺', 'Symptoms Tracker', 'Report how you feel', (_) => const SymptomsScreen()),
+        ('🍽️', 'Log a Meal', 'AI nutrition analysis', (_) => const FoodAiScreen()),
+        ('⌚', 'Wearables & Vitals', 'Devices & readings', (_) => const WearablesScreen()),
+      ]),
+      ('Wellbeing', [
+        ('🧠', 'Mood Screening', 'PHQ-9 check-in', (_) => const ScreeningScreen(type: 'phq9')),
+        ('✅', 'Healthy Habits', 'Daily habits & streaks', (_) => const HabitsScreen()),
+        ('📔', 'My Journal', 'Gratitude & reflections', (_) => const JournalScreen()),
+        ('💼', 'Return to Work', 'Your personalised plan', (_) => const ReturnToWorkScreen()),
+      ]),
+      ('Support', [
+        ('🎧', 'Contact Care Team', 'Secure messaging', (_) => const MessagesScreen()),
+        ('🔔', 'Notifications', 'Manage alerts', null),
+        ('🌐', 'Language', 'English / Deutsch', null),
+        ('🔒', 'Privacy & Security', 'Manage your data', null),
+        ('❓', 'Help & FAQ', 'Get support', null),
+      ]),
     ];
+
+    void open(BuildContext ctx, (String, String, String, WidgetBuilder?) t) {
+      if (t.$4 != null) {
+        Navigator.of(ctx).push(MaterialPageRoute(builder: t.$4!));
+      } else {
+        ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(content: Text('${t.$2} is coming soon.')));
+      }
+    }
 
     return sections.map((section) => Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
-          child: Text(section['title']! as String, style: GoogleFonts.inter(fontSize: 13 * fs, fontWeight: FontWeight.w700, color: AppColors.textMedium)),
+          child: Text(section.$1, style: GoogleFonts.inter(fontSize: 13 * fs, fontWeight: FontWeight.w700, color: AppColors.textMedium)),
         ),
         Container(
           decoration: AppDecorations.card,
           child: Column(
-            children: (section['items']! as List).map<Widget>((item) {
-              final t = item as (String, String, String);
+            children: section.$2.map<Widget>((t) {
               return Container(
-                decoration: BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.border))),
+                decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.border))),
                 child: ListTile(
                   contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
                   leading: Text(t.$1, style: TextStyle(fontSize: 20 * fs)),
                   title: Text(t.$2, style: GoogleFonts.inter(fontSize: 13 * fs, fontWeight: FontWeight.w600, color: AppColors.textDark)),
                   subtitle: Text(t.$3, style: GoogleFonts.inter(fontSize: 11 * fs, color: AppColors.textMedium)),
                   trailing: const Icon(Icons.chevron_right, size: 18, color: AppColors.textLight),
-                  onTap: () {},
+                  onTap: () => open(context, t),
                 ),
               );
             }).toList(),
@@ -148,16 +156,7 @@ class MoreScreen extends StatelessWidget {
     )).toList();
   }
 
-  Widget _signOut(double fs) {
-    return GestureDetector(
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(vertical: 14),
-        decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(14)),
-        child: Center(child: Text('Sign Out', style: GoogleFonts.inter(fontSize: 14 * fs, fontWeight: FontWeight.w700, color: AppColors.primary))),
-      ),
-    );
-  }
+  Widget _signOut(double fs) => _SignOutButton(fs: fs);
 
   Widget _footer(double fs) {
     return Center(
@@ -166,12 +165,26 @@ class MoreScreen extends StatelessWidget {
   }
 }
 
-class _ProfileCard extends StatelessWidget {
+class _ProfileCard extends ConsumerWidget {
   final double fs;
   const _ProfileCard({required this.fs});
+
+  static const _surgeryLabels = {
+    'cabg': 'CABG Surgery',
+    'valve': 'Valve Surgery',
+    'tavi': 'TAVI',
+    'aortic': 'Aortic Surgery',
+    'combined': 'Combined Surgery',
+  };
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final isWide = Responsive.isTablet(context) || Responsive.isFoldable(context);
+    final user = ref.watch(authControllerProvider).user;
+    final name = user?.name ?? 'Patient';
+    final email = user?.email ?? '';
+    final surgery = _surgeryLabels[user?.surgeryType] ?? 'Cardiac patient';
+    final progress = (user?.journeyProgress ?? 0).round();
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: AppDecorations.card,
@@ -184,62 +197,123 @@ class _ProfileCard extends StatelessWidget {
           ),
           const SizedBox(width: 14),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(userName, style: GoogleFonts.inter(fontSize: 20 * fs, fontWeight: FontWeight.w800, color: AppColors.textDark)),
-            Text('CABG Surgery · Pre-op Phase', style: GoogleFonts.inter(fontSize: 12 * fs, color: AppColors.textMedium)),
+            Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.inter(fontSize: 20 * fs, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+            Text('$surgery · ${user?.phaseLabel ?? ''}', maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.inter(fontSize: 12 * fs, color: AppColors.textMedium)),
             const SizedBox(height: 4),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
               decoration: BoxDecoration(color: AppColors.tealLight, borderRadius: BorderRadius.circular(20)),
-              child: Text('🏥 St. George Hospital', style: GoogleFonts.inter(fontSize: 10 * fs, fontWeight: FontWeight.w600, color: AppColors.teal)),
+              child: Text(email.isEmpty ? '🏥 Not enrolled yet' : '✉️ $email', maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.inter(fontSize: 10 * fs, fontWeight: FontWeight.w600, color: AppColors.teal)),
             ),
           ])),
           ProgressRing(
-            value: journeyProgress.toDouble(),
+            value: progress.toDouble(),
             max: 100,
             size: isWide ? 72 : 60,
-            label: '$journeyProgress%',
+            label: '$progress%',
             sublabel: 'Journey',
           ),
         ]),
         if (!Responsive.isTablet(context)) ...[
           const SizedBox(height: 14),
-          Row(children: [
-            Expanded(child: _StatChip('❤️', '72 BPM', 'Heart Rate', fs)),
-            const SizedBox(width: 8),
-            Expanded(child: _StatChip('💧', '112 mg/dL', 'Glucose', fs)),
-            const SizedBox(width: 8),
-            Expanded(child: _StatChip('🦶', '3,240', 'Steps', fs)),
-          ]),
+          Builder(builder: (context) {
+            final w = ref.watch(wearableSummaryProvider).valueOrNull ?? const {};
+            return Row(children: [
+              Expanded(child: _StatChip('❤️', _wv(w, 'heart_rate', ' bpm'), 'Heart Rate', fs)),
+              const SizedBox(width: 8),
+              Expanded(child: _StatChip('🦶', _wv(w, 'steps', ''), 'Steps', fs)),
+              const SizedBox(width: 8),
+              Expanded(child: _StatChip('💨', _wv(w, 'spo2', '%'), 'SpO₂', fs)),
+            ]);
+          }),
         ],
       ]),
     );
   }
 }
 
-class _WearableExpanded extends StatelessWidget {
+/// Format a wearable-summary value for display, or '—' when not recorded.
+String _wv(Map w, String key, String unit) {
+  final m = w[key] as Map?;
+  if (m == null) return '—';
+  final v = m['value'] as num;
+  final n = v == v.roundToDouble() ? v.toInt().toString() : v.toStringAsFixed(1);
+  return '$n$unit';
+}
+
+class _WearableExpanded extends ConsumerWidget {
   final double fs;
   const _WearableExpanded({required this.fs});
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final w = ref.watch(wearableSummaryProvider).valueOrNull ?? const {};
+    final connected = w.isNotEmpty;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: AppDecorations.card,
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text('⌚ Wearable Data', style: GoogleFonts.inter(fontSize: 15 * fs, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+        const SizedBox(height: 6),
+        Text(connected ? 'Latest synced readings' : 'Connect a device to see your readings',
+            style: GoogleFonts.inter(fontSize: 11 * fs, color: AppColors.textMedium)),
         const SizedBox(height: 12),
         Wrap(
           spacing: 10,
           runSpacing: 10,
           children: [
-            _StatChip('❤️', '72 BPM', 'Heart Rate', fs),
-            _StatChip('💧', '112 mg/dL', 'Glucose', fs),
-            _StatChip('🦶', '3,240', 'Steps', fs),
-            _StatChip('💨', '98%', 'SpO₂', fs),
-            _StatChip('😴', '7h 15m', 'Sleep', fs),
-            _StatChip('🧠', '62 ms', 'HRV', fs),
+            _StatChip('❤️', _wv(w, 'heart_rate', ' bpm'), 'Heart Rate', fs),
+            _StatChip('🦶', _wv(w, 'steps', ''), 'Steps', fs),
+            _StatChip('💨', _wv(w, 'spo2', '%'), 'SpO₂', fs),
+            _StatChip('😴', _wv(w, 'sleep', 'h'), 'Sleep', fs),
+            _StatChip('🧠', _wv(w, 'hrv', ' ms'), 'HRV', fs),
+            _StatChip('🔥', _wv(w, 'active_energy', ''), 'Energy', fs),
           ],
         ),
       ]),
+    );
+  }
+}
+
+class _SignOutButton extends ConsumerWidget {
+  final double fs;
+  const _SignOutButton({required this.fs});
+
+  Future<void> _confirmAndLogout(BuildContext context, WidgetRef ref) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        title: Text('Sign out?', style: GoogleFonts.inter(fontWeight: FontWeight.w800, color: AppColors.textDark)),
+        content: Text('You can log back in anytime with your email and password.',
+            style: GoogleFonts.inter(color: AppColors.textMedium, height: 1.4)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text('Cancel', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: AppColors.textMedium)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text('Sign out', style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: AppColors.primary)),
+          ),
+        ],
+      ),
+    );
+    if (ok == true) {
+      await ref.read(authControllerProvider.notifier).logout();
+      // AuthGate swaps back to the Login screen automatically.
+    }
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return GestureDetector(
+      onTap: () => _confirmAndLogout(context, ref),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(14)),
+        child: Center(child: Text('Sign Out', style: GoogleFonts.inter(fontSize: 14 * fs, fontWeight: FontWeight.w700, color: AppColors.primary))),
+      ),
     );
   }
 }

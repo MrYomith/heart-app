@@ -1,36 +1,57 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_theme.dart';
+import '../providers/patient_providers.dart';
 import '../utils/responsive.dart';
 
-class CalendarScreen extends StatefulWidget {
+class CalendarScreen extends ConsumerStatefulWidget {
   const CalendarScreen({super.key});
 
   @override
-  State<CalendarScreen> createState() => _CalendarScreenState();
+  ConsumerState<CalendarScreen> createState() => _CalendarScreenState();
 }
 
-class _CalendarScreenState extends State<CalendarScreen> {
+class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   String _view = 'Month';
 
-  final _events = [
-    {'day': 16, 'title': 'Pre-op Assessment', 'color': 0xFFE8614D},
-    {'day': 18, 'title': 'Blood Tests', 'color': 0xFF4A7C79},
-    {'day': 22, 'title': 'Surgery Day', 'color': 0xFFE8614D},
-    {'day': 30, 'title': 'Post-op Check', 'color': 0xFF4A7C79},
-  ];
+  // Real per-day markers for the current month, derived from the patient's
+  // actual appointments (dates that parse and fall in this month).
+  Set<int> _eventDays() {
+    final now = DateTime.now();
+    final appts = ref.watch(appointmentsProvider).valueOrNull ?? const [];
+    final days = <int>{};
+    for (final a in appts) {
+      final d = DateTime.tryParse(a.date);
+      if (d != null && d.year == now.year && d.month == now.month) days.add(d.day);
+    }
+    return days;
+  }
 
-  final _upcoming = [
-    {'icon': '🏥', 'title': 'Pre-op Assessment', 'date': 'Thu 16 May', 'time': '09:00', 'location': 'Cardiology Clinic, Floor 3'},
-    {'icon': '🩸', 'title': 'Blood Tests', 'date': 'Sat 18 May', 'time': '08:00', 'location': 'Pathology Lab'},
-    {'icon': '💉', 'title': 'Surgery Day', 'date': 'Wed 22 May', 'time': '07:00', 'location': 'OR Suite 4'},
-  ];
+  // Real upcoming appointments rendered from the backend.
+  List<Widget> _appointmentCards(double fs) {
+    return ref.watch(appointmentsProvider).when(
+          loading: () => [const Padding(padding: EdgeInsets.all(12), child: Center(child: CircularProgressIndicator(color: AppColors.teal)))],
+          error: (e, _) => [Padding(padding: const EdgeInsets.all(8), child: Text("Couldn't load appointments", style: GoogleFonts.inter(color: AppColors.textMedium)))],
+          data: (appts) => appts.isEmpty
+              ? [Padding(padding: const EdgeInsets.symmetric(vertical: 12), child: Text('No upcoming appointments', style: GoogleFonts.inter(fontSize: 13 * fs, color: AppColors.textLight)))]
+              : appts
+                  .map((a) => _AppointmentCard(a: {'icon': a.icon, 'title': a.title, 'date': a.date, 'time': a.time ?? '', 'location': a.location ?? a.subtitle ?? ''}, fs: fs))
+                  .toList(),
+        );
+  }
 
   @override
   Widget build(BuildContext context) {
     final isWide = Responsive.isTablet(context) || Responsive.isFoldable(context);
     final pad = Responsive.hp(context);
     final fs = Responsive.fontScale(context);
+
+    String monthLabel() {
+      const names = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+      final now = DateTime.now();
+      return '${names[now.month - 1]} ${now.year}';
+    }
 
     return Scaffold(
       backgroundColor: AppColors.bg,
@@ -39,11 +60,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
         automaticallyImplyLeading: false,
         title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text('Calendar', style: GoogleFonts.inter(fontSize: 20 * fs, fontWeight: FontWeight.w800, color: AppColors.textDark)),
-          Text('May 2024', style: GoogleFonts.inter(fontSize: 12 * fs, color: AppColors.textMedium)),
+          Text(monthLabel(), style: GoogleFonts.inter(fontSize: 12 * fs, color: AppColors.textMedium)),
         ]),
-        actions: [
-          Padding(padding: const EdgeInsets.only(right: 12), child: Icon(Icons.add_rounded, color: AppColors.textDark, size: 24)),
-        ],
       ),
       body: Align(
         alignment: Alignment.topCenter,
@@ -66,11 +84,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
         const SizedBox(height: 14),
         _ViewToggle(view: _view, onChanged: (v) => setState(() => _view = v)),
         const SizedBox(height: 14),
-        _CalendarGrid(events: _events, fs: fs),
+        _CalendarGrid(eventDays: _eventDays(), fs: fs),
         const SizedBox(height: 16),
         Text('Upcoming Appointments', style: GoogleFonts.inter(fontSize: 17 * fs, fontWeight: FontWeight.w700, color: AppColors.textDark)),
         const SizedBox(height: 10),
-        ..._upcoming.map((a) => _AppointmentCard(a: a, fs: fs)),
+        ..._appointmentCards(fs),
         const SizedBox(height: 16),
         _RecoveryPrediction(fs: fs),
         const SizedBox(height: 16),
@@ -94,7 +112,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
               child: Column(children: [
                 _ViewToggle(view: _view, onChanged: (v) => setState(() => _view = v)),
                 const SizedBox(height: 14),
-                _CalendarGrid(events: _events, fs: fs),
+                _CalendarGrid(eventDays: _eventDays(), fs: fs),
                 const SizedBox(height: 16),
                 _RecoveryPrediction(fs: fs),
               ]),
@@ -106,7 +124,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text('Upcoming Appointments', style: GoogleFonts.inter(fontSize: 17 * fs, fontWeight: FontWeight.w700, color: AppColors.textDark)),
                 const SizedBox(height: 10),
-                ..._upcoming.map((a) => _AppointmentCard(a: a, fs: fs)),
+                ..._appointmentCards(fs),
               ]),
             ),
           ],
@@ -117,31 +135,31 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 }
 
-class _TimelineScroll extends StatelessWidget {
+class _TimelineScroll extends ConsumerWidget {
   final double fs;
   const _TimelineScroll({required this.fs});
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final phases = ref.watch(journeyProvider).valueOrNull ?? const [];
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: AppDecorations.card,
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text('Your Journey Timeline', style: GoogleFonts.inter(fontSize: 14 * fs, fontWeight: FontWeight.w700, color: AppColors.textDark)),
         const SizedBox(height: 10),
-        SizedBox(
-          height: 62,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: [
-              _TLItem('🔍', 'Diagnosis', 'Mar 2024', true, false),
-              _TLItem('📋', 'Pre-op', 'May 2024', true, false),
-              _TLItem('🏥', 'Surgery', 'May 22', false, true),
-              _TLItem('🛏️', 'Inpatient', 'Jun 2024', false, false),
-              _TLItem('🏠', 'Rehab', 'Jul 2024', false, false),
-              _TLItem('🌟', 'Thriving', 'Ongoing', false, false),
-            ],
+        if (phases.isEmpty)
+          Text('Your journey timeline will appear here.', style: GoogleFonts.inter(fontSize: 12 * fs, color: AppColors.textLight))
+        else
+          SizedBox(
+            height: 62,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: [
+                for (final p in phases)
+                  _TLItem(p.emoji, p.label, p.date ?? '', p.status == 'completed', p.status == 'active'),
+              ],
+            ),
           ),
-        ),
       ]),
     );
   }
@@ -191,20 +209,28 @@ class _ViewToggle extends StatelessWidget {
 }
 
 class _CalendarGrid extends StatelessWidget {
-  final List events;
+  final Set<int> eventDays;
   final double fs;
-  const _CalendarGrid({required this.events, required this.fs});
+  const _CalendarGrid({required this.eventDays, required this.fs});
+
+  static const _monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
   @override
   Widget build(BuildContext context) {
+    final now = DateTime.now();
+    final today = now.day;
+    final daysInMonth = DateTime(now.year, now.month + 1, 0).day;
+    // Monday-first offset: DateTime.weekday is 1 (Mon) .. 7 (Sun).
+    final firstWeekday = DateTime(now.year, now.month, 1).weekday; // 1..7
+    final leading = firstWeekday - 1; // blank cells before day 1
+    final totalCells = leading + daysInMonth;
+    final rows = (totalCells / 7).ceil();
+
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: AppDecorations.card,
       child: Column(children: [
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          const Icon(Icons.chevron_left, color: AppColors.textMedium),
-          Text('May 2024', style: GoogleFonts.inter(fontSize: 15 * fs, fontWeight: FontWeight.w700, color: AppColors.textDark)),
-          const Icon(Icons.chevron_right, color: AppColors.textMedium),
-        ]),
+        Text('${_monthNames[now.month - 1]} ${now.year}', style: GoogleFonts.inter(fontSize: 15 * fs, fontWeight: FontWeight.w700, color: AppColors.textDark)),
         const SizedBox(height: 8),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -213,22 +239,22 @@ class _CalendarGrid extends StatelessWidget {
               .toList(),
         ),
         const SizedBox(height: 4),
-        ...List.generate(5, (row) => Row(
+        ...List.generate(rows, (row) => Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: List.generate(7, (col) {
-            final day = row * 7 + col - 1;
-            if (day < 1 || day > 31) return const SizedBox(width: 36, height: 36);
-            final event = events.where((e) => e['day'] == day).firstOrNull;
-            final isToday = day == 16;
+            final day = row * 7 + col - leading + 1;
+            if (day < 1 || day > daysInMonth) return const SizedBox(width: 36, height: 36);
+            final hasEvent = eventDays.contains(day);
+            final isToday = day == today;
             return Container(
               width: 36, height: 36,
               decoration: BoxDecoration(
-                color: isToday ? AppColors.primary : event != null ? Color(event['color'] as int).withValues(alpha: 0.15) : Colors.transparent,
+                color: isToday ? AppColors.primary : hasEvent ? AppColors.teal.withValues(alpha: 0.15) : Colors.transparent,
                 shape: BoxShape.circle,
               ),
               child: Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
                 Text('$day', style: GoogleFonts.inter(fontSize: 12 * fs, fontWeight: FontWeight.w600, color: isToday ? Colors.white : AppColors.textDark)),
-                if (event != null && !isToday) Container(width: 4, height: 4, decoration: BoxDecoration(shape: BoxShape.circle, color: Color(event['color'] as int))),
+                if (hasEvent && !isToday) Container(width: 4, height: 4, decoration: const BoxDecoration(shape: BoxShape.circle, color: AppColors.teal)),
               ])),
             );
           }),
@@ -270,11 +296,12 @@ class _AppointmentCard extends StatelessWidget {
   }
 }
 
-class _RecoveryPrediction extends StatelessWidget {
+class _RecoveryPrediction extends ConsumerWidget {
   final double fs;
   const _RecoveryPrediction({required this.fs});
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final pred = ref.watch(recoveryPredictionProvider);
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: AppDecorations.card,
@@ -283,42 +310,28 @@ class _RecoveryPrediction extends StatelessWidget {
         const SizedBox(height: 4),
         Text('Based on your progress and adherence', style: GoogleFonts.inter(fontSize: 11 * fs, color: AppColors.textMedium)),
         const SizedBox(height: 12),
-        SizedBox(height: 80, child: CustomPaint(size: const Size(double.infinity, 80), painter: _LineChartPainter())),
-        const SizedBox(height: 8),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: ['Wk 1', 'Wk 2', 'Wk 3', 'Wk 4', 'Wk 6', 'Wk 8']
-              .map((w) => Text(w, style: GoogleFonts.inter(fontSize: 9 * fs, color: AppColors.textLight)))
-              .toList(),
+        pred.when(
+          loading: () => const SizedBox(height: 60, child: Center(child: CircularProgressIndicator(strokeWidth: 2))),
+          error: (e, _) => Text('Could not load prediction.', style: GoogleFonts.inter(fontSize: 11 * fs, color: AppColors.textMedium)),
+          data: (p) {
+            final onTrack = ((p['on_track_pct'] as num?) ?? 0).toDouble();
+            final status = (p['status'] as String?) ?? 'on_track';
+            final color = status == 'behind' ? AppColors.primary : AppColors.teal;
+            final label = {'ahead': 'Ahead of schedule 🎉', 'on_track': 'On track ✅', 'behind': 'A little behind — keep going 💪'}[status] ?? status;
+            return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
+                Text('${onTrack.round()}%', style: GoogleFonts.inter(fontSize: 30 * fs, fontWeight: FontWeight.w800, color: color)),
+                const SizedBox(width: 6),
+                Padding(padding: const EdgeInsets.only(bottom: 6), child: Text('on track', style: GoogleFonts.inter(fontSize: 11 * fs, color: AppColors.textMedium))),
+              ]),
+              const SizedBox(height: 6),
+              ClipRRect(borderRadius: BorderRadius.circular(6), child: LinearProgressIndicator(value: (onTrack / 100).clamp(0, 1), minHeight: 8, backgroundColor: AppColors.bg, color: color)),
+              const SizedBox(height: 8),
+              Text(label, style: GoogleFonts.inter(fontSize: 12 * fs, fontWeight: FontWeight.w600, color: color)),
+            ]);
+          },
         ),
       ]),
     );
   }
-}
-
-class _LineChartPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = const Color(0xFF4A7C79)
-      ..strokeWidth = 2
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
-    final points = [
-      Offset(0, size.height * 0.9),
-      Offset(size.width * 0.2, size.height * 0.7),
-      Offset(size.width * 0.4, size.height * 0.5),
-      Offset(size.width * 0.6, size.height * 0.35),
-      Offset(size.width * 0.8, size.height * 0.2),
-      Offset(size.width, size.height * 0.1),
-    ];
-    final path = Path()..moveTo(points.first.dx, points.first.dy);
-    for (var i = 1; i < points.length; i++) {
-      path.lineTo(points[i].dx, points[i].dy);
-    }
-    canvas.drawPath(path, paint);
-    canvas.drawCircle(points[2], 4, Paint()..color = const Color(0xFFE8614D));
-  }
-  @override
-  bool shouldRepaint(_) => false;
 }

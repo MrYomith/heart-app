@@ -3,12 +3,36 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/mio_mascot.dart';
 import '../../widgets/phase_layout.dart';
+import '../learn_screen.dart';
+import '../food_ai_screen.dart';
+import '../habits_screen.dart';
+import '../journal_screen.dart';
+import '../messages_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../providers/patient_providers.dart';
+import '../../providers/auth_provider.dart';
+import '../../widgets/stage_guides.dart';
 
-class ThrivingScreen extends StatelessWidget {
+void _push(BuildContext c, Widget s) => Navigator.push(c, MaterialPageRoute(builder: (_) => s));
+
+class ThrivingScreen extends ConsumerWidget {
   const ThrivingScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final vitals = ref.watch(latestVitalsProvider).valueOrNull ?? const {};
+    final goal = ref.watch(weeklyGoalProvider).valueOrNull;
+    final user = ref.watch(authControllerProvider).user;
+    String v(String key, {String unit = ''}) {
+      final m = vitals[key] as Map?;
+      if (m == null) return '—';
+      final val = m['value'] as num;
+      final n = val == val.roundToDouble() ? val.toInt().toString() : val.toStringAsFixed(1);
+      return '$n$unit';
+    }
+    final bp = (vitals['bp_systolic'] != null && vitals['bp_diastolic'] != null)
+        ? '${(vitals['bp_systolic']['value'] as num).toInt()}/${(vitals['bp_diastolic']['value'] as num).toInt()}'
+        : 'Not recorded yet';
     return PhaseLayout(
       title: 'Thriving Phase',
       subtitle: 'Living your best heart-healthy life',
@@ -37,6 +61,11 @@ class ThrivingScreen extends StatelessWidget {
       ],
       sections: Column(
         children: [
+          const PhaseSection(
+            title: '📚 Learn about this stage',
+            subtitle: 'Tap any guide to read more',
+            child: StageGuides(stage: 'thriving'),
+          ),
           // Celebration banner
           Container(
             margin: const EdgeInsets.only(bottom: 10),
@@ -54,7 +83,7 @@ class ThrivingScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('Congratulations! 🎉', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w800, color: Colors.white)),
-                      Text("You've completed your heart surgery journey and you're now thriving!", style: GoogleFonts.inter(fontSize: 11, color: Colors.white.withOpacity(0.9), height: 1.4)),
+                      Text("You've completed your heart surgery journey and you're now thriving!", style: GoogleFonts.inter(fontSize: 11, color: Colors.white.withValues(alpha: 0.9), height: 1.4)),
                     ],
                   ),
                 ),
@@ -69,10 +98,10 @@ class ThrivingScreen extends StatelessWidget {
               children: [
                 Text('Ongoing management goals:', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.textDark)),
                 const SizedBox(height: 6),
-                _GoalRow('Blood pressure', '< 130/80 mmHg', '122/78', true),
-                _GoalRow('LDL Cholesterol', '< 1.8 mmol/L', '1.6', true),
-                _GoalRow('HbA1c (diabetes)', '< 7%', '6.4%', true),
-                _GoalRow('BMI', '18.5–24.9', '26.1', false),
+                _GoalRow('Blood pressure', '< 130/80 mmHg', bp, vitals['bp_systolic'] != null),
+                _GoalRow('LDL Cholesterol', '< 1.8 mmol/L', v('ldl'), vitals['ldl'] != null),
+                _GoalRow('HbA1c (diabetes)', '< 7%', v('hba1c', unit: '%'), vitals['hba1c'] != null),
+                _GoalRow('BMI', '18.5–24.9', v('bmi'), vitals['bmi'] != null),
               ],
             ),
           ),
@@ -84,16 +113,16 @@ class ThrivingScreen extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Expanded(child: _FitnessCard('🚶', 'Weekly Steps', '42,000', '/ 70,000')),
+                    Expanded(child: _FitnessCard('🚶', 'Steps', v('steps'), 'latest')),
                     const SizedBox(width: 8),
-                    Expanded(child: _FitnessCard('⏱️', 'Active Mins', '112', '/ 150')),
+                    Expanded(child: _FitnessCard('⏱️', 'Active Mins', '${goal?.minutes ?? 0}', '/ ${goal?.goal ?? 150}')),
                     const SizedBox(width: 8),
-                    Expanded(child: _FitnessCard('❤️', 'Resting HR', '62', 'BPM')),
+                    Expanded(child: _FitnessCard('❤️', 'Heart Rate', v('heart_rate'), 'bpm')),
                   ],
                 ),
                 const SizedBox(height: 10),
-                const PhaseActionRow(icon: '📋', label: 'View Full Exercise Plan'),
-                const PhaseActionRow(icon: '🏅', label: 'Cardiac Rehab Graduation'),
+                PhaseActionRow(icon: '📋', label: 'View Full Exercise Plan', onTap: () => _push(context, const HabitsScreen())),
+                PhaseActionRow(icon: '🏅', label: 'Cardiac Rehab Graduation', onTap: () => _push(context, const LearnScreen())),
               ],
             ),
           ),
@@ -101,10 +130,10 @@ class ThrivingScreen extends StatelessWidget {
           PhaseSection(
             title: '🥗 C. Nutrition',
             child: Column(
-              children: const [
-                PhaseActionRow(icon: '🫒', label: 'Mediterranean Diet Guide'),
-                PhaseActionRow(icon: '📊', label: 'Weekly Nutrition Tracking'),
-                PhaseActionRow(icon: '👩‍🍳', label: 'Heart-Healthy Recipes'),
+              children: [
+                PhaseActionRow(icon: '🫒', label: 'Mediterranean Diet Guide', onTap: () => _push(context, const LearnScreen())),
+                PhaseActionRow(icon: '📊', label: 'Weekly Nutrition Tracking', onTap: () => _push(context, const FoodAiScreen())),
+                PhaseActionRow(icon: '👩‍🍳', label: 'Heart-Healthy Recipes', onTap: () => _push(context, const LearnScreen())),
               ],
             ),
           ),
@@ -116,15 +145,15 @@ class ThrivingScreen extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Expanded(child: _WellbeingCard('😊', 'Mood', 'Great')),
+                    Expanded(child: _WellbeingCard('😊', 'Mood', v('mood'))),
                     const SizedBox(width: 8),
-                    Expanded(child: _WellbeingCard('😴', 'Sleep', '7.8h')),
+                    Expanded(child: _WellbeingCard('😴', 'Sleep', v('sleep_hours', unit: 'h'))),
                     const SizedBox(width: 8),
-                    Expanded(child: _WellbeingCard('🧘', 'Stress', 'Low')),
+                    Expanded(child: _WellbeingCard('🧘', 'Stress', v('stress'))),
                   ],
                 ),
                 const SizedBox(height: 8),
-                const PhaseActionRow(icon: '🎧', label: 'Daily Mindfulness (10 min)'),
+                PhaseActionRow(icon: '🎧', label: 'Daily Mindfulness (10 min)', onTap: () => _push(context, const LearnScreen())),
               ],
             ),
           ),
@@ -132,10 +161,10 @@ class ThrivingScreen extends StatelessWidget {
           PhaseSection(
             title: '👥 E. Relationships & Social',
             child: Column(
-              children: const [
-                PhaseActionRow(icon: '💑', label: 'Intimacy & recovery guide'),
-                PhaseActionRow(icon: '👨‍👩‍👧', label: 'Family communication resources'),
-                PhaseActionRow(icon: '🤝', label: 'Support group connections'),
+              children: [
+                PhaseActionRow(icon: '💑', label: 'Intimacy & recovery guide', onTap: () => _push(context, const LearnScreen())),
+                PhaseActionRow(icon: '👨‍👩‍👧', label: 'Family communication resources', onTap: () => _push(context, const LearnScreen())),
+                PhaseActionRow(icon: '🤝', label: 'Support group connections', onTap: () => _push(context, const MessagesScreen())),
               ],
             ),
           ),
@@ -145,11 +174,11 @@ class ThrivingScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _InfoRow('Work status', 'Full time (returned)'),
-                _InfoRow('Clearance', 'All activities cleared'),
-                _InfoRow('Next review', 'December 2024'),
+                const _InfoRow('Desk job', '4–6 weeks after surgery'),
+                const _InfoRow('Light physical', '6–8 weeks after surgery'),
+                const _InfoRow('Heavy physical', '3–6 months after surgery'),
                 const SizedBox(height: 6),
-                const PhaseActionRow(icon: '🎯', label: 'Set new life goals'),
+                PhaseActionRow(icon: '🎯', label: 'Set new life goals', onTap: () => _push(context, const JournalScreen())),
               ],
             ),
           ),
@@ -158,22 +187,22 @@ class ThrivingScreen extends StatelessWidget {
             title: '✈️ G. Travel',
             background: const Color(0xFFF0FDF9),
             child: Column(
-              children: const [
-                PhaseActionRow(icon: '✈️', label: 'Travel clearance: All clear'),
-                PhaseActionRow(icon: '💊', label: 'Travelling with medications guide'),
-                PhaseActionRow(icon: '🌏', label: 'International travel tips'),
+              children: [
+                PhaseActionRow(icon: '✈️', label: 'Travel clearance: All clear', onTap: () => _push(context, const LearnScreen())),
+                PhaseActionRow(icon: '💊', label: 'Travelling with medications guide', onTap: () => _push(context, const LearnScreen())),
+                PhaseActionRow(icon: '🌏', label: 'International travel tips', onTap: () => _push(context, const LearnScreen())),
               ],
             ),
           ),
 
-          PhaseSection(
+          const PhaseSection(
             title: '🩺 H. Ongoing Check-ups',
             child: Column(
               children: [
-                _CheckupRow('3-month cardiology review', 'Jun 2024', true),
-                _CheckupRow('6-month echo & stress test', 'Sep 2024', false),
-                _CheckupRow('Annual full cardiac review', 'Mar 2025', false),
-                _CheckupRow('Flu vaccination', 'Apr 2025', false),
+                _CheckupRow('Cardiology review', 'Every 3 months', false),
+                _CheckupRow('Echo & stress test', 'At 6 months', false),
+                _CheckupRow('Full cardiac review', 'Annually', false),
+                _CheckupRow('Flu vaccination', 'Each season', false),
               ],
             ),
           ),
@@ -182,10 +211,10 @@ class ThrivingScreen extends StatelessWidget {
             title: '🤝 I. Give Back',
             background: const Color(0xFFF0FDF9),
             child: Column(
-              children: const [
-                PhaseActionRow(icon: '🌱', label: 'Share your story with new patients'),
-                PhaseActionRow(icon: '🤝', label: 'Become a peer recovery mentor'),
-                PhaseActionRow(icon: '💝', label: 'Donate to cardiac research'),
+              children: [
+                PhaseActionRow(icon: '🌱', label: 'Share your story with new patients', onTap: () => _push(context, const MessagesScreen())),
+                PhaseActionRow(icon: '🤝', label: 'Become a peer recovery mentor', onTap: () => _push(context, const MessagesScreen())),
+                const PhaseActionRow(icon: '💝', label: 'Donate to cardiac research'),
               ],
             ),
           ),
@@ -197,13 +226,9 @@ class ThrivingScreen extends StatelessWidget {
               children: [
                 Text('Your remarkable journey:', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.textDark)),
                 const SizedBox(height: 8),
-                _MilestoneRow('🔍', 'Diagnosis received', 'March 2024'),
-                _MilestoneRow('📋', 'Pre-op completed', 'May 2024'),
-                _MilestoneRow('🏥', 'Surgery success', 'May 22, 2024'),
-                _MilestoneRow('🚶', 'First steps post-op', 'May 24, 2024'),
-                _MilestoneRow('🏠', 'Discharged home', 'May 28, 2024'),
-                _MilestoneRow('🏃', 'First run (1km)', 'August 2024'),
-                _MilestoneRow('🌟', 'Thriving today!', 'Ongoing'),
+                _MilestoneRow('🏥', 'Surgery', user?.surgeryDate ?? '—'),
+                _MilestoneRow('🏠', 'Discharged home', user?.dischargeDate ?? '—'),
+                const _MilestoneRow('🌟', 'Thriving today!', 'Ongoing'),
                 const SizedBox(height: 8),
                 Container(
                   width: double.infinity,
@@ -234,7 +259,7 @@ class _GoalRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 7),
-      decoration: BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.border))),
+      decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.border))),
       child: Row(
         children: [
           Expanded(child: Text(metric, style: GoogleFonts.inter(fontSize: 12, color: AppColors.textDark))),
@@ -322,7 +347,7 @@ class _CheckupRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8),
-      decoration: BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.border))),
+      decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.border))),
       child: Row(
         children: [
           Icon(done ? Icons.check_circle : Icons.schedule, size: 16, color: done ? AppColors.success : AppColors.textLight),

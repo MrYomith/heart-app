@@ -1,16 +1,25 @@
 from pydantic import BaseModel
-from typing import Optional
 
 
 class AppointmentOut(BaseModel):
-    id: int
-    user_id: int
+    id: str
     title: str
-    subtitle: Optional[str] = None
+    subtitle: str | None = None
     date: str
-    time: Optional[str] = None
-    location: Optional[str] = None
+    time: str | None = None
+    location: str | None = None
     appointment_type: str
     is_confirmed: bool
 
-    model_config = {"from_attributes": True}
+    @classmethod
+    def from_row(cls, a) -> "AppointmentOut":
+        return cls(
+            id=str(a.id),
+            title=a.title,
+            subtitle=a.subtitle,
+            date=a.date,
+            time=a.time,
+            location=a.location,
+            appointment_type=a.appointment_type.value if a.appointment_type else "followup",
+            is_confirmed=a.is_confirmed,
+        )

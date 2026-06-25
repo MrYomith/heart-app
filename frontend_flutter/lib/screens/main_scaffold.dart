@@ -6,6 +6,7 @@ import 'home_screen.dart';
 import 'journey_screen.dart';
 import 'learn_screen.dart';
 import 'more_screen.dart';
+import 'food_ai_screen.dart';
 
 class MainScaffold extends StatefulWidget {
   const MainScaffold({super.key});
@@ -62,7 +63,7 @@ class _MainScaffoldState extends State<MainScaffold> {
             width: railWidth,
             decoration: BoxDecoration(
               color: AppColors.bgCard,
-              border: Border(right: BorderSide(color: AppColors.border)),
+              border: const Border(right: BorderSide(color: AppColors.border)),
               boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 8)],
             ),
             child: SafeArea(
@@ -202,13 +203,13 @@ class _MioBottomNav extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.bgCard,
         boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.08), blurRadius: 16, offset: const Offset(0, -4))],
-        border: Border(top: BorderSide(color: AppColors.border)),
+        border: const Border(top: BorderSide(color: AppColors.border)),
       ),
       child: Row(
         children: [
           _NavTab(icon: Icons.home_rounded, label: 'Home', index: 0, active: currentIndex == 0, onTap: onTap, activeColor: AppColors.primary),
           _NavTab(icon: Icons.route_rounded, label: 'Journey', index: 1, active: currentIndex == 1, onTap: onTap),
-          _CenterMioButton(onTap: () {}),
+          _CenterMioButton(onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FoodAiScreen()))),
           _NavTab(icon: Icons.menu_book_rounded, label: 'Learn', index: 2, active: currentIndex == 2, onTap: onTap),
           _NavTab(icon: Icons.grid_view_rounded, label: 'More', index: 3, active: currentIndex == 3, onTap: onTap),
         ],
@@ -264,11 +265,11 @@ class _CenterMioButton extends StatelessWidget {
       child: SizedBox(
         width: 80,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              margin: const EdgeInsets.only(bottom: 2),
-              width: 54, height: 54,
+              width: 48, height: 48,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: const LinearGradient(
@@ -278,10 +279,10 @@ class _CenterMioButton extends StatelessWidget {
                 ),
                 boxShadow: [BoxShadow(color: AppColors.primary.withValues(alpha: 0.4), blurRadius: 16, offset: const Offset(0, 4))],
               ),
-              child: const Center(child: Text('🫀', style: TextStyle(fontSize: 24))),
+              child: const Center(child: Text('🫀', style: TextStyle(fontSize: 22))),
             ),
-            Text('MioHart', style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w700, color: AppColors.primary)),
-            const SizedBox(height: 8),
+            const SizedBox(height: 2),
+            Text('MioHart', style: GoogleFonts.inter(fontSize: 9, fontWeight: FontWeight.w700, color: AppColors.primary)),
           ],
         ),
       ),

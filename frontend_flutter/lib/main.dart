@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'theme/app_theme.dart';
-import 'screens/main_scaffold.dart';
+import 'screens/auth/auth_gate.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -10,7 +11,7 @@ void main() {
     statusBarColor: Colors.transparent,
     statusBarIconBrightness: Brightness.dark,
   ));
-  runApp(const MioHartApp());
+  runApp(const ProviderScope(child: MioHartApp()));
 }
 
 class MioHartApp extends StatelessWidget {
@@ -22,7 +23,7 @@ class MioHartApp extends StatelessWidget {
       title: 'MioHart',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.theme,
-      home: const MainScaffold(),
+      home: const AuthGate(),
     );
   }
 }

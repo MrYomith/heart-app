@@ -3,12 +3,30 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/mio_mascot.dart';
 import '../../widgets/phase_layout.dart';
+import '../../widgets/stage_guides.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../providers/auth_provider.dart';
+import '../../providers/patient_providers.dart';
+import '../learn_screen.dart';
+import '../messages_screen.dart';
+import '../breathing_screen.dart';
 
-class PreopScreen extends StatelessWidget {
+void _push(BuildContext c, Widget s) => Navigator.push(c, MaterialPageRoute(builder: (_) => s));
+String _orNot(String? v) => (v == null || v.isEmpty) ? 'Not recorded yet' : v;
+
+class PreopScreen extends ConsumerWidget {
   const PreopScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(authControllerProvider).user;
+    final day = user?.dayPostOp;
+    final daysUntil = day == null ? null : -day;
+    final heroSub = daysUntil == null
+        ? 'Your surgery date will appear here once set'
+        : daysUntil > 0
+            ? 'Surgery in $daysUntil ${daysUntil == 1 ? "day" : "days"}'
+            : 'Surgery scheduled';
     return PhaseLayout(
       title: 'Pre-operative Preparation',
       subtitle: 'Getting ready for your surgery',
@@ -16,7 +34,7 @@ class PreopScreen extends StatelessWidget {
       heroBg: const Color(0xFFF0FDF9),
       mioVariant: MioVariant.medical,
       heroMsg: "Let's prepare you for the\nbest possible surgery outcome.",
-      heroSub: 'Surgery in 6 days · All systems green ✅',
+      heroSub: heroSub,
       mottoMsg: 'Prepared patients recover faster. 💪',
       focusItems: const [
         FocusItem('✅', 'ERAS checklist'),
@@ -33,20 +51,15 @@ class PreopScreen extends StatelessWidget {
       ],
       sections: Column(
         children: [
-          PhaseSection(
+          const PhaseSection(
+            title: '📚 Learn about this stage',
+            subtitle: 'Tap any guide to read more',
+            child: StageGuides(stage: 'preop'),
+          ),
+          const PhaseSection(
             title: '✅ A. ERAS Checklist',
             subtitle: 'Enhanced Recovery After Surgery Protocol',
-            child: Column(
-              children: [
-                _ErasItem('Stop blood thinners 5 days before', true),
-                _ErasItem('Carbohydrate drink the night before', true),
-                _ErasItem('No food 6h before surgery', false),
-                _ErasItem('No clear fluids 2h before surgery', false),
-                _ErasItem('Anti-DVT stockings packed', true),
-                _ErasItem('Shower with antiseptic soap tonight', false),
-                _ErasItem('Bowel prep completed', true),
-              ],
-            ),
+            child: _ErasChecklist(),
           ),
 
           PhaseSection(
@@ -62,15 +75,18 @@ class PreopScreen extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Dr. Cardiac Surgeon', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.textDark)),
-                          Text('Video consult available', style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMedium)),
+                          Text(user?.surgeonName ?? 'Your care team', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+                          Text('Message available', style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMedium)),
                         ],
                       ),
                     ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      decoration: BoxDecoration(color: AppColors.teal, borderRadius: BorderRadius.circular(20)),
-                      child: Text('Join Call', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.white)),
+                    GestureDetector(
+                      onTap: () => _push(context, const MessagesScreen()),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        decoration: BoxDecoration(color: AppColors.teal, borderRadius: BorderRadius.circular(20)),
+                        child: Text('Join Call', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.white)),
+                      ),
                     ),
                   ],
                 ),
@@ -82,11 +98,11 @@ class PreopScreen extends StatelessWidget {
             title: '🏋️ C. Physical Optimisation',
             child: Column(
               children: [
-                _ProgressRow('Spirometry Practice', 80),
-                _ProgressRow('Daily Walks', 60),
-                _ProgressRow('Breathing Exercises', 90),
+                const _ProgressRow('Spirometry Practice', 0),
+                const _ProgressRow('Daily Walks', 0),
+                const _ProgressRow('Breathing Exercises', 0),
                 const SizedBox(height: 4),
-                const PhaseActionRow(icon: '▶️', label: 'Watch: Prehab Exercises'),
+                PhaseActionRow(icon: '▶️', label: 'Watch: Prehab Exercises', onTap: () => _push(context, const BreathingScreen())),
               ],
             ),
           ),
@@ -119,15 +135,15 @@ class PreopScreen extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('7.2h average', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.textDark)),
-                          Text('Last 7 nights · Target: 8h', style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMedium)),
+                          Text('Aim for 7–8h', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+                          Text('Good sleep before surgery aids recovery', style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMedium)),
                         ],
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 8),
-                const PhaseActionRow(icon: '🎧', label: 'Sleep Meditation (12 min)'),
+                PhaseActionRow(icon: '🎧', label: 'Sleep Meditation (12 min)', onTap: () => _push(context, const LearnScreen())),
               ],
             ),
           ),
@@ -136,18 +152,20 @@ class PreopScreen extends StatelessWidget {
             title: '🗓️ F. Surgery Plan Overview',
             child: Column(
               children: [
-                _InfoRow('Surgeon', 'Dr. Cardiac Surgeon'),
-                _InfoRow('Hospital', 'St. George Hospital'),
-                _InfoRow('Surgery date', 'Wednesday, 22 May 2024'),
-                _InfoRow('Procedure', 'CABG (3-vessel bypass)'),
-                _InfoRow('Est. duration', '4-6 hours'),
-                _InfoRow('Arrival time', '06:00 AM'),
+                _InfoRow('Hospital', _orNot(user?.hospitalName)),
+                _InfoRow('Surgeon', _orNot(user?.surgeonName)),
+                _InfoRow('Surgery date', _orNot(user?.surgeryDate)),
+                _InfoRow('Procedure', _orNot(user?.surgeryType?.toUpperCase())),
+                _InfoRow('NYHA class', _orNot(user?.nyhaClass)),
                 const SizedBox(height: 8),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(10)),
-                  child: Center(child: Text('Download Surgery Pack', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white))),
+                GestureDetector(
+                  onTap: () => _push(context, const LearnScreen()),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(10)),
+                    child: Center(child: Text('Download Surgery Pack', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white))),
+                  ),
                 ),
               ],
             ),
@@ -158,22 +176,57 @@ class PreopScreen extends StatelessWidget {
   }
 }
 
-class _ErasItem extends StatelessWidget {
-  final String label;
-  final bool done;
-  const _ErasItem(this.label, this.done);
+/// Real ERAS prehab checklist — ticking persists to the backend (eras_progress)
+/// and moves the same rings shown on the full ERAS screen (interconnected).
+class _ErasChecklist extends ConsumerStatefulWidget {
+  const _ErasChecklist();
+  @override
+  ConsumerState<_ErasChecklist> createState() => _ErasChecklistState();
+}
+
+class _ErasChecklistState extends ConsumerState<_ErasChecklist> {
+  // key → patient-facing label
+  static const _items = <(String, String)>[
+    ('smoking', 'Stop smoking (if applicable)'),
+    ('nutrition', 'Optimise nutrition & protein intake'),
+    ('exercise', 'Daily prehab walks'),
+    ('breathing', 'Breathing / spirometry practice'),
+    ('medications', 'Review medications with your team'),
+    ('skin_prep', 'Antiseptic skin prep'),
+    ('education', 'Complete pre-surgery education'),
+  ];
+
+  late final Future<Map<String, int>> _future = _load();
+
+  Future<Map<String, int>> _load() async {
+    final summary = await ref.read(patientRepositoryProvider).erasSummary();
+    return {
+      for (final it in summary.items) (it['item_key'] as String): (it['progress'] as num?)?.toInt() ?? 0,
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        children: [
-          Icon(done ? Icons.check_circle : Icons.radio_button_unchecked, size: 18, color: done ? AppColors.success : AppColors.border),
-          const SizedBox(width: 8),
-          Expanded(child: Text(label, style: GoogleFonts.inter(fontSize: 12, color: done ? AppColors.textMedium : AppColors.textDark, decoration: done ? TextDecoration.lineThrough : null))),
-        ],
-      ),
+    return FutureBuilder<Map<String, int>>(
+      future: _future,
+      builder: (context, snap) {
+        if (!snap.hasData) {
+          return const Padding(padding: EdgeInsets.all(8), child: Center(child: SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.teal))));
+        }
+        final progress = snap.data!;
+        return Column(
+          children: [
+            for (final (key, label) in _items)
+              CheckRow(
+                label: label,
+                initialDone: (progress[key] ?? 0) >= 100,
+                onChanged: (done) async {
+                  await ref.read(patientRepositoryProvider).updateEras(key, done ? 100 : 0);
+                },
+              ),
+          ],
+        );
+      },
     );
   }
 }

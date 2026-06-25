@@ -1,37 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_theme.dart';
-import '../data/mock_data.dart';
 import '../models/task.dart';
+import '../providers/auth_provider.dart';
+import '../providers/patient_providers.dart';
 import '../utils/responsive.dart';
 import '../widgets/mio_mascot.dart';
 import '../widgets/progress_ring.dart';
 import '../widgets/task_item.dart';
 
-class TodayPlanScreen extends StatefulWidget {
+class TodayPlanScreen extends ConsumerWidget {
   const TodayPlanScreen({super.key});
 
   @override
-  State<TodayPlanScreen> createState() => _TodayPlanScreenState();
-}
-
-class _TodayPlanScreenState extends State<TodayPlanScreen> {
-  List<Task> _tasks = todayTasks.toList();
-
-  void _toggle(int id) {
-    setState(() {
-      _tasks = _tasks.map((t) => t.id == id ? t.copyWith(done: !t.done) : t).toList();
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final done = _tasks.where((t) => t.done).length;
-    final total = _tasks.length;
-    final isWide = Responsive.isTablet(context) || Responsive.isFoldable(context);
-    final pad = Responsive.hp(context);
+  Widget build(BuildContext context, WidgetRef ref) {
     final fs = Responsive.fontScale(context);
-    final ringSize = Responsive.value<double>(context, phone: 70, tablet: 90);
+    final tasksAsync = ref.watch(todayTasksProvider);
+    final name = ref.watch(authControllerProvider).user?.firstName ?? 'there';
 
     return Scaffold(
       backgroundColor: AppColors.bg,
@@ -41,131 +27,130 @@ class _TodayPlanScreenState extends State<TodayPlanScreen> {
           icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: AppColors.textDark),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text("Today's Plan", style: GoogleFonts.inter(fontSize: 20 * fs, fontWeight: FontWeight.w800, color: AppColors.textDark)),
-          Text('Thursday, 16 May 2024', style: GoogleFonts.inter(fontSize: 12 * fs, color: AppColors.textMedium)),
-        ]),
-        actions: [
-          Padding(padding: const EdgeInsets.only(right: 12), child: Icon(Icons.calendar_today_rounded, color: AppColors.textDark, size: 22)),
-        ],
+        title: Text("Today's Plan", style: GoogleFonts.inter(fontSize: 20 * fs, fontWeight: FontWeight.w800, color: AppColors.textDark)),
       ),
-      body: Align(
-        alignment: Alignment.topCenter,
-        child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: Responsive.maxWidth(context)),
-          child: Column(
-            children: [
-              // Hero
-              Container(
-                color: AppColors.bgBanner,
-                padding: EdgeInsets.symmetric(horizontal: pad, vertical: isWide ? 20 : 16),
-                child: Row(children: [
-                  MioMascot(variant: MioVariant.happy, size: isWide ? 88 : 72),
-                  const SizedBox(width: 14),
-                  Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text('Hi $userName! 👋', style: GoogleFonts.inter(fontSize: (isWide ? 19 : 17) * fs, fontWeight: FontWeight.w800, color: AppColors.textDark)),
-                    const SizedBox(height: 4),
-                    Text('Here is your personalised plan for today.', style: GoogleFonts.inter(fontSize: 12 * fs, color: AppColors.textMedium)),
-                    const SizedBox(height: 6),
-                    Text('Small steps today, stronger heart tomorrow. 🤍', style: GoogleFonts.inter(fontSize: 12 * fs, fontWeight: FontWeight.w600, color: AppColors.primary)),
-                  ])),
-                  const SizedBox(width: 10),
-                  ProgressRing(value: done.toDouble(), max: total.toDouble(), size: ringSize, label: '$done/$total', sublabel: 'Tasks'),
-                ]),
-              ),
-
-              // Section header
-              Padding(
-                padding: EdgeInsets.fromLTRB(pad, 14, pad, 0),
-                child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text('✨', style: TextStyle(fontSize: 20 * fs)),
-                  const SizedBox(width: 8),
-                  Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text("Today's most important steps", style: GoogleFonts.inter(fontSize: 16 * fs, fontWeight: FontWeight.w700, color: AppColors.textDark)),
-                    Text("Focus on these. You've got this!", style: GoogleFonts.inter(fontSize: 12 * fs, color: AppColors.textMedium)),
-                  ])),
-                  Text('Why these?', style: GoogleFonts.inter(fontSize: 12 * fs, fontWeight: FontWeight.w600, color: AppColors.teal)),
-                  const SizedBox(width: 4),
-                  Container(
-                    width: 18, height: 18,
-                    decoration: BoxDecoration(border: Border.all(color: AppColors.border), shape: BoxShape.circle),
-                    child: Center(child: Text('i', style: GoogleFonts.inter(fontSize: 10 * fs, color: AppColors.textMedium))),
-                  ),
-                ]),
-              ),
-
-              // Task list — 1 col phone, 2 col tablet
-              Expanded(
-                child: isWide
-                    ? _buildWideList(context, pad, fs)
-                    : _buildPhoneList(context, pad, fs),
-              ),
-            ],
-          ),
-        ),
+      body: tasksAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator(color: AppColors.teal)),
+        error: (e, _) => _ErrorState(onRetry: () => ref.read(todayTasksProvider.notifier).load()),
+        data: (tasks) => _content(context, ref, tasks, name, fs),
       ),
     );
   }
 
-  Widget _buildPhoneList(BuildContext context, double pad, double fs) {
+  Widget _content(BuildContext context, WidgetRef ref, List<Task> tasks, String name, double fs) {
+    final isWide = Responsive.isTablet(context) || Responsive.isFoldable(context);
+    final pad = Responsive.hp(context);
+    final ringSize = Responsive.value<double>(context, phone: 70, tablet: 90);
+    final done = tasks.where((t) => t.done).length;
+    final total = tasks.length;
+    void toggle(String id) => ref.read(todayTasksProvider.notifier).toggle(id);
+
+    return Align(
+      alignment: Alignment.topCenter,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: Responsive.maxWidth(context)),
+        child: Column(children: [
+          // Hero
+          Container(
+            color: AppColors.bgBanner,
+            padding: EdgeInsets.symmetric(horizontal: pad, vertical: isWide ? 20 : 16),
+            child: Row(children: [
+              MioMascot(variant: MioVariant.happy, size: isWide ? 88 : 72),
+              const SizedBox(width: 14),
+              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text('Hi $name! 👋', style: GoogleFonts.inter(fontSize: (isWide ? 19 : 17) * fs, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+                const SizedBox(height: 4),
+                Text('Here is your personalised plan for today.', style: GoogleFonts.inter(fontSize: 12 * fs, color: AppColors.textMedium)),
+              ])),
+              const SizedBox(width: 10),
+              ProgressRing(value: done.toDouble(), max: total == 0 ? 1 : total.toDouble(), size: ringSize, label: '$done/$total', sublabel: 'Tasks'),
+            ]),
+          ),
+          Expanded(
+            child: total == 0
+                ? _EmptyState(fs: fs)
+                : (isWide ? _wideList(context, tasks, toggle, pad, fs) : _phoneList(context, tasks, toggle, pad, fs)),
+          ),
+        ]),
+      ),
+    );
+  }
+
+  Widget _phoneList(BuildContext context, List<Task> tasks, void Function(String) toggle, double pad, double fs) {
     return ListView(
-      padding: EdgeInsets.fromLTRB(pad, 10, pad, 16),
+      padding: EdgeInsets.fromLTRB(pad, 12, pad, 16),
       children: [
         Container(
           padding: const EdgeInsets.fromLTRB(12, 4, 12, 0),
           decoration: AppDecorations.card,
-          child: Column(children: _tasks.map((t) => TaskItem(task: t, onToggle: () => _toggle(t.id))).toList()),
+          child: Column(children: tasks.map((t) => TaskItem(task: t, onToggle: () => toggle(t.id))).toList()),
         ),
         const SizedBox(height: 16),
-        _encouragementBanner(fs),
+        _banner(fs),
       ],
     );
   }
 
-  Widget _buildWideList(BuildContext context, double pad, double fs) {
-    final half = (_tasks.length / 2).ceil();
-    final leftTasks = _tasks.sublist(0, half);
-    final rightTasks = _tasks.sublist(half);
-
+  Widget _wideList(BuildContext context, List<Task> tasks, void Function(String) toggle, double pad, double fs) {
+    final half = (tasks.length / 2).ceil();
     return SingleChildScrollView(
-      padding: EdgeInsets.fromLTRB(pad, 10, pad, 16),
+      padding: EdgeInsets.fromLTRB(pad, 12, pad, 16),
       child: Column(children: [
         Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.fromLTRB(12, 4, 12, 0),
-              decoration: AppDecorations.card,
-              child: Column(children: leftTasks.map((t) => TaskItem(task: t, onToggle: () => _toggle(t.id))).toList()),
-            ),
-          ),
+          Expanded(child: Container(padding: const EdgeInsets.fromLTRB(12, 4, 12, 0), decoration: AppDecorations.card, child: Column(children: tasks.sublist(0, half).map((t) => TaskItem(task: t, onToggle: () => toggle(t.id))).toList()))),
           const SizedBox(width: 14),
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.fromLTRB(12, 4, 12, 0),
-              decoration: AppDecorations.card,
-              child: Column(children: rightTasks.map((t) => TaskItem(task: t, onToggle: () => _toggle(t.id))).toList()),
-            ),
-          ),
+          Expanded(child: Container(padding: const EdgeInsets.fromLTRB(12, 4, 12, 0), decoration: AppDecorations.card, child: Column(children: tasks.sublist(half).map((t) => TaskItem(task: t, onToggle: () => toggle(t.id))).toList()))),
         ]),
         const SizedBox(height: 16),
-        _encouragementBanner(fs),
+        _banner(fs),
       ]),
     );
   }
 
-  Widget _encouragementBanner(double fs) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: AppColors.tealLight, borderRadius: BorderRadius.circular(16)),
-      child: Row(children: [
-        Text('✅', style: TextStyle(fontSize: 26 * fs)),
-        const SizedBox(width: 12),
-        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text("You're doing great, $userName!", style: GoogleFonts.inter(fontSize: 14 * fs, fontWeight: FontWeight.w700, color: AppColors.tealDark)),
-          Text('Every step you take is building your recovery.', style: GoogleFonts.inter(fontSize: 12 * fs, color: AppColors.teal)),
-        ])),
-        const MioMascot(variant: MioVariant.celebrate, size: 50),
-      ]),
-    );
-  }
+  Widget _banner(double fs) => Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(color: AppColors.tealLight, borderRadius: BorderRadius.circular(16)),
+        child: Row(children: [
+          Text('✅', style: TextStyle(fontSize: 26 * fs)),
+          const SizedBox(width: 12),
+          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text("You're doing great!", style: GoogleFonts.inter(fontSize: 14 * fs, fontWeight: FontWeight.w700, color: AppColors.tealDark)),
+            Text('Every step you take is building your recovery.', style: GoogleFonts.inter(fontSize: 12 * fs, color: AppColors.teal)),
+          ])),
+          const MioMascot(variant: MioVariant.celebrate, size: 50),
+        ]),
+      );
+}
+
+class _EmptyState extends StatelessWidget {
+  final double fs;
+  const _EmptyState({required this.fs});
+  @override
+  Widget build(BuildContext context) => Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            const MioMascot(variant: MioVariant.calm, size: 80),
+            const SizedBox(height: 16),
+            Text('No tasks for today yet', style: GoogleFonts.inter(fontSize: 16 * fs, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+            const SizedBox(height: 6),
+            Text('Your plan will appear here each morning.', textAlign: TextAlign.center, style: GoogleFonts.inter(fontSize: 13 * fs, color: AppColors.textMedium)),
+          ]),
+        ),
+      );
+}
+
+class _ErrorState extends StatelessWidget {
+  final VoidCallback onRetry;
+  const _ErrorState({required this.onRetry});
+  @override
+  Widget build(BuildContext context) => Center(
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          const Icon(Icons.cloud_off_rounded, size: 48, color: AppColors.textLight),
+          const SizedBox(height: 12),
+          Text("Couldn't load your plan", style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: AppColors.textDark)),
+          const SizedBox(height: 12),
+          OutlinedButton(onPressed: onRetry, child: const Text('Try again')),
+        ]),
+      );
 }

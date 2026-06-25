@@ -46,18 +46,37 @@ class PhaseLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final sidebarWidth = Responsive.value<double>(
-      context,
-      phone: 100.0,
-      fold: 120.0,
-      tablet: 148.0,
-      large: 180.0,
-    );
-    final iconSize = Responsive.value<double>(context, phone: 15.0, fold: 17.0, tablet: 19.0);
-    final labelSize = Responsive.value<double>(context, phone: 8.5, fold: 9.5, tablet: 10.5);
     final mioSize = Responsive.value<double>(context, phone: 60.0, fold: 72.0, tablet: 88.0);
     final heroFontSize = Responsive.value<double>(context, phone: 13.0, fold: 15.0, tablet: 17.0);
     final isLarge = Responsive.isTablet(context) || Responsive.isFoldable(context);
+    // On wide screens the hero lays the focus card beside the mascot; on a
+    // narrow phone it stacks below so nothing overflows.
+    final focusBeside = isLarge;
+
+    final focusCard = focusItems == null
+        ? null
+        : Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.85), borderRadius: BorderRadius.circular(12)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text("Today's Focus", style: GoogleFonts.inter(fontSize: isLarge ? 12 : 11, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+                const SizedBox(height: 5),
+                ...focusItems!.map((f) => Padding(
+                      padding: const EdgeInsets.only(bottom: 3),
+                      child: Row(children: [
+                        Text(f.icon, style: TextStyle(fontSize: isLarge ? 14 : 13)),
+                        const SizedBox(width: 6),
+                        Flexible(child: Text(f.label, style: GoogleFonts.inter(fontSize: isLarge ? 11 : 10, color: AppColors.textMedium))),
+                      ]),
+                    )),
+                const SizedBox(height: 3),
+                Text("You've got this!", style: GoogleFonts.inter(fontSize: isLarge ? 11 : 10, fontWeight: FontWeight.w700, color: AppColors.primary)),
+              ],
+            ),
+          );
 
     return Scaffold(
       backgroundColor: AppColors.bg,
@@ -84,131 +103,65 @@ class PhaseLayout extends StatelessWidget {
         ),
         titleSpacing: 0,
       ),
-      body: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ── Sidebar ─────────────────────────────────────
-          Container(
-            width: sidebarWidth,
-            color: AppColors.bgCard,
+      // Single centred column on every screen size — no side rail (it used to
+      // mirror the section list and looked like everything was doubled).
+      body: SingleChildScrollView(
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: Responsive.maxWidth(context)),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: ListView.builder(
-                    padding: const EdgeInsets.symmetric(vertical: 6),
-                    itemCount: sideNav.length,
-                    itemBuilder: (context, i) {
-                      final item = sideNav[i];
-                      return InkWell(
-                        onTap: () {},
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: isLarge ? 9 : 7, horizontal: 4),
-                          child: Column(
-                            children: [
-                              Text(item.icon, style: TextStyle(fontSize: iconSize)),
-                              const SizedBox(height: 2),
-                              Text(
-                                item.label,
-                                style: GoogleFonts.inter(fontSize: labelSize, fontWeight: FontWeight.w600, color: AppColors.textMedium),
-                                textAlign: TextAlign.center,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                // Care team CTA
+                // Hero
                 Container(
-                  margin: const EdgeInsets.all(6),
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(color: AppColors.bgTeal, borderRadius: BorderRadius.circular(8)),
-                  child: Column(children: [
-                    Text('🎧', style: TextStyle(fontSize: iconSize)),
-                    const SizedBox(height: 3),
-                    Text('Need\nsomething?', style: GoogleFonts.inter(fontSize: labelSize - 0.5, fontWeight: FontWeight.w600, color: AppColors.textMedium), textAlign: TextAlign.center),
-                    Text('Contact\ncare team', style: GoogleFonts.inter(fontSize: labelSize - 0.5, color: AppColors.primary), textAlign: TextAlign.center),
-                  ]),
-                ),
-              ],
-            ),
-          ),
-
-          // ── Main content ─────────────────────────────────
-          Expanded(
-            child: SingleChildScrollView(
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: Responsive.maxWidth(context)),
+                  color: heroBg,
+                  width: double.infinity,
+                  padding: EdgeInsets.all(isLarge ? 20 : 14),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Hero
-                      Container(
-                        color: heroBg,
-                        width: double.infinity,
-                        padding: EdgeInsets.all(isLarge ? 20 : 14),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(heroMsg, style: GoogleFonts.inter(fontSize: heroFontSize, fontWeight: FontWeight.w800, color: AppColors.textDark, height: 1.4)),
-                                  if (heroSub != null) ...[
-                                    const SizedBox(height: 4),
-                                    Text(heroSub!, style: GoogleFonts.inter(fontSize: (heroFontSize - 2), color: AppColors.textMedium, height: 1.5)),
-                                  ],
-                                  if (mottoMsg != null) ...[
-                                    const SizedBox(height: 8),
-                                    Text(mottoMsg!, style: GoogleFonts.inter(fontSize: (heroFontSize - 1), fontWeight: FontWeight.w600, color: AppColors.primary)),
-                                  ],
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(heroMsg, style: GoogleFonts.inter(fontSize: heroFontSize, fontWeight: FontWeight.w800, color: AppColors.textDark, height: 1.4)),
+                                if (heroSub != null) ...[
+                                  const SizedBox(height: 4),
+                                  Text(heroSub!, style: GoogleFonts.inter(fontSize: (heroFontSize - 2), color: AppColors.textMedium, height: 1.5)),
                                 ],
-                              ),
+                                if (mottoMsg != null) ...[
+                                  const SizedBox(height: 8),
+                                  Text(mottoMsg!, style: GoogleFonts.inter(fontSize: (heroFontSize - 1), fontWeight: FontWeight.w600, color: AppColors.primary)),
+                                ],
+                              ],
                             ),
+                          ),
+                          const SizedBox(width: 10),
+                          MioMascot(variant: mioVariant, size: mioSize),
+                          if (focusCard != null && focusBeside) ...[
                             const SizedBox(width: 10),
-                            MioMascot(variant: mioVariant, size: mioSize),
-                            if (focusItems != null) ...[
-                              const SizedBox(width: 10),
-                              Container(
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.85), borderRadius: BorderRadius.circular(12)),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text("Today's Focus", style: GoogleFonts.inter(fontSize: isLarge ? 12 : 10, fontWeight: FontWeight.w700, color: AppColors.textDark)),
-                                    const SizedBox(height: 5),
-                                    ...focusItems!.map((f) => Padding(
-                                      padding: const EdgeInsets.only(bottom: 3),
-                                      child: Row(children: [
-                                        Text(f.icon, style: TextStyle(fontSize: isLarge ? 14 : 12)),
-                                        const SizedBox(width: 4),
-                                        Text(f.label, style: GoogleFonts.inter(fontSize: isLarge ? 11 : 9, color: AppColors.textMedium)),
-                                      ]),
-                                    )),
-                                    const SizedBox(height: 3),
-                                    Text("You've got this!", style: GoogleFonts.inter(fontSize: isLarge ? 11 : 9, fontWeight: FontWeight.w700, color: AppColors.primary)),
-                                  ],
-                                ),
-                              ),
-                            ],
+                            SizedBox(width: 150, child: focusCard),
                           ],
-                        ),
+                        ],
                       ),
-                      // Sections
-                      Padding(padding: EdgeInsets.all(isLarge ? 14 : 10), child: sections),
+                      // On phones the focus card stacks under the hero row.
+                      if (focusCard != null && !focusBeside) ...[
+                        const SizedBox(height: 12),
+                        focusCard,
+                      ],
                     ],
                   ),
                 ),
-              ),
+                // Sections
+                Padding(padding: EdgeInsets.all(isLarge ? 14 : 10), child: sections),
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -261,16 +214,77 @@ class PhaseActionRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final fs = Responsive.fontScale(context);
+    // Rows without an explicit destination still acknowledge the tap so the
+    // app never feels "dead" — these are info/resource items being rolled out.
+    final effectiveOnTap = onTap ??
+        () => ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('$label — coming soon'), duration: const Duration(seconds: 2)),
+            );
     return InkWell(
-      onTap: onTap,
+      onTap: effectiveOnTap,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 9),
-        decoration: BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.border))),
+        decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.border))),
         child: Row(children: [
           Text(icon, style: TextStyle(fontSize: 16 * fs)),
           const SizedBox(width: 8),
           Expanded(child: Text(label, style: GoogleFonts.inter(fontSize: 12 * fs, color: AppColors.textDark, fontWeight: FontWeight.w500))),
           const Icon(Icons.chevron_right, size: 16, color: AppColors.textLight),
+        ]),
+      ),
+    );
+  }
+}
+
+/// A tappable checklist row that toggles + persists. [initialDone] seeds the
+/// state; [onChanged] is awaited when the user taps (e.g. to hit the backend).
+class CheckRow extends StatefulWidget {
+  final String label;
+  final String? sublabel;
+  final bool initialDone;
+  final Future<void> Function(bool done)? onChanged;
+  const CheckRow({super.key, required this.label, this.sublabel, this.initialDone = false, this.onChanged});
+
+  @override
+  State<CheckRow> createState() => _CheckRowState();
+}
+
+class _CheckRowState extends State<CheckRow> {
+  late bool _done = widget.initialDone;
+  bool _busy = false;
+
+  Future<void> _toggle() async {
+    if (_busy) return;
+    final next = !_done;
+    setState(() { _done = next; _busy = true; });
+    try {
+      await widget.onChanged?.call(next);
+    } catch (_) {
+      if (mounted) setState(() => _done = !next); // revert on failure
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final fs = Responsive.fontScale(context);
+    return InkWell(
+      onTap: _toggle,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.border))),
+        child: Row(children: [
+          Icon(_done ? Icons.check_circle_rounded : Icons.radio_button_unchecked_rounded,
+              size: 20, color: _done ? AppColors.success : AppColors.border),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(widget.label, style: GoogleFonts.inter(fontSize: 12.5 * fs, fontWeight: FontWeight.w500, color: AppColors.textDark, decoration: _done ? TextDecoration.lineThrough : null)),
+              if (widget.sublabel != null) Text(widget.sublabel!, style: GoogleFonts.inter(fontSize: 10 * fs, color: AppColors.textMedium)),
+            ]),
+          ),
+          if (_busy) const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.teal)),
         ]),
       ),
     );
@@ -288,7 +302,7 @@ class PhaseViewLink extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.only(top: 8),
-        decoration: BoxDecoration(border: Border(top: BorderSide(color: AppColors.border))),
+        decoration: const BoxDecoration(border: Border(top: BorderSide(color: AppColors.border))),
         child: Text(label, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.teal)),
       ),
     );

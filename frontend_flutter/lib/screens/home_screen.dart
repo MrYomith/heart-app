@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_theme.dart';
-import '../data/mock_data.dart';
+import '../providers/auth_provider.dart';
+import '../providers/patient_providers.dart';
 import '../utils/responsive.dart';
 import '../widgets/mio_mascot.dart';
 import '../widgets/progress_ring.dart';
@@ -9,6 +11,12 @@ import 'today_plan_screen.dart';
 import 'journey_screen.dart';
 import 'messages_screen.dart';
 import 'calendar_screen.dart';
+import 'emotional_checkin_screen.dart';
+import 'pain_tracking_screen.dart';
+import 'medications_screen.dart';
+import 'breathing_screen.dart';
+import 'eras_screen.dart';
+import 'wearables_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -18,7 +26,6 @@ class HomeScreen extends StatelessWidget {
     final pad = Responsive.hp(context);
     final fs = Responsive.fontScale(context);
     final isWide = Responsive.isTablet(context) || Responsive.isFoldable(context);
-    final previewTasks = todayTasks.take(3).toList();
 
     return Scaffold(
       backgroundColor: AppColors.bg,
@@ -65,9 +72,9 @@ class HomeScreen extends StatelessWidget {
                     padding: EdgeInsets.symmetric(horizontal: pad),
                     child: isWide
                         // ── Tablet: 3-column top section ──────────
-                        ? _WideTopSection(previewTasks: previewTasks, fs: fs)
+                        ? _WideTopSection(fs: fs)
                         // ── Phone: 2-column top section ───────────
-                        : _PhoneTopSection(previewTasks: previewTasks, fs: fs),
+                        : _PhoneTopSection(fs: fs),
                   ),
 
                   SizedBox(height: isWide ? 20 : 16),
@@ -90,7 +97,7 @@ class HomeScreen extends StatelessWidget {
                       decoration: BoxDecoration(color: AppColors.tealLight, borderRadius: BorderRadius.circular(16)),
                       child: Row(
                         children: [
-                          Text('🛡️', style: TextStyle(fontSize: 28 * fs)),
+                          Icon(Icons.shield_rounded, size: 28 * fs, color: AppColors.tealDark),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Column(
@@ -151,10 +158,10 @@ class _HeroWide extends StatelessWidget {
         Expanded(child: _HeroText(fs: fs)),
         const SizedBox(width: 16),
         // Extra wearable stat cards on wide screens
-        Column(
+        const Column(
           children: [
             _WeatherStatCard('☀️ 15°C', 'Weather'),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             _WeatherStatCard('❤️ 72bpm', 'Heart Rate'),
           ],
         ),
@@ -163,17 +170,32 @@ class _HeroWide extends StatelessWidget {
   }
 }
 
-class _HeroText extends StatelessWidget {
+class _HeroText extends ConsumerWidget {
   final double fs;
   const _HeroText({required this.fs});
+
+  static String _greeting() {
+    final h = DateTime.now().hour;
+    if (h < 12) return 'Good morning,';
+    if (h < 18) return 'Good afternoon,';
+    return 'Good evening,';
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(authControllerProvider).user;
+    final name = user?.firstName ?? 'there';
+    final phaseLabel = user?.phaseLabel ?? 'Getting Started';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Good morning,', style: GoogleFonts.inter(fontSize: 13 * fs, color: AppColors.textMedium)),
+        Text(_greeting(), style: GoogleFonts.inter(fontSize: 13 * fs, color: AppColors.textMedium)),
         Row(children: [
-          Text(userName, style: GoogleFonts.inter(fontSize: 22 * fs, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+          Flexible(
+            child: Text(name,
+                maxLines: 1, overflow: TextOverflow.ellipsis,
+                style: GoogleFonts.inter(fontSize: 22 * fs, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+          ),
           const SizedBox(width: 4),
           const Text('🤍', style: TextStyle(fontSize: 16)),
         ]),
@@ -183,7 +205,7 @@ class _HeroText extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(color: AppColors.tealLight, borderRadius: BorderRadius.circular(20)),
-          child: Text('🌱 Pre-op Preparation', style: GoogleFonts.inter(fontSize: 11 * fs, fontWeight: FontWeight.w600, color: AppColors.teal)),
+          child: Text('🌱 $phaseLabel', style: GoogleFonts.inter(fontSize: 11 * fs, fontWeight: FontWeight.w600, color: AppColors.teal)),
         ),
       ],
     );
@@ -210,15 +232,14 @@ class _WeatherStatCard extends StatelessWidget {
 // ─── Top section variants ─────────────────────────────────────────────────────
 
 class _PhoneTopSection extends StatelessWidget {
-  final List previewTasks;
   final double fs;
-  const _PhoneTopSection({required this.previewTasks, required this.fs});
+  const _PhoneTopSection({required this.fs});
   @override
   Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(child: _TodayPlanCard(previewTasks: previewTasks, fs: fs)),
+        Expanded(child: _TodayPlanCard(fs: fs)),
         const SizedBox(width: 12),
         Expanded(child: _ProgressCard(fs: fs)),
       ],
@@ -227,15 +248,14 @@ class _PhoneTopSection extends StatelessWidget {
 }
 
 class _WideTopSection extends StatelessWidget {
-  final List previewTasks;
   final double fs;
-  const _WideTopSection({required this.previewTasks, required this.fs});
+  const _WideTopSection({required this.fs});
   @override
   Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(flex: 2, child: _TodayPlanCard(previewTasks: previewTasks, fs: fs)),
+        Expanded(flex: 2, child: _TodayPlanCard(fs: fs)),
         const SizedBox(width: 14),
         Expanded(child: _ProgressCard(fs: fs)),
         const SizedBox(width: 14),
@@ -245,12 +265,14 @@ class _WideTopSection extends StatelessWidget {
   }
 }
 
-class _TodayPlanCard extends StatelessWidget {
-  final List previewTasks;
+class _TodayPlanCard extends ConsumerWidget {
   final double fs;
-  const _TodayPlanCard({required this.previewTasks, required this.fs});
+  const _TodayPlanCard({required this.fs});
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final all = ref.watch(todayTasksProvider).valueOrNull ?? const [];
+    final preview = all.take(3).toList();
+    final doneCount = all.where((t) => t.done == true).length;
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: AppDecorations.card,
@@ -260,7 +282,12 @@ class _TodayPlanCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("📋 Today's Plan", style: GoogleFonts.inter(fontSize: 14 * fs, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+              Flexible(
+                child: Text(all.isEmpty ? "Today's Plan" : "Today's Plan · $doneCount/${all.length}",
+                    maxLines: 1, overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.inter(fontSize: 14 * fs, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+              ),
+              const SizedBox(width: 6),
               GestureDetector(
                 onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TodayPlanScreen())),
                 child: Text('View all', style: GoogleFonts.inter(fontSize: 12 * fs, fontWeight: FontWeight.w600, color: AppColors.teal)),
@@ -268,18 +295,37 @@ class _TodayPlanCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          ...previewTasks.map((t) => _MiniTaskRow(task: t, fs: fs)),
+          if (preview.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Text('No tasks yet', style: GoogleFonts.inter(fontSize: 12 * fs, color: AppColors.textLight)),
+            )
+          else
+            ...preview.map((t) => _MiniTaskRow(task: t, fs: fs)),
         ],
       ),
     );
   }
 }
 
-class _ProgressCard extends StatelessWidget {
+class _ProgressCard extends ConsumerWidget {
   final double fs;
   const _ProgressCard({required this.fs});
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(authControllerProvider).user;
+    final base = (user?.journeyProgress ?? 0).toDouble();
+    final phaseLabel = user?.phaseLabel ?? 'Getting Started';
+    final nextLabel = user?.nextPhaseLabel ?? '';
+    // Blend the phase milestone with today's task completion so the ring climbs
+    // as the patient ticks tasks. Capped at 90% of the step to the next phase so
+    // it never falsely reaches the next milestone (that only happens on transition).
+    final tasks = ref.watch(todayTasksProvider).valueOrNull ?? const [];
+    final total = tasks.length;
+    final doneToday = tasks.where((t) => t.done == true).length;
+    final step = nextLabel.isNotEmpty ? 20.0 : 0.0;
+    final frac = total > 0 ? doneToday / total : 0.0;
+    final progress = (base + step * frac * 0.9).round().clamp(0, 100);
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: AppDecorations.card,
@@ -288,7 +334,12 @@ class _ProgressCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('📈 Progress', style: GoogleFonts.inter(fontSize: 14 * fs, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+              Flexible(
+                child: Text('📈 Progress',
+                    maxLines: 1, overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.inter(fontSize: 14 * fs, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+              ),
+              const SizedBox(width: 6),
               GestureDetector(
                 onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const JourneyScreen())),
                 child: Text('Journey', style: GoogleFonts.inter(fontSize: 12 * fs, fontWeight: FontWeight.w600, color: AppColors.teal)),
@@ -296,52 +347,78 @@ class _ProgressCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 10),
-          ProgressRing(value: journeyProgress.toDouble(), max: 100, size: Responsive.value(context, phone: 80.0, tablet: 90.0), label: '$journeyProgress%', sublabel: 'of journey'),
+          ProgressRing(value: progress.toDouble(), max: 100, size: Responsive.value(context, phone: 80.0, tablet: 90.0), label: '$progress%', sublabel: 'of journey'),
           const SizedBox(height: 8),
-          Text('Pre-op Preparation', style: GoogleFonts.inter(fontSize: 11 * fs, fontWeight: FontWeight.w700, color: AppColors.teal), textAlign: TextAlign.center),
-          Text('Next: Surgery Day', style: GoogleFonts.inter(fontSize: 10 * fs, color: AppColors.textMedium), textAlign: TextAlign.center),
+          Text(phaseLabel, style: GoogleFonts.inter(fontSize: 11 * fs, fontWeight: FontWeight.w700, color: AppColors.teal), textAlign: TextAlign.center),
+          if (nextLabel.isNotEmpty)
+            Text('Next: $nextLabel', style: GoogleFonts.inter(fontSize: 10 * fs, color: AppColors.textMedium), textAlign: TextAlign.center),
+          if (total > 0)
+            Padding(
+              padding: const EdgeInsets.only(top: 2),
+              child: Text('$doneToday/$total tasks done today', style: GoogleFonts.inter(fontSize: 9.5 * fs, color: AppColors.textLight), textAlign: TextAlign.center),
+            ),
         ],
       ),
     );
   }
 }
 
-class _WearableCard extends StatelessWidget {
+class _WearableCard extends ConsumerWidget {
   final double fs;
   const _WearableCard({required this.fs});
+
+  String _fmt(Map s, String key, String unit) {
+    final m = s[key] as Map?;
+    if (m == null) return '—';
+    final v = (m['value'] as num);
+    final n = v == v.roundToDouble() ? v.toInt().toString() : v.toStringAsFixed(1);
+    return '$n $unit';
+  }
+
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: AppDecorations.card,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('⌚ Wearables', style: GoogleFonts.inter(fontSize: 14 * fs, fontWeight: FontWeight.w700, color: AppColors.textDark)),
-          const SizedBox(height: 10),
-          _StatRow('❤️', 'Heart Rate', '72 bpm'),
-          _StatRow('🦶', 'Steps', '5,240'),
-          _StatRow('💧', 'SpO₂', '98%'),
-          _StatRow('😴', 'Sleep', '7h 15m'),
-          const SizedBox(height: 6),
-          Text('Connected · Last sync: now', style: GoogleFonts.inter(fontSize: 10 * fs, color: AppColors.textLight)),
-        ],
+  Widget build(BuildContext context, WidgetRef ref) {
+    final summary = ref.watch(wearableSummaryProvider);
+    return GestureDetector(
+      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const WearablesScreen())),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: AppDecorations.card,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('⌚ Wearables', style: GoogleFonts.inter(fontSize: 14 * fs, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+            const SizedBox(height: 10),
+            summary.when(
+              loading: () => const Padding(padding: EdgeInsets.all(8), child: Center(child: SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)))),
+              error: (e, _) => Text('Tap to connect a device', style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMedium)),
+              data: (s) => s.isEmpty
+                  ? Text('No readings yet — tap to add', style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMedium))
+                  : Column(children: [
+                      _StatRow(Icons.favorite_rounded, AppColors.primary, 'Heart Rate', _fmt(s, 'heart_rate', 'bpm')),
+                      _StatRow(Icons.directions_walk_rounded, AppColors.teal, 'Steps', _fmt(s, 'steps', '')),
+                      _StatRow(Icons.water_drop_rounded, AppColors.teal, 'SpO₂', _fmt(s, 'spo2', '%')),
+                      _StatRow(Icons.bedtime_rounded, AppColors.teal, 'Sleep', _fmt(s, 'sleep', 'h')),
+                    ]),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
 class _StatRow extends StatelessWidget {
-  final String icon;
+  final IconData icon;
+  final Color color;
   final String label;
   final String value;
-  const _StatRow(this.icon, this.label, this.value);
+  const _StatRow(this.icon, this.color, this.label, this.value);
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(children: [
-        Text(icon, style: const TextStyle(fontSize: 14)),
+        Icon(icon, size: 15, color: color),
         const SizedBox(width: 6),
         Expanded(child: Text(label, style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMedium))),
         Text(value, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.textDark)),
@@ -350,35 +427,38 @@ class _StatRow extends StatelessWidget {
   }
 }
 
-class _MiniTaskRow extends StatelessWidget {
+class _MiniTaskRow extends ConsumerWidget {
   final dynamic task;
   final double fs;
   const _MiniTaskRow({required this.task, required this.fs});
   @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(children: [
-        Text(task.icon, style: const TextStyle(fontSize: 16)),
-        const SizedBox(width: 6),
-        Expanded(child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(task.title, style: GoogleFonts.inter(fontSize: 11 * fs, fontWeight: FontWeight.w600, color: AppColors.textDark), overflow: TextOverflow.ellipsis),
-            Text(task.subtitle, style: GoogleFonts.inter(fontSize: 10 * fs, color: AppColors.textMedium), overflow: TextOverflow.ellipsis),
-          ],
-        )),
-        AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          width: 22, height: 22,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: task.done ? AppColors.teal : Colors.transparent,
-            border: Border.all(color: task.done ? AppColors.teal : AppColors.border, width: 1.5),
+  Widget build(BuildContext context, WidgetRef ref) {
+    return InkWell(
+      onTap: () => ref.read(todayTasksProvider.notifier).toggle(task.id),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        child: Row(children: [
+          Text(task.icon, style: const TextStyle(fontSize: 16)),
+          const SizedBox(width: 6),
+          Expanded(child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(task.title, style: GoogleFonts.inter(fontSize: 11 * fs, fontWeight: FontWeight.w600, color: AppColors.textDark), overflow: TextOverflow.ellipsis),
+              Text(task.subtitle, style: GoogleFonts.inter(fontSize: 10 * fs, color: AppColors.textMedium), overflow: TextOverflow.ellipsis),
+            ],
+          )),
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            width: 22, height: 22,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: task.done ? AppColors.teal : Colors.transparent,
+              border: Border.all(color: task.done ? AppColors.teal : AppColors.border, width: 1.5),
+            ),
+            child: task.done ? const Icon(Icons.check, size: 12, color: Colors.white) : null,
           ),
-          child: task.done ? const Icon(Icons.check, size: 12, color: Colors.white) : null,
-        ),
-      ]),
+        ]),
+      ),
     );
   }
 }
@@ -392,15 +472,15 @@ class _QuickActionsGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cols = Responsive.gridCols(context, phone: 4, fold: 6, tablet: 8);
-    final actions = [
-      ('💚', 'Emotional\nCheck-in', 'How are you\nfeeling?', null),
-      ('💊', 'Medications', 'Next: 08:00\nAspirin', null),
-      ('📅', 'Calendar', 'Next: Pre-op', const CalendarScreen()),
-      ('❤️', 'Symptoms', 'No alerts\ntoday', null),
-      ('🎯', 'Goals', 'Stay active,\neat well', null),
-      ('⌚', 'Wearables', 'Connected\nGood sync', null),
-      ('💧', 'Glucose', '112 mg/dL', null),
-      ('🎧', 'Contact\nTeam', "We're here", const MessagesScreen()),
+    final actions = <(IconData, Color, String, String, Widget)>[
+      (Icons.sentiment_satisfied_rounded, AppColors.teal, 'Emotional\nCheck-in', 'How are you\nfeeling?', const EmotionalCheckinScreen()),
+      (Icons.medication_rounded, AppColors.primary, 'Medications', 'Tap to view\n& mark taken', const MedicationsScreen()),
+      (Icons.calendar_month_rounded, AppColors.teal, 'Calendar', 'Appointments\n& plan', const CalendarScreen()),
+      (Icons.monitor_heart_rounded, AppColors.primary, 'Pain Check', 'Log how you\nfeel', const PainTrackingScreen()),
+      (Icons.checklist_rounded, AppColors.teal, 'Surgery Prep', 'ERAS\nchecklist', const ErasScreen()),
+      (Icons.watch_rounded, AppColors.teal, 'Wearables', 'Devices &\nreadings', const WearablesScreen()),
+      (Icons.air_rounded, AppColors.teal, 'Breathing', 'Guided\ncoach', const BreathingScreen()),
+      (Icons.headset_mic_rounded, AppColors.primary, 'Contact\nTeam', "We're here", const MessagesScreen()),
     ];
 
     return GridView.count(
@@ -409,21 +489,32 @@ class _QuickActionsGrid extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       mainAxisSpacing: 10,
       crossAxisSpacing: 10,
-      childAspectRatio: cols > 5 ? 0.85 : 0.9,
+      childAspectRatio: cols > 5 ? 0.80 : 0.74,
       children: actions.map((a) => GestureDetector(
-        onTap: a.$4 != null ? () => Navigator.push(context, MaterialPageRoute(builder: (_) => a.$4!)) : null,
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => a.$5)),
         child: Container(
           decoration: BoxDecoration(
             color: AppColors.bgCard,
             borderRadius: BorderRadius.circular(12),
             boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 4, offset: const Offset(0, 2))],
           ),
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
-          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Text(a.$1, style: TextStyle(fontSize: 22 * fs)),
-            const SizedBox(height: 3),
-            Text(a.$2, style: GoogleFonts.inter(fontSize: 10 * fs, fontWeight: FontWeight.w700, color: AppColors.textDark), textAlign: TextAlign.center),
-            Text(a.$3, style: GoogleFonts.inter(fontSize: 9 * fs, color: AppColors.textMedium), textAlign: TextAlign.center),
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+          child: Column(mainAxisAlignment: MainAxisAlignment.center, mainAxisSize: MainAxisSize.min, children: [
+            Container(
+              width: 40 * fs, height: 40 * fs,
+              decoration: BoxDecoration(color: a.$2.withValues(alpha: 0.12), shape: BoxShape.circle),
+              child: Icon(a.$1, size: 21 * fs, color: a.$2),
+            ),
+            const SizedBox(height: 5),
+            Flexible(
+              child: Text(a.$3, maxLines: 2, overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.inter(fontSize: 10 * fs, fontWeight: FontWeight.w700, color: AppColors.textDark, height: 1.15), textAlign: TextAlign.center),
+            ),
+            const SizedBox(height: 2),
+            Flexible(
+              child: Text(a.$4, maxLines: 2, overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.inter(fontSize: 9 * fs, color: AppColors.textMedium, height: 1.15), textAlign: TextAlign.center),
+            ),
           ]),
         ),
       )).toList(),

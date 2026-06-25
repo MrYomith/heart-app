@@ -1,14 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../providers/auth_provider.dart';
+import '../../providers/patient_providers.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/mio_mascot.dart';
 import '../../widgets/phase_layout.dart';
+import '../../widgets/stage_guides.dart';
+import '../return_to_work_screen.dart';
+import '../screening_screen.dart';
+import '../medications_screen.dart';
+import '../messages_screen.dart';
+import '../learn_screen.dart';
 
-class PostDischargeRehabScreen extends StatelessWidget {
+void _push(BuildContext c, Widget s) => Navigator.push(c, MaterialPageRoute(builder: (_) => s));
+
+class PostDischargeRehabScreen extends ConsumerWidget {
   const PostDischargeRehabScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(authControllerProvider).user;
+    final cessation = ref.watch(cessationProvider).valueOrNull ?? const [];
+    final meds = ref.watch(medicationsProvider).valueOrNull ?? const [];
+    int streak(String type) {
+      final c = cessation.cast<Map<String, dynamic>?>().firstWhere(
+          (e) => e?['type'] == type, orElse: () => null);
+      return (c?['current_streak_days'] as num?)?.toInt() ?? 0;
+    }
+    final day = user?.dayPostOp;
+    final weekLabel = (day == null || day < 0) ? 'Home Recovery' : 'Day $day · Home Recovery';
     return PhaseLayout(
       title: 'Post-Discharge Rehab',
       subtitle: 'Home recovery & cardiac rehabilitation',
@@ -16,7 +37,7 @@ class PostDischargeRehabScreen extends StatelessWidget {
       heroBg: const Color(0xFFF0FDF9),
       mioVariant: MioVariant.happy,
       heroMsg: "You're home! This is where\nyour real recovery begins. 🌟",
-      heroSub: 'Week 2 post-surgery · Home Recovery',
+      heroSub: weekLabel,
       mottoMsg: 'Every day you get a little stronger. 💚',
       focusItems: const [
         FocusItem('🛡️', 'Sternal care'),
@@ -36,21 +57,22 @@ class PostDischargeRehabScreen extends StatelessWidget {
       ],
       sections: Column(
         children: [
+          const PhaseSection(
+            title: '📚 Learn about this stage',
+            subtitle: 'Tap any guide to read more',
+            child: StageGuides(stage: 'rehab'),
+          ),
           PhaseSection(
             title: '🏥 A. Cardiac Rehab Centre',
             child: Column(
               children: [
-                _InfoRow('Centre', 'St. George Cardiac Rehab'),
-                _InfoRow('Address', '123 Health St, Kogarah'),
-                _InfoRow('Schedule', 'Mon/Wed/Fri 9:00–11:00 AM'),
-                _InfoRow('Next session', 'Monday, 3 June 2024'),
+                _InfoRow('Centre', user?.hospitalName ?? 'To be confirmed'),
+                const _InfoRow('Programme', 'Anschlussheilbehandlung (AHB)'),
+                const _InfoRow('Schedule', 'Your centre will confirm your sessions'),
                 const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Expanded(child: _ActionBtn('Get Directions', AppColors.teal)),
-                    const SizedBox(width: 8),
-                    Expanded(child: _ActionBtn('Call Centre', AppColors.primary)),
-                  ],
+                GestureDetector(
+                  onTap: () => _push(context, const MessagesScreen()),
+                  child: const _ActionBtn('Contact rehab team', AppColors.teal),
                 ),
               ],
             ),
@@ -64,13 +86,13 @@ class PostDischargeRehabScreen extends StatelessWidget {
               children: [
                 Text('Your sternum takes 6–12 weeks to heal.', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.primary)),
                 const SizedBox(height: 6),
-                _RuleRow('✅', 'Use pillow when coughing or sneezing'),
-                _RuleRow('✅', 'Let others carry heavy items (>2kg)'),
-                _RuleRow('❌', 'Do NOT push/pull with arms'),
-                _RuleRow('❌', 'Do NOT drive for 4–6 weeks'),
-                _RuleRow('❌', 'Do NOT lift arms above shoulders'),
+                const _RuleRow('✅', 'Use pillow when coughing or sneezing'),
+                const _RuleRow('✅', 'Let others carry heavy items (>2kg)'),
+                const _RuleRow('❌', 'Do NOT push/pull with arms'),
+                const _RuleRow('❌', 'Do NOT drive for 4–6 weeks'),
+                const _RuleRow('❌', 'Do NOT lift arms above shoulders'),
                 const SizedBox(height: 6),
-                const PhaseActionRow(icon: '📺', label: 'Watch: Sternal Precautions Video'),
+                PhaseActionRow(icon: '📺', label: 'Watch: Sternal Precautions Video', onTap: () => _push(context, const LearnScreen())),
               ],
             ),
           ),
@@ -78,12 +100,12 @@ class PostDischargeRehabScreen extends StatelessWidget {
           PhaseSection(
             title: '🏠 C. Home Recovery Guide',
             child: Column(
-              children: const [
-                PhaseActionRow(icon: '🛀', label: 'Showering & wound care at home'),
-                PhaseActionRow(icon: '😴', label: 'Sleep positions for comfort'),
-                PhaseActionRow(icon: '🚗', label: 'When you can resume driving'),
-                PhaseActionRow(icon: '✈️', label: 'Travel restrictions & clearance'),
-                PhaseActionRow(icon: '📞', label: 'When to call your doctor'),
+              children: [
+                PhaseActionRow(icon: '🛀', label: 'Showering & wound care at home', onTap: () => _push(context, const LearnScreen())),
+                PhaseActionRow(icon: '😴', label: 'Sleep positions for comfort', onTap: () => _push(context, const LearnScreen())),
+                PhaseActionRow(icon: '🚗', label: 'When you can resume driving', onTap: () => _push(context, const LearnScreen())),
+                PhaseActionRow(icon: '✈️', label: 'Travel restrictions & clearance', onTap: () => _push(context, const LearnScreen())),
+                PhaseActionRow(icon: '📞', label: 'When to call your doctor', onTap: () => _push(context, const MessagesScreen())),
               ],
             ),
           ),
@@ -95,9 +117,9 @@ class PostDischargeRehabScreen extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Expanded(child: _CounterCard('🚭', 'Smoke Free', '36 Days', AppColors.success)),
+                    Expanded(child: _CounterCard('🚭', 'Smoke Free', '${streak('smoking')} Days', AppColors.success)),
                     const SizedBox(width: 10),
-                    Expanded(child: _CounterCard('🍷', 'Alcohol Free', '36 Days', AppColors.teal)),
+                    Expanded(child: _CounterCard('🍷', 'Alcohol Free', '${streak('alcohol')} Days', AppColors.teal)),
                   ],
                 ),
                 const SizedBox(height: 8),
@@ -115,7 +137,7 @@ class PostDischargeRehabScreen extends StatelessWidget {
                 const SizedBox(height: 6),
                 Text('Most patients can resume at 4–6 weeks when they can walk briskly up two flights of stairs without chest pain or shortness of breath.', style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMedium, height: 1.5)),
                 const SizedBox(height: 6),
-                const PhaseActionRow(icon: '📄', label: 'Download: Intimacy After Heart Surgery'),
+                PhaseActionRow(icon: '📄', label: 'Download: Intimacy After Heart Surgery', onTap: () => _push(context, const LearnScreen())),
               ],
             ),
           ),
@@ -124,12 +146,14 @@ class PostDischargeRehabScreen extends StatelessWidget {
             title: '💊 F. Medications at Home',
             child: Column(
               children: [
-                _MedRow('Aspirin', '100mg', 'Daily', '🌅'),
-                _MedRow('Metoprolol', '25mg', 'Twice daily', '🕗'),
-                _MedRow('Atorvastatin', '40mg', 'Nightly', '🌙'),
-                _MedRow('Ramipril', '5mg', 'Morning', '🌅'),
+                if (meds.isEmpty)
+                  Text('Your discharge medications will appear here once your care team adds them.',
+                      style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMedium))
+                else
+                  for (final m in meds)
+                    _MedRow(m.name, m.dose, m.schedule, m.isAnticoagulant ? '⚠️' : '💊'),
                 const SizedBox(height: 8),
-                const PhaseActionRow(icon: '🔔', label: 'Set Medication Reminders'),
+                PhaseActionRow(icon: '🔔', label: 'Set Medication Reminders', onTap: () => _push(context, const MedicationsScreen())),
               ],
             ),
           ),
@@ -138,12 +162,12 @@ class PostDischargeRehabScreen extends StatelessWidget {
             title: '💼 G. Return to Work',
             child: Column(
               children: [
-                _InfoRow('Desk job', '4–6 weeks'),
-                _InfoRow('Light physical', '6–8 weeks'),
-                _InfoRow('Heavy physical', '3–6 months'),
+                const _InfoRow('Desk job', '4–6 weeks'),
+                const _InfoRow('Light physical', '6–8 weeks'),
+                const _InfoRow('Heavy physical', '3–6 months'),
                 const SizedBox(height: 6),
-                const PhaseActionRow(icon: '📄', label: 'Medical Certificate Request'),
-                const PhaseActionRow(icon: '👔', label: 'Graduated Return-to-Work Plan'),
+                PhaseActionRow(icon: '📄', label: 'Medical Certificate Request', onTap: () => _push(context, const MessagesScreen())),
+                PhaseActionRow(icon: '👔', label: 'Graduated Return-to-Work Plan', onTap: () => _push(context, const ReturnToWorkScreen())),
               ],
             ),
           ),
@@ -152,10 +176,10 @@ class PostDischargeRehabScreen extends StatelessWidget {
             title: '💚 H. Emotional Support',
             background: const Color(0xFFF0FDF4),
             child: Column(
-              children: const [
-                PhaseActionRow(icon: '🧠', label: 'Post-cardiac depression screening'),
-                PhaseActionRow(icon: '💬', label: 'Chat with psychologist'),
-                PhaseActionRow(icon: '📞', label: 'Lifeline: 13 11 14'),
+              children: [
+                PhaseActionRow(icon: '🧠', label: 'Post-cardiac depression screening', onTap: () => _push(context, const ScreeningScreen(type: 'phq9'))),
+                PhaseActionRow(icon: '💬', label: 'Chat with psychologist', onTap: () => _push(context, const MessagesScreen())),
+                const PhaseActionRow(icon: '📞', label: 'Lifeline: 13 11 14'),
               ],
             ),
           ),
@@ -163,10 +187,10 @@ class PostDischargeRehabScreen extends StatelessWidget {
           PhaseSection(
             title: '👥 I. Patient Community',
             child: Column(
-              children: const [
-                PhaseActionRow(icon: '💬', label: 'Join Heart Recovery Forum'),
-                PhaseActionRow(icon: '📅', label: 'Local cardiac support group'),
-                PhaseActionRow(icon: '🤝', label: 'Connect with a recovery buddy'),
+              children: [
+                PhaseActionRow(icon: '💬', label: 'Join Heart Recovery Forum', onTap: () => _push(context, const MessagesScreen())),
+                PhaseActionRow(icon: '📅', label: 'Local cardiac support group', onTap: () => _push(context, const MessagesScreen())),
+                PhaseActionRow(icon: '🤝', label: 'Connect with a recovery buddy', onTap: () => _push(context, const MessagesScreen())),
               ],
             ),
           ),
@@ -241,7 +265,7 @@ class _CounterCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
+      decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
       child: Column(
         children: [
           Text(icon, style: const TextStyle(fontSize: 24)),
@@ -265,7 +289,7 @@ class _MedRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8),
-      decoration: BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.border))),
+      decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.border))),
       child: Row(
         children: [
           Text(timeIcon, style: const TextStyle(fontSize: 16)),

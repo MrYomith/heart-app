@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_theme.dart';
-import '../data/mock_data.dart';
+import '../models/journey_phase.dart';
+import '../providers/auth_provider.dart';
+import '../providers/patient_providers.dart';
 import '../utils/responsive.dart';
 import '../widgets/mio_mascot.dart';
 import 'phases/diagnosis_screen.dart';
@@ -11,7 +14,7 @@ import 'phases/inpatient_recovery_screen.dart';
 import 'phases/post_discharge_rehab_screen.dart';
 import 'phases/thriving_screen.dart';
 
-class JourneyScreen extends StatelessWidget {
+class JourneyScreen extends ConsumerWidget {
   const JourneyScreen({super.key});
 
   Widget? _dest(String key) {
@@ -43,10 +46,20 @@ class JourneyScreen extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final pad = Responsive.hp(context);
     final isWide = Responsive.isTablet(context) || Responsive.isFoldable(context);
     final fs = Responsive.fontScale(context);
+    final user = ref.watch(authControllerProvider).user;
+    final journeyAsync = ref.watch(journeyProvider);
+    // Blend phase milestone with today's task completion (mirrors the home ring).
+    final base = (user?.journeyProgress ?? 0).toDouble();
+    final tasks = ref.watch(todayTasksProvider).valueOrNull ?? const [];
+    final total = tasks.length;
+    final doneToday = tasks.where((t) => t.done == true).length;
+    final step = (user?.nextPhaseLabel ?? '').isNotEmpty ? 20.0 : 0.0;
+    final frac = total > 0 ? doneToday / total : 0.0;
+    final progress = (base + step * frac * 0.9).round().clamp(0, 100);
 
     return Scaffold(
       backgroundColor: AppColors.bg,
@@ -78,14 +91,14 @@ class JourneyScreen extends StatelessWidget {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(4),
                       child: LinearProgressIndicator(
-                        value: journeyProgress / 100,
+                        value: progress / 100,
                         backgroundColor: AppColors.border,
                         color: AppColors.teal,
                         minHeight: 8,
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Text('$journeyProgress% complete — Pre-op Phase', style: GoogleFonts.inter(fontSize: 11 * fs, color: AppColors.textMedium)),
+                    Text('$progress% complete — ${user?.phaseLabel ?? ''}', style: GoogleFonts.inter(fontSize: 11 * fs, color: AppColors.textMedium)),
                   ]),
                 ),
               ],
@@ -98,9 +111,13 @@ class JourneyScreen extends StatelessWidget {
               alignment: Alignment.topCenter,
               child: ConstrainedBox(
                 constraints: BoxConstraints(maxWidth: Responsive.maxWidth(context)),
-                child: isWide
-                    ? _buildGridList(context, pad, fs)
-                    : _buildTimelineList(context, pad, fs),
+                child: journeyAsync.when(
+                  loading: () => const Center(child: CircularProgressIndicator(color: AppColors.teal)),
+                  error: (e, _) => Center(child: Text("Couldn't load your journey", style: GoogleFonts.inter(color: AppColors.textMedium))),
+                  data: (phases) => isWide
+                      ? _buildGridList(context, phases, pad, fs)
+                      : _buildTimelineList(context, phases, pad, fs),
+                ),
               ),
             ),
           ),
@@ -110,14 +127,14 @@ class JourneyScreen extends StatelessWidget {
   }
 
   // ── Phone: vertical timeline ─────────────────────────────
-  Widget _buildTimelineList(BuildContext context, double pad, double fs) {
+  Widget _buildTimelineList(BuildContext context, List<JourneyPhase> phases, double pad, double fs) {
     return ListView.builder(
       padding: EdgeInsets.fromLTRB(pad, 14, pad, 16),
-      itemCount: journeyPhases.length,
+      itemCount: phases.length,
       itemBuilder: (context, i) {
-        final phase = journeyPhases[i];
+        final phase = phases[i];
         final dest = _dest(phase.id);
-        final isLast = i == journeyPhases.length - 1;
+        final isLast = i == phases.length - 1;
         return IntrinsicHeight(
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -133,7 +150,7 @@ class JourneyScreen extends StatelessWidget {
   }
 
   // ── Tablet: 2-column card grid ───────────────────────────
-  Widget _buildGridList(BuildContext context, double pad, double fs) {
+  Widget _buildGridList(BuildContext context, List<JourneyPhase> phases, double pad, double fs) {
     final cols = Responsive.isLarge(context) ? 3 : 2;
     return GridView.builder(
       padding: EdgeInsets.fromLTRB(pad, 16, pad, 16),
@@ -143,9 +160,9 @@ class JourneyScreen extends StatelessWidget {
         mainAxisSpacing: 14,
         childAspectRatio: 1.1,
       ),
-      itemCount: journeyPhases.length,
+      itemCount: phases.length,
       itemBuilder: (context, i) {
-        final phase = journeyPhases[i];
+        final phase = phases[i];
         final dest = _dest(phase.id);
         return _PhaseCardGrid(phase: phase, dest: dest, statusColor: _statusColor(phase.status), statusLabel: _statusLabel(phase.status), fs: fs);
       },
@@ -154,7 +171,7 @@ class JourneyScreen extends StatelessWidget {
 }
 
 class _TimelineColumn extends StatelessWidget {
-  final phase;
+  final dynamic phase;
   final bool isLast;
   final Color statusColor;
   const _TimelineColumn({required this.phase, required this.isLast, required this.statusColor});
@@ -177,7 +194,7 @@ class _TimelineColumn extends StatelessWidget {
 }
 
 class _PhaseCard extends StatelessWidget {
-  final phase;
+  final dynamic phase;
   final Widget? dest;
   final Color statusColor;
   final String statusLabel;
@@ -204,7 +221,7 @@ class _PhaseCard extends StatelessWidget {
 }
 
 class _PhaseCardGrid extends StatelessWidget {
-  final phase;
+  final dynamic phase;
   final Widget? dest;
   final Color statusColor;
   final String statusLabel;
@@ -259,7 +276,7 @@ class _PhaseCardGrid extends StatelessWidget {
 }
 
 class _PhaseCardContent extends StatelessWidget {
-  final phase;
+  final dynamic phase;
   final Widget? dest;
   final Color statusColor;
   final String statusLabel;

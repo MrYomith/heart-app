@@ -1,26 +1,169 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_theme.dart';
-import '../data/mock_data.dart';
 import '../models/message.dart';
+import '../providers/patient_providers.dart';
 import '../utils/responsive.dart';
 
-class MessagesScreen extends StatefulWidget {
+class MessagesScreen extends ConsumerStatefulWidget {
   const MessagesScreen({super.key});
 
   @override
-  State<MessagesScreen> createState() => _MessagesScreenState();
+  ConsumerState<MessagesScreen> createState() => _MessagesScreenState();
 }
 
-class _MessagesScreenState extends State<MessagesScreen> {
+class _MessagesScreenState extends ConsumerState<MessagesScreen> {
   String _activeCategory = 'All';
   ChatMessage? _selected;
+  List<ChatMessage> _messages = [];
+  bool _loading = true;
+  final _chatController = TextEditingController();
+  bool _sending = false;
+
+  @override
+  void dispose() {
+    _chatController.dispose();
+    super.dispose();
+  }
+
+  /// Inline chat send — type at the bottom bar, message goes to the care team
+  /// and the thread refreshes immediately.
+  Future<void> _sendInline() async {
+    final text = _chatController.text.trim();
+    if (text.isEmpty || _sending) return;
+    setState(() => _sending = true);
+    try {
+      await ref.read(patientRepositoryProvider).sendMessage(text);
+      _chatController.clear();
+      await _load();
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not send. Please try again.')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _sending = false);
+    }
+  }
+
+  Widget _composerBar() {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+      decoration: const BoxDecoration(
+        color: AppColors.bgCard,
+        border: Border(top: BorderSide(color: AppColors.border)),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Row(children: [
+          Expanded(
+            child: TextField(
+              controller: _chatController,
+              minLines: 1,
+              maxLines: 4,
+              textInputAction: TextInputAction.send,
+              onSubmitted: (_) => _sendInline(),
+              decoration: InputDecoration(
+                hintText: 'Message your care team…',
+                hintStyle: GoogleFonts.inter(fontSize: 13, color: AppColors.textLight),
+                filled: true,
+                fillColor: AppColors.bg,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          GestureDetector(
+            onTap: _sendInline,
+            child: Container(
+              width: 44, height: 44,
+              decoration: const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle),
+              child: _sending
+                  ? const Padding(padding: EdgeInsets.all(12), child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                  : const Icon(Icons.send_rounded, color: Colors.white, size: 20),
+            ),
+          ),
+        ]),
+      ),
+    );
+  }
 
   final List<String> _categories = ['All', 'Appointments', 'Lab Results', 'Prescriptions', 'Education', 'Alerts', 'Support'];
 
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    try {
+      final m = await ref.read(patientRepositoryProvider).messages();
+      if (mounted) setState(() { _messages = m; _loading = false; });
+    } catch (_) {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  void _open(ChatMessage msg) {
+    setState(() {
+      _selected = msg;
+      if (!msg.isRead) {
+        _messages = [for (final m in _messages) m.id == msg.id ? m.copyWith(isRead: true) : m];
+      }
+    });
+    if (!msg.isRead) ref.read(patientRepositoryProvider).markMessageRead(msg.id);
+  }
+
+  /// Compose & send a message to the care team (FR-200).
+  Future<void> _compose({String? prefill}) async {
+    final controller = TextEditingController(text: prefill ?? '');
+    final sent = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.bgCard,
+        title: Text('Message your care team', style: GoogleFonts.inter(fontWeight: FontWeight.w700)),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          maxLines: 4,
+          decoration: const InputDecoration(hintText: 'Type your message…', border: OutlineInputBorder()),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, foregroundColor: Colors.white),
+            child: const Text('Send'),
+          ),
+        ],
+      ),
+    );
+    if (sent == true && controller.text.trim().isNotEmpty) {
+      try {
+        await ref.read(patientRepositoryProvider).sendMessage(controller.text.trim());
+        await _load();
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Message sent to your care team.')),
+          );
+        }
+      } catch (_) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Could not send. Please try again.')),
+          );
+        }
+      }
+    }
+  }
+
   List<ChatMessage> get _filtered {
-    if (_activeCategory == 'All') return messages;
-    return messages.where((m) => m.category == _activeCategory).toList();
+    if (_activeCategory == 'All') return _messages;
+    return _messages.where((m) => m.category == _activeCategory).toList();
   }
 
   @override
@@ -40,7 +183,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
           _categoryChips(),
           Expanded(child: _messageList(context)),
           if (_selected != null) _detailPane(context),
-          _smartCheckIn(context),
+          _composerBar(),
         ],
       ),
     );
@@ -57,7 +200,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
           // Master list panel
           Container(
             width: listWidth,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: AppColors.bgCard,
               border: Border(right: BorderSide(color: AppColors.border)),
             ),
@@ -66,7 +209,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                 _careTeamBanner(context),
                 _categoryChips(),
                 Expanded(child: _messageList(context)),
-                _smartCheckIn(context),
+                _composerBar(),
               ],
             ),
           ),
@@ -92,9 +235,10 @@ class _MessagesScreenState extends State<MessagesScreen> {
       ],
     ),
     actions: [
-      Padding(
-        padding: const EdgeInsets.only(right: 12),
-        child: Icon(Icons.edit_rounded, color: AppColors.textDark, size: 22),
+      IconButton(
+        onPressed: _compose,
+        icon: const Icon(Icons.edit_rounded, color: AppColors.textDark, size: 22),
+        tooltip: 'New message',
       ),
     ],
   );
@@ -105,9 +249,9 @@ class _MessagesScreenState extends State<MessagesScreen> {
       color: AppColors.bgBanner,
       child: Row(
         children: [
-          _Avatar('👩‍⚕️'),
-          Transform.translate(offset: const Offset(-10, 0), child: _Avatar('👨‍⚕️')),
-          Transform.translate(offset: const Offset(-20, 0), child: _Avatar('👩‍🔬')),
+          const _Avatar('👩‍⚕️'),
+          Transform.translate(offset: const Offset(-10, 0), child: const _Avatar('👨‍⚕️')),
+          Transform.translate(offset: const Offset(-20, 0), child: const _Avatar('👩‍🔬')),
           const SizedBox(width: 4),
           Expanded(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -115,10 +259,13 @@ class _MessagesScreenState extends State<MessagesScreen> {
               Text('3 specialists · ~2h response', style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMedium)),
             ]),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(20)),
-            child: Text('+ New', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.white)),
+          GestureDetector(
+            onTap: _compose,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(20)),
+              child: Text('+ New', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.white)),
+            ),
           ),
         ],
       ),
@@ -154,13 +301,24 @@ class _MessagesScreenState extends State<MessagesScreen> {
   }
 
   Widget _messageList(BuildContext context) {
+    if (_loading) {
+      return const Center(child: CircularProgressIndicator(color: AppColors.teal));
+    }
+    if (_filtered.isEmpty) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Text('No messages yet', style: GoogleFonts.inter(fontSize: 14, color: AppColors.textLight)),
+        ),
+      );
+    }
     return ListView.builder(
       padding: const EdgeInsets.symmetric(vertical: 4),
       itemCount: _filtered.length,
       itemBuilder: (context, i) {
         final msg = _filtered[i];
         return GestureDetector(
-          onTap: () => setState(() => _selected = msg),
+          onTap: () => _open(msg),
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
             padding: const EdgeInsets.all(12),
@@ -175,7 +333,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
               children: [
                 Container(
                   width: 44, height: 44,
-                  decoration: BoxDecoration(shape: BoxShape.circle, color: AppColors.tealLight),
+                  decoration: const BoxDecoration(shape: BoxShape.circle, color: AppColors.tealLight),
                   child: Center(child: Text(msg.avatar, style: const TextStyle(fontSize: 20))),
                 ),
                 const SizedBox(width: 10),
@@ -222,7 +380,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
         Text(_selected!.body.isNotEmpty ? _selected!.body : _selected!.preview, style: GoogleFonts.inter(fontSize: 13, color: AppColors.textDark, height: 1.5)),
         const SizedBox(height: 10),
         Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-          TextButton(onPressed: () {}, child: Text('Reply', style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: AppColors.teal))),
+          TextButton(onPressed: () => _compose(), child: Text('Reply', style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: AppColors.teal))),
         ]),
       ]),
     );
@@ -237,7 +395,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
         Row(children: [
           Container(
             width: 52, height: 52,
-            decoration: BoxDecoration(shape: BoxShape.circle, color: AppColors.tealLight),
+            decoration: const BoxDecoration(shape: BoxShape.circle, color: AppColors.tealLight),
             child: Center(child: Text(_selected!.avatar, style: const TextStyle(fontSize: 24))),
           ),
           const SizedBox(width: 14),
@@ -262,10 +420,13 @@ class _MessagesScreenState extends State<MessagesScreen> {
         const SizedBox(height: 24),
         Row(children: [
           Expanded(
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              decoration: BoxDecoration(color: AppColors.teal, borderRadius: BorderRadius.circular(12)),
-              child: Center(child: Text('Reply', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white))),
+            child: GestureDetector(
+              onTap: () => _compose(),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(color: AppColors.teal, borderRadius: BorderRadius.circular(12)),
+                child: Center(child: Text('Reply', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white))),
+              ),
             ),
           ),
           const SizedBox(width: 12),
@@ -289,26 +450,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
     );
   }
 
-  Widget _smartCheckIn(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(color: AppColors.tealLight, borderRadius: BorderRadius.circular(14)),
-      child: Row(children: [
-        const Text('📋', style: TextStyle(fontSize: 22)),
-        const SizedBox(width: 10),
-        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('Smart Check-in', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.tealDark)),
-          Text('Send your daily vitals to your care team', style: GoogleFonts.inter(fontSize: 11, color: AppColors.teal)),
-        ])),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-          decoration: BoxDecoration(color: AppColors.teal, borderRadius: BorderRadius.circular(20)),
-          child: Text('Send', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700, color: Colors.white)),
-        ),
-      ]),
-    );
-  }
 }
 
 class _Avatar extends StatelessWidget {

@@ -1,16 +1,25 @@
 from pydantic import BaseModel
-from typing import Optional
 
 
 class JourneyPhaseOut(BaseModel):
-    id: int
-    user_id: int
+    id: str
     phase_key: str
     label: str
-    emoji: Optional[str] = None
+    emoji: str | None = None
     status: str
-    date_label: Optional[str] = None
-    subtitle: Optional[str] = None
+    date_label: str | None = None
+    subtitle: str | None = None
     order: int
 
-    model_config = {"from_attributes": True}
+    @classmethod
+    def from_row(cls, p) -> "JourneyPhaseOut":
+        return cls(
+            id=str(p.id),
+            phase_key=p.phase_key.value if p.phase_key else "",
+            label=p.label,
+            emoji=p.emoji,
+            status=p.status.value if p.status else "upcoming",
+            date_label=p.date_label,
+            subtitle=p.subtitle,
+            order=p.sort_order or 0,
+        )

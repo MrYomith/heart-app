@@ -1,22 +1,49 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../providers/auth_provider.dart';
+import '../../providers/patient_providers.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/mio_mascot.dart';
+import '../../widgets/mood_checkin.dart';
 import '../../widgets/phase_layout.dart';
+import '../pain_tracking_screen.dart';
+import '../breathing_screen.dart';
+import '../delirium_screen.dart';
+import '../nutrition_screen.dart';
+import '../emotional_checkin_screen.dart';
+import '../mobilisation_screen.dart';
+import '../wound_screen.dart';
+import '../learn_screen.dart';
+import '../../widgets/stage_guides.dart';
 
-class InpatientRecoveryScreen extends StatefulWidget {
+void _go(BuildContext context, Widget screen) =>
+    Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
+
+class InpatientRecoveryScreen extends ConsumerStatefulWidget {
   const InpatientRecoveryScreen({super.key});
 
   @override
-  State<InpatientRecoveryScreen> createState() => _InpatientRecoveryScreenState();
+  ConsumerState<InpatientRecoveryScreen> createState() => _InpatientRecoveryScreenState();
 }
 
-class _InpatientRecoveryScreenState extends State<InpatientRecoveryScreen> {
+class _InpatientRecoveryScreenState extends ConsumerState<InpatientRecoveryScreen> {
   double _painLevel = 3;
-  String _emotionEmoji = '😐';
+
+  Future<void> _logBreathing(bool done) async {
+    if (!done) return; // checking off records a completed session
+    await ref.read(patientRepositoryProvider).logBreathing(type: 'breathing');
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Breathing session logged 🫁'), duration: Duration(seconds: 2)),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final day = ref.watch(authControllerProvider).user?.dayPostOp;
+    final dayLabel = (day == null || day < 0) ? 'Recovering in hospital' : 'Day $day post-surgery';
     return PhaseLayout(
       title: 'Inpatient Recovery',
       subtitle: 'Hospital recovery — days 1 to 7',
@@ -24,10 +51,10 @@ class _InpatientRecoveryScreenState extends State<InpatientRecoveryScreen> {
       heroBg: const Color(0xFFF0FDF9),
       mioVariant: MioVariant.calm,
       heroMsg: 'Surgery is done. You did it!\nNow let your body heal. 🌿',
-      heroSub: 'Day 2 post-surgery · ICU → Cardiac Ward',
+      heroSub: '$dayLabel · ICU → Cardiac Ward',
       mottoMsg: 'Rest is recovery. 💚',
       focusItems: const [
-        FocusItem('😌', 'Pain: 3/10'),
+        FocusItem('😌', 'Log your pain'),
         FocusItem('🫁', 'Breathing ex'),
         FocusItem('🚶', 'First steps'),
       ],
@@ -49,6 +76,11 @@ class _InpatientRecoveryScreenState extends State<InpatientRecoveryScreen> {
   Widget _buildSections(BuildContext context) {
     return Column(
       children: [
+        const PhaseSection(
+          title: '📚 Learn about this stage',
+          subtitle: 'Tap any guide to read more',
+          child: StageGuides(stage: 'inpatient'),
+        ),
         // Pain tracking
         PhaseSection(
           title: '😣 A. Pain Tracking',
@@ -60,22 +92,25 @@ class _InpatientRecoveryScreenState extends State<InpatientRecoveryScreen> {
                 children: List.generate(11, (i) => Text('$i', style: GoogleFonts.inter(fontSize: 9, color: AppColors.textLight))),
               ),
               SliderTheme(
-                data: SliderThemeData(thumbColor: AppColors.primary, activeTrackColor: AppColors.primary, inactiveTrackColor: AppColors.border, trackHeight: 4),
+                data: const SliderThemeData(thumbColor: AppColors.primary, activeTrackColor: AppColors.primary, inactiveTrackColor: AppColors.border, trackHeight: 4),
                 child: Slider(value: _painLevel, min: 0, max: 10, divisions: 10, onChanged: (v) => setState(() => _painLevel = v)),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('${_painLevel.toInt()}/10 pain', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.primary)),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(20)),
-                    child: Text('Log Pain', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.white)),
+                  GestureDetector(
+                    onTap: () => _go(context, const PainTrackingScreen()),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(20)),
+                      child: Text('Log Pain', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.white)),
+                    ),
                   ),
                 ],
               ),
               const SizedBox(height: 6),
-              Text('Last medication: Morphine 4mg at 08:00', style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMedium)),
+              Text('Tap below to log your pain — your nurse is alerted if it is 7 or higher.', style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMedium)),
             ],
           ),
         ),
@@ -86,9 +121,10 @@ class _InpatientRecoveryScreenState extends State<InpatientRecoveryScreen> {
           background: const Color(0xFFF0FDF9),
           child: Column(
             children: [
-              _BreathingItem('Spirometer practice', '10 reps × 3 sets', false),
-              _BreathingItem('Deep breathing', '5 min × 4 times/day', true),
-              _BreathingItem('Cough assist technique', 'As needed', true),
+              CheckRow(label: 'Spirometer practice', sublabel: '10 reps × 3 sets', onChanged: _logBreathing),
+              CheckRow(label: 'Deep breathing', sublabel: '5 min × 4 times/day', onChanged: _logBreathing),
+              CheckRow(label: 'Cough assist technique', sublabel: 'As needed', onChanged: _logBreathing),
+              PhaseActionRow(icon: '🫁', label: 'Open guided breathing coach', onTap: () => _go(context, const BreathingScreen())),
             ],
           ),
         ),
@@ -98,11 +134,12 @@ class _InpatientRecoveryScreenState extends State<InpatientRecoveryScreen> {
           title: '🚶 C. Mobilisation',
           child: Column(
             children: [
-              _MobiRow('Day 1', 'Sit on edge of bed', true),
-              _MobiRow('Day 2', 'Stand & walk in room', true),
-              _MobiRow('Day 3', 'Walk in corridor', false),
-              _MobiRow('Day 5', 'Walk 2× daily (50m)', false),
-              _MobiRow('Day 7', 'Stair practice before discharge', false),
+              const _MobiRow('Day 1', 'Sit on edge of bed', false),
+              const _MobiRow('Day 2', 'Stand & walk in room', false),
+              const _MobiRow('Day 3', 'Walk in corridor', false),
+              const _MobiRow('Day 5', 'Walk 2× daily (50m)', false),
+              const _MobiRow('Day 7', 'Stair practice before discharge', false),
+              PhaseActionRow(icon: '🚶', label: 'Track my mobilisation milestones', onTap: () => _go(context, const MobilisationScreen())),
             ],
           ),
         ),
@@ -114,12 +151,12 @@ class _InpatientRecoveryScreenState extends State<InpatientRecoveryScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('CAM-ICU Score: Negative ✅', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.success)),
+              Text('Complete your daily check to screen for confusion.', style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMedium)),
               const SizedBox(height: 6),
               Text('No delirium signs detected.', style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMedium)),
               const SizedBox(height: 6),
-              const PhaseActionRow(icon: '📋', label: 'View Orientation Quiz'),
-              const PhaseActionRow(icon: '🔔', label: 'Report Confusion to Nurse'),
+              PhaseActionRow(icon: '📋', label: 'Start Orientation Check', onTap: () => _go(context, const DeliriumScreen())),
+              PhaseActionRow(icon: '🔔', label: 'Report Confusion to Nurse', onTap: () => _go(context, const DeliriumScreen())),
             ],
           ),
         ),
@@ -128,10 +165,10 @@ class _InpatientRecoveryScreenState extends State<InpatientRecoveryScreen> {
         PhaseSection(
           title: '🩹 E. Wound Care',
           child: Column(
-            children: const [
-              PhaseActionRow(icon: '🔍', label: 'Daily wound check guide'),
-              PhaseActionRow(icon: '⚠️', label: 'Warning signs to report'),
-              PhaseActionRow(icon: '🚿', label: 'Showering instructions'),
+            children: [
+              PhaseActionRow(icon: '📷', label: 'Open wound photo log', onTap: () => _go(context, const WoundScreen())),
+              PhaseActionRow(icon: '⚠️', label: 'Warning signs to report', onTap: () => _go(context, const LearnScreen())),
+              PhaseActionRow(icon: '🚿', label: 'Showering instructions', onTap: () => _go(context, const LearnScreen())),
             ],
           ),
         ),
@@ -143,23 +180,11 @@ class _InpatientRecoveryScreenState extends State<InpatientRecoveryScreen> {
           background: const Color(0xFFF0FDF4),
           child: Column(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: ['😢', '😟', '😐', '🙂', '😊'].map((e) => GestureDetector(
-                  onTap: () => setState(() => _emotionEmoji = e),
-                  child: Container(
-                    width: 44, height: 44,
-                    decoration: BoxDecoration(
-                      color: _emotionEmoji == e ? AppColors.tealLight : AppColors.bg,
-                      borderRadius: BorderRadius.circular(12),
-                      border: _emotionEmoji == e ? Border.all(color: AppColors.teal, width: 2) : null,
-                    ),
-                    child: Center(child: Text(e, style: const TextStyle(fontSize: 22))),
-                  ),
-                )).toList(),
-              ),
+              const MoodCheckIn(),
               const SizedBox(height: 8),
               Text("Post-cardiac surgery blues are normal. You're not alone.", style: GoogleFonts.inter(fontSize: 11, fontStyle: FontStyle.italic, color: AppColors.teal, height: 1.5), textAlign: TextAlign.center),
+              const SizedBox(height: 6),
+              PhaseActionRow(icon: '💚', label: 'Open full mood check-in', onTap: () => _go(context, const EmotionalCheckinScreen())),
             ],
           ),
         ),
@@ -168,10 +193,10 @@ class _InpatientRecoveryScreenState extends State<InpatientRecoveryScreen> {
         PhaseSection(
           title: '🧘 G. Meditation & Relaxation',
           child: Column(
-            children: const [
-              PhaseActionRow(icon: '🎧', label: 'Body Scan Meditation (10 min)'),
-              PhaseActionRow(icon: '🌊', label: 'Ocean Sounds Sleep Aid'),
-              PhaseActionRow(icon: '🧘', label: 'Mindful Breathing (5 min)'),
+            children: [
+              PhaseActionRow(icon: '🎧', label: 'Body Scan Meditation (10 min)', onTap: () => _go(context, const BreathingScreen())),
+              PhaseActionRow(icon: '🌊', label: 'Ocean Sounds Sleep Aid', onTap: () => _go(context, const BreathingScreen())),
+              PhaseActionRow(icon: '🧘', label: 'Mindful Breathing (5 min)', onTap: () => _go(context, const BreathingScreen())),
             ],
           ),
         ),
@@ -182,10 +207,10 @@ class _InpatientRecoveryScreenState extends State<InpatientRecoveryScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Current diet: Soft cardiac diet', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.teal)),
+              Text('Follow the diet your care team has set for this stage of recovery.', style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMedium)),
               const SizedBox(height: 6),
-              const PhaseActionRow(icon: '📋', label: 'View today\'s meal plan'),
-              const PhaseActionRow(icon: '📞', label: 'Speak with dietitian'),
+              PhaseActionRow(icon: '🥣', label: 'Log nutrition (protein, fluids, meals)', onTap: () => _go(context, const NutritionScreen())),
+              PhaseActionRow(icon: '📞', label: 'Speak with dietitian', onTap: () => _go(context, const NutritionScreen())),
             ],
           ),
         ),
@@ -195,44 +220,14 @@ class _InpatientRecoveryScreenState extends State<InpatientRecoveryScreen> {
           title: '🎓 I. ICU Education',
           background: const Color(0xFFF0FDF9),
           child: Column(
-            children: const [
-              PhaseActionRow(icon: '📺', label: 'Understanding your ICU equipment'),
-              PhaseActionRow(icon: '📖', label: 'ICU Recovery Guide (PDF)'),
-              PhaseActionRow(icon: '❓', label: 'Common ICU FAQs'),
+            children: [
+              PhaseActionRow(icon: '📺', label: 'Understanding your ICU equipment', onTap: () => _go(context, const LearnScreen())),
+              PhaseActionRow(icon: '📖', label: 'ICU Recovery Guide (PDF)', onTap: () => _go(context, const LearnScreen())),
+              PhaseActionRow(icon: '❓', label: 'Common ICU FAQs', onTap: () => _go(context, const LearnScreen())),
             ],
           ),
         ),
       ],
-    );
-  }
-}
-
-class _BreathingItem extends StatelessWidget {
-  final String title;
-  final String instruction;
-  final bool done;
-  const _BreathingItem(this.title, this.instruction, this.done);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      decoration: BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.border))),
-      child: Row(
-        children: [
-          Icon(done ? Icons.check_circle : Icons.radio_button_unchecked, size: 16, color: done ? AppColors.success : AppColors.border),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textDark)),
-                Text(instruction, style: GoogleFonts.inter(fontSize: 10, color: AppColors.textMedium)),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

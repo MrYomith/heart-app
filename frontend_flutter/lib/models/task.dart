@@ -1,5 +1,5 @@
 class Task {
-  final int id;
+  final String id;
   final String icon;
   final String title;
   final String subtitle;
@@ -18,6 +18,17 @@ class Task {
     this.done = false,
     required this.category,
   });
+
+  factory Task.fromJson(Map<String, dynamic> j) => Task(
+        id: j['id'].toString(),
+        icon: (j['icon'] as String?) ?? '•',
+        title: j['title'] as String,
+        subtitle: (j['subtitle'] as String?) ?? '',
+        time: (j['scheduled_time'] as String?) ?? '',
+        timeColor: (j['time_color'] as String?) ?? 'teal',
+        done: (j['is_done'] as bool?) ?? false,
+        category: (j['category'] as String?) ?? '',
+      );
 
   Task copyWith({bool? done}) => Task(
         id: id,

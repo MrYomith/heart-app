@@ -38,10 +38,10 @@ class MioMascot extends StatelessWidget {
               shape: BoxShape.circle,
               gradient: RadialGradient(
                 center: const Alignment(-0.3, -0.3),
-                colors: [_bgColor.withOpacity(0.85), _bgColor],
+                colors: [_bgColor.withValues(alpha: 0.85), _bgColor],
               ),
               boxShadow: [
-                BoxShadow(color: _bgColor.withOpacity(0.3), blurRadius: 16, offset: const Offset(0, 4)),
+                BoxShadow(color: _bgColor.withValues(alpha: 0.3), blurRadius: 16, offset: const Offset(0, 4)),
               ],
             ),
             child: Center(

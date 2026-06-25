@@ -82,7 +82,7 @@ class AppDecorations {
   static BoxDecoration card = BoxDecoration(
     color: AppColors.bgCard,
     borderRadius: BorderRadius.circular(16),
-    boxShadow: [BoxShadow(color: AppColors.shadow, blurRadius: 8, offset: const Offset(0, 2))],
+    boxShadow: const [BoxShadow(color: AppColors.shadow, blurRadius: 8, offset: Offset(0, 2))],
   );
   static BoxDecoration banner = BoxDecoration(
     color: AppColors.bgBanner,
