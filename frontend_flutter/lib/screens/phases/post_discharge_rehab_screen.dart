@@ -35,7 +35,7 @@ class PostDischargeRehabScreen extends ConsumerWidget {
       subtitle: 'Home recovery & cardiac rehabilitation',
       iconEmoji: '🏠',
       heroBg: const Color(0xFFF0FDF9),
-      mioVariant: MioVariant.happy,
+      mioVariant: MioVariant.walking,
       heroMsg: "You're home! This is where\nyour real recovery begins. 🌟",
       heroSub: weekLabel,
       mottoMsg: 'Every day you get a little stronger. 💚',
@@ -84,7 +84,7 @@ class PostDischargeRehabScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Your sternum takes 6–12 weeks to heal.', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.primary)),
+                Text('Your sternum takes 6–12 weeks to heal.', style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.primary)),
                 const SizedBox(height: 6),
                 const _RuleRow('✅', 'Use pillow when coughing or sneezing'),
                 const _RuleRow('✅', 'Let others carry heavy items (>2kg)'),
@@ -123,7 +123,7 @@ class PostDischargeRehabScreen extends ConsumerWidget {
                   ],
                 ),
                 const SizedBox(height: 8),
-                Text('Every smoke-free day reduces your re-event risk.', style: GoogleFonts.inter(fontSize: 11, fontStyle: FontStyle.italic, color: AppColors.teal), textAlign: TextAlign.center),
+                Text('Every smoke-free day reduces your re-event risk.', style: GoogleFonts.poppins(fontSize: 11, fontStyle: FontStyle.italic, color: AppColors.teal), textAlign: TextAlign.center),
               ],
             ),
           ),
@@ -133,9 +133,9 @@ class PostDischargeRehabScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('When can I resume sexual activity?', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+                Text('When can I resume sexual activity?', style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.textDark)),
                 const SizedBox(height: 6),
-                Text('Most patients can resume at 4–6 weeks when they can walk briskly up two flights of stairs without chest pain or shortness of breath.', style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMedium, height: 1.5)),
+                Text('Most patients can resume at 4–6 weeks when they can walk briskly up two flights of stairs without chest pain or shortness of breath.', style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textMedium, height: 1.5)),
                 const SizedBox(height: 6),
                 PhaseActionRow(icon: '📄', label: 'Download: Intimacy After Heart Surgery', onTap: () => _push(context, const LearnScreen())),
               ],
@@ -148,7 +148,7 @@ class PostDischargeRehabScreen extends ConsumerWidget {
               children: [
                 if (meds.isEmpty)
                   Text('Your discharge medications will appear here once your care team adds them.',
-                      style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMedium))
+                      style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textMedium))
                 else
                   for (final m in meds)
                     _MedRow(m.name, m.dose, m.schedule, m.isAnticoagulant ? '⚠️' : '💊'),
@@ -211,8 +211,8 @@ class _InfoRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
-          SizedBox(width: 70, child: Text(label, style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMedium))),
-          Expanded(child: Text(value, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textDark))),
+          SizedBox(width: 70, child: Text(label, style: GoogleFonts.poppins(fontSize: 11, color: AppColors.textMedium))),
+          Expanded(child: Text(value, style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textDark))),
         ],
       ),
     );
@@ -229,7 +229,7 @@ class _ActionBtn extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 9),
       decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(10)),
-      child: Center(child: Text(label, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700, color: Colors.white))),
+      child: Center(child: Text(label, style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w700, color: Colors.white))),
     );
   }
 }
@@ -247,7 +247,7 @@ class _RuleRow extends StatelessWidget {
         children: [
           Text(icon, style: const TextStyle(fontSize: 14)),
           const SizedBox(width: 6),
-          Expanded(child: Text(label, style: GoogleFonts.inter(fontSize: 12, color: AppColors.textDark))),
+          Expanded(child: Text(label, style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textDark))),
         ],
       ),
     );
@@ -270,8 +270,8 @@ class _CounterCard extends StatelessWidget {
         children: [
           Text(icon, style: const TextStyle(fontSize: 24)),
           const SizedBox(height: 4),
-          Text(value, style: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.w800, color: color)),
-          Text(label, style: GoogleFonts.inter(fontSize: 10, color: AppColors.textMedium)),
+          Text(value, style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w800, color: color)),
+          Text(label, style: GoogleFonts.poppins(fontSize: 10, color: AppColors.textMedium)),
         ],
       ),
     );
@@ -298,8 +298,8 @@ class _MedRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('$name $dose', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textDark)),
-                Text(schedule, style: GoogleFonts.inter(fontSize: 10, color: AppColors.textMedium)),
+                Text('$name $dose', style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textDark)),
+                Text(schedule, style: GoogleFonts.poppins(fontSize: 10, color: AppColors.textMedium)),
               ],
             ),
           ),

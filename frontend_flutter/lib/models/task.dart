@@ -7,6 +7,7 @@ class Task {
   final String timeColor; // 'teal' | 'orange' | 'red'
   final bool done;
   final String category;
+  final String? reasoning; // "Why this?" — clinical reasoning (FR-160)
 
   const Task({
     required this.id,
@@ -17,6 +18,7 @@ class Task {
     this.timeColor = 'teal',
     this.done = false,
     required this.category,
+    this.reasoning,
   });
 
   factory Task.fromJson(Map<String, dynamic> j) => Task(
@@ -28,6 +30,7 @@ class Task {
         timeColor: (j['time_color'] as String?) ?? 'teal',
         done: (j['is_done'] as bool?) ?? false,
         category: (j['category'] as String?) ?? '',
+        reasoning: j['reasoning'] as String?,
       );
 
   Task copyWith({bool? done}) => Task(
@@ -39,5 +42,6 @@ class Task {
         timeColor: timeColor,
         done: done ?? this.done,
         category: category,
+        reasoning: reasoning,
       );
 }

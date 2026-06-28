@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../models/medication.dart';
 import '../providers/patient_providers.dart';
 import '../theme/app_theme.dart';
+import '../widgets/mio_app_bar.dart';
 import '../widgets/mio_mascot.dart';
 
 /// FR-043 / FR-122 · Medication manager: list, purpose, anticoagulant flag, mark-as-taken.
@@ -19,11 +20,12 @@ class MedicationsScreen extends ConsumerWidget {
       appBar: AppBar(
         backgroundColor: AppColors.bgCard,
         leading: IconButton(icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: AppColors.textDark), onPressed: () => Navigator.pop(context)),
-        title: Text('Medications', style: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+        title: Text('Medications', style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+        actions: mioActions(context),
       ),
       body: async.when(
         loading: () => const Center(child: CircularProgressIndicator(color: AppColors.teal)),
-        error: (e, _) => Center(child: Text("Couldn't load your medications", style: GoogleFonts.inter(color: AppColors.textMedium))),
+        error: (e, _) => Center(child: Text("Couldn't load your medications", style: GoogleFonts.poppins(color: AppColors.textMedium))),
         data: (meds) => meds.isEmpty ? _empty() : _list(context, ref, meds),
       ),
     );
@@ -42,11 +44,11 @@ class MedicationsScreen extends ConsumerWidget {
             const MioMascot(variant: MioVariant.medical, size: 56),
             const SizedBox(width: 14),
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text("Today's medications", style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+              Text("Today's medications", style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.textDark)),
               const SizedBox(height: 4),
-              Text('$takenCount of ${meds.length} taken', style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMedium)),
+              Text('$takenCount of ${meds.length} taken', style: GoogleFonts.poppins(fontSize: 13, color: AppColors.textMedium)),
             ])),
-            Text('$takenCount/${meds.length}', style: GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.teal)),
+            Text('$takenCount/${meds.length}', style: GoogleFonts.poppins(fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.teal)),
           ]),
         ),
         const SizedBox(height: 16),
@@ -61,9 +63,9 @@ class MedicationsScreen extends ConsumerWidget {
           child: Column(mainAxisSize: MainAxisSize.min, children: [
             const MioMascot(variant: MioVariant.calm, size: 80),
             const SizedBox(height: 16),
-            Text('No medications listed', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+            Text('No medications listed', style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.textDark)),
             const SizedBox(height: 6),
-            Text('Your medications will appear here.', textAlign: TextAlign.center, style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMedium)),
+            Text('Your medications will appear here.', textAlign: TextAlign.center, style: GoogleFonts.poppins(fontSize: 13, color: AppColors.textMedium)),
           ]),
         ),
       );
@@ -90,16 +92,16 @@ class _MedCard extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(children: [
-              Flexible(child: Text(med.name, style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.textDark))),
+              Flexible(child: Text(med.name, style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.textDark))),
               const SizedBox(width: 6),
-              Text(med.dose, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.teal)),
+              Text(med.dose, style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.teal)),
             ]),
-            Text(med.schedule, style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMedium)),
+            Text(med.schedule, style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textMedium)),
           ])),
         ]),
         if (med.purpose != null) ...[
           const SizedBox(height: 10),
-          Text(med.purpose!, style: GoogleFonts.inter(fontSize: 12.5, color: AppColors.textMedium, height: 1.4)),
+          Text(med.purpose!, style: GoogleFonts.poppins(fontSize: 12.5, color: AppColors.textMedium, height: 1.4)),
         ],
         if (med.isAnticoagulant) ...[
           const SizedBox(height: 10),
@@ -109,7 +111,7 @@ class _MedCard extends StatelessWidget {
             child: Row(mainAxisSize: MainAxisSize.min, children: [
               const Icon(Icons.warning_amber_rounded, size: 16, color: AppColors.warning),
               const SizedBox(width: 6),
-              Flexible(child: Text('Blood thinner — never stop without asking your surgeon.', style: GoogleFonts.inter(fontSize: 11.5, fontWeight: FontWeight.w600, color: AppColors.warning))),
+              Flexible(child: Text('Blood thinner — never stop without asking your surgeon.', style: GoogleFonts.poppins(fontSize: 11.5, fontWeight: FontWeight.w600, color: AppColors.warning))),
             ]),
           ),
         ],
@@ -122,13 +124,13 @@ class _MedCard extends StatelessWidget {
                   child: Center(child: Row(mainAxisSize: MainAxisSize.min, children: [
                     const Icon(Icons.check_circle_rounded, color: AppColors.success, size: 20),
                     const SizedBox(width: 8),
-                    Text('Taken today', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.success)),
+                    Text('Taken today', style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.success)),
                   ])),
                 )
               : ElevatedButton(
                   onPressed: onTaken,
                   style: ElevatedButton.styleFrom(backgroundColor: AppColors.teal, foregroundColor: Colors.white, elevation: 0, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-                  child: Text('Mark as taken', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700)),
+                  child: Text('Mark as taken', style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w700)),
                 ),
         ),
       ]),

@@ -29,7 +29,7 @@ class JournalScreen extends ConsumerWidget {
         builder: (ctx) => StatefulBuilder(builder: (ctx, setSheet) => Padding(
           padding: EdgeInsets.fromLTRB(20, 20, 20, MediaQuery.of(ctx).viewInsets.bottom + 24),
           child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('New journal entry', style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w800)),
+            Text('New journal entry', style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w800)),
             const SizedBox(height: 12),
             Wrap(spacing: 6, children: [
               for (final t in _types)
@@ -58,18 +58,18 @@ class JournalScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.bg,
-      appBar: AppBar(backgroundColor: AppColors.bgCard, title: Text('My Journal', style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.textDark))),
+      appBar: AppBar(backgroundColor: AppColors.bgCard, title: Text('My Journal', style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.textDark))),
       floatingActionButton: FloatingActionButton.extended(onPressed: add, backgroundColor: AppColors.teal, icon: const Icon(Icons.edit), label: const Text('New entry')),
       body: entries.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Could not load your journal.', style: GoogleFonts.inter(color: AppColors.textMedium))),
+        error: (e, _) => Center(child: Text('Could not load your journal.', style: GoogleFonts.poppins(color: AppColors.textMedium))),
         data: (list) => list.isEmpty
             ? Center(child: Padding(padding: const EdgeInsets.all(32), child: Column(mainAxisSize: MainAxisSize.min, children: [
                 const Text('📔', style: TextStyle(fontSize: 44)),
                 const SizedBox(height: 10),
-                Text('Your journal is empty', style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+                Text('Your journal is empty', style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textDark)),
                 Text('Note something you are grateful for, a goal, or a question for your surgeon.',
-                    textAlign: TextAlign.center, style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMedium)),
+                    textAlign: TextAlign.center, style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textMedium)),
               ])))
             : ListView(padding: const EdgeInsets.all(16), children: [
                 for (final e in list)
@@ -79,10 +79,10 @@ class JournalScreen extends ConsumerWidget {
                       Row(children: [
                         Text(_emoji(e['type'] as String?), style: const TextStyle(fontSize: 18)),
                         const SizedBox(width: 8),
-                        Text((e['entry_date'] as String?) ?? '', style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMedium)),
+                        Text((e['entry_date'] as String?) ?? '', style: GoogleFonts.poppins(fontSize: 11, color: AppColors.textMedium)),
                       ]),
                       const SizedBox(height: 6),
-                      Text(e['body'] as String? ?? '', style: GoogleFonts.inter(fontSize: 13, color: AppColors.textDark, height: 1.4)),
+                      Text(e['body'] as String? ?? '', style: GoogleFonts.poppins(fontSize: 13, color: AppColors.textDark, height: 1.4)),
                     ]),
                   ),
               ]),

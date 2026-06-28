@@ -49,7 +49,7 @@ class _InpatientRecoveryScreenState extends ConsumerState<InpatientRecoveryScree
       subtitle: 'Hospital recovery — days 1 to 7',
       iconEmoji: '🛏️',
       heroBg: const Color(0xFFF0FDF9),
-      mioVariant: MioVariant.calm,
+      mioVariant: MioVariant.medical,
       heroMsg: 'Surgery is done. You did it!\nNow let your body heal. 🌿',
       heroSub: '$dayLabel · ICU → Cardiac Ward',
       mottoMsg: 'Rest is recovery. 💚',
@@ -89,7 +89,7 @@ class _InpatientRecoveryScreenState extends ConsumerState<InpatientRecoveryScree
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: List.generate(11, (i) => Text('$i', style: GoogleFonts.inter(fontSize: 9, color: AppColors.textLight))),
+                children: List.generate(11, (i) => Text('$i', style: GoogleFonts.poppins(fontSize: 9, color: AppColors.textLight))),
               ),
               SliderTheme(
                 data: const SliderThemeData(thumbColor: AppColors.primary, activeTrackColor: AppColors.primary, inactiveTrackColor: AppColors.border, trackHeight: 4),
@@ -98,19 +98,19 @@ class _InpatientRecoveryScreenState extends ConsumerState<InpatientRecoveryScree
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('${_painLevel.toInt()}/10 pain', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.primary)),
+                  Text('${_painLevel.toInt()}/10 pain', style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.primary)),
                   GestureDetector(
                     onTap: () => _go(context, const PainTrackingScreen()),
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                       decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(20)),
-                      child: Text('Log Pain', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.white)),
+                      child: Text('Log Pain', style: GoogleFonts.poppins(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.white)),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 6),
-              Text('Tap below to log your pain — your nurse is alerted if it is 7 or higher.', style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMedium)),
+              Text('Tap below to log your pain — your nurse is alerted if it is 7 or higher.', style: GoogleFonts.poppins(fontSize: 11, color: AppColors.textMedium)),
             ],
           ),
         ),
@@ -151,9 +151,9 @@ class _InpatientRecoveryScreenState extends ConsumerState<InpatientRecoveryScree
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Complete your daily check to screen for confusion.', style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMedium)),
+              Text('Complete your daily check to screen for confusion.', style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textMedium)),
               const SizedBox(height: 6),
-              Text('No delirium signs detected.', style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMedium)),
+              Text('No delirium signs detected.', style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textMedium)),
               const SizedBox(height: 6),
               PhaseActionRow(icon: '📋', label: 'Start Orientation Check', onTap: () => _go(context, const DeliriumScreen())),
               PhaseActionRow(icon: '🔔', label: 'Report Confusion to Nurse', onTap: () => _go(context, const DeliriumScreen())),
@@ -182,7 +182,7 @@ class _InpatientRecoveryScreenState extends ConsumerState<InpatientRecoveryScree
             children: [
               const MoodCheckIn(),
               const SizedBox(height: 8),
-              Text("Post-cardiac surgery blues are normal. You're not alone.", style: GoogleFonts.inter(fontSize: 11, fontStyle: FontStyle.italic, color: AppColors.teal, height: 1.5), textAlign: TextAlign.center),
+              Text("Post-cardiac surgery blues are normal. You're not alone.", style: GoogleFonts.poppins(fontSize: 11, fontStyle: FontStyle.italic, color: AppColors.teal, height: 1.5), textAlign: TextAlign.center),
               const SizedBox(height: 6),
               PhaseActionRow(icon: '💚', label: 'Open full mood check-in', onTap: () => _go(context, const EmotionalCheckinScreen())),
             ],
@@ -207,7 +207,7 @@ class _InpatientRecoveryScreenState extends ConsumerState<InpatientRecoveryScree
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Follow the diet your care team has set for this stage of recovery.', style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMedium)),
+              Text('Follow the diet your care team has set for this stage of recovery.', style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textMedium)),
               const SizedBox(height: 6),
               PhaseActionRow(icon: '🥣', label: 'Log nutrition (protein, fluids, meals)', onTap: () => _go(context, const NutritionScreen())),
               PhaseActionRow(icon: '📞', label: 'Speak with dietitian', onTap: () => _go(context, const NutritionScreen())),
@@ -249,8 +249,8 @@ class _MobiRow extends StatelessWidget {
             decoration: BoxDecoration(shape: BoxShape.circle, color: done ? AppColors.success : AppColors.border),
           ),
           const SizedBox(width: 8),
-          SizedBox(width: 44, child: Text(day, style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w700, color: AppColors.textMedium))),
-          Expanded(child: Text(label, style: GoogleFonts.inter(fontSize: 12, color: AppColors.textDark))),
+          SizedBox(width: 44, child: Text(day, style: GoogleFonts.poppins(fontSize: 10, fontWeight: FontWeight.w700, color: AppColors.textMedium))),
+          Expanded(child: Text(label, style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textDark))),
           if (done) const Icon(Icons.check_circle_outline, size: 14, color: AppColors.success),
         ],
       ),

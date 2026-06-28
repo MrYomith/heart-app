@@ -62,18 +62,18 @@ class PhaseLayout extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text("Today's Focus", style: GoogleFonts.inter(fontSize: isLarge ? 12 : 11, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+                Text("Today's Focus", style: GoogleFonts.poppins(fontSize: isLarge ? 12 : 11, fontWeight: FontWeight.w700, color: AppColors.textDark)),
                 const SizedBox(height: 5),
                 ...focusItems!.map((f) => Padding(
                       padding: const EdgeInsets.only(bottom: 3),
                       child: Row(children: [
                         Text(f.icon, style: TextStyle(fontSize: isLarge ? 14 : 13)),
                         const SizedBox(width: 6),
-                        Flexible(child: Text(f.label, style: GoogleFonts.inter(fontSize: isLarge ? 11 : 10, color: AppColors.textMedium))),
+                        Flexible(child: Text(f.label, style: GoogleFonts.poppins(fontSize: isLarge ? 11 : 10, color: AppColors.textMedium))),
                       ]),
                     )),
                 const SizedBox(height: 3),
-                Text("You've got this!", style: GoogleFonts.inter(fontSize: isLarge ? 11 : 10, fontWeight: FontWeight.w700, color: AppColors.primary)),
+                Text("You've got this!", style: GoogleFonts.poppins(fontSize: isLarge ? 11 : 10, fontWeight: FontWeight.w700, color: AppColors.primary)),
               ],
             ),
           );
@@ -94,8 +94,8 @@ class PhaseLayout extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: GoogleFonts.inter(fontSize: isLarge ? 18 : 15, fontWeight: FontWeight.w800, color: AppColors.textDark)),
-                  Text(subtitle, style: GoogleFonts.inter(fontSize: isLarge ? 12 : 10, color: AppColors.textMedium)),
+                  Text(title, style: GoogleFonts.poppins(fontSize: isLarge ? 18 : 15, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+                  Text(subtitle, style: GoogleFonts.poppins(fontSize: isLarge ? 12 : 10, color: AppColors.textMedium)),
                 ],
               ),
             ),
@@ -128,14 +128,14 @@ class PhaseLayout extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(heroMsg, style: GoogleFonts.inter(fontSize: heroFontSize, fontWeight: FontWeight.w800, color: AppColors.textDark, height: 1.4)),
+                                Text(heroMsg, style: GoogleFonts.poppins(fontSize: heroFontSize, fontWeight: FontWeight.w800, color: AppColors.textDark, height: 1.4)),
                                 if (heroSub != null) ...[
                                   const SizedBox(height: 4),
-                                  Text(heroSub!, style: GoogleFonts.inter(fontSize: (heroFontSize - 2), color: AppColors.textMedium, height: 1.5)),
+                                  Text(heroSub!, style: GoogleFonts.poppins(fontSize: (heroFontSize - 2), color: AppColors.textMedium, height: 1.5)),
                                 ],
                                 if (mottoMsg != null) ...[
                                   const SizedBox(height: 8),
-                                  Text(mottoMsg!, style: GoogleFonts.inter(fontSize: (heroFontSize - 1), fontWeight: FontWeight.w600, color: AppColors.primary)),
+                                  Text(mottoMsg!, style: GoogleFonts.poppins(fontSize: (heroFontSize - 1), fontWeight: FontWeight.w600, color: AppColors.primary)),
                                 ],
                               ],
                             ),
@@ -191,10 +191,10 @@ class PhaseSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: GoogleFonts.inter(fontSize: 13 * fs, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+          Text(title, style: GoogleFonts.poppins(fontSize: 13 * fs, fontWeight: FontWeight.w700, color: AppColors.textDark)),
           if (subtitle != null) ...[
             const SizedBox(height: 2),
-            Text(subtitle!, style: GoogleFonts.inter(fontSize: 10 * fs, color: AppColors.textMedium)),
+            Text(subtitle!, style: GoogleFonts.poppins(fontSize: 10 * fs, color: AppColors.textMedium)),
           ],
           const SizedBox(height: 8),
           child,
@@ -228,7 +228,7 @@ class PhaseActionRow extends StatelessWidget {
         child: Row(children: [
           Text(icon, style: TextStyle(fontSize: 16 * fs)),
           const SizedBox(width: 8),
-          Expanded(child: Text(label, style: GoogleFonts.inter(fontSize: 12 * fs, color: AppColors.textDark, fontWeight: FontWeight.w500))),
+          Expanded(child: Text(label, style: GoogleFonts.poppins(fontSize: 12 * fs, color: AppColors.textDark, fontWeight: FontWeight.w500))),
           const Icon(Icons.chevron_right, size: 16, color: AppColors.textLight),
         ]),
       ),
@@ -280,8 +280,8 @@ class _CheckRowState extends State<CheckRow> {
           const SizedBox(width: 10),
           Expanded(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(widget.label, style: GoogleFonts.inter(fontSize: 12.5 * fs, fontWeight: FontWeight.w500, color: AppColors.textDark, decoration: _done ? TextDecoration.lineThrough : null)),
-              if (widget.sublabel != null) Text(widget.sublabel!, style: GoogleFonts.inter(fontSize: 10 * fs, color: AppColors.textMedium)),
+              Text(widget.label, style: GoogleFonts.poppins(fontSize: 12.5 * fs, fontWeight: FontWeight.w500, color: AppColors.textDark, decoration: _done ? TextDecoration.lineThrough : null)),
+              if (widget.sublabel != null) Text(widget.sublabel!, style: GoogleFonts.poppins(fontSize: 10 * fs, color: AppColors.textMedium)),
             ]),
           ),
           if (_busy) const SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.teal)),
@@ -303,7 +303,7 @@ class PhaseViewLink extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.only(top: 8),
         decoration: const BoxDecoration(border: Border(top: BorderSide(color: AppColors.border))),
-        child: Text(label, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.teal)),
+        child: Text(label, style: GoogleFonts.poppins(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.teal)),
       ),
     );
   }
@@ -327,8 +327,8 @@ class PhaseIconBtn extends StatelessWidget {
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           Text(icon, style: const TextStyle(fontSize: 20)),
           const SizedBox(height: 4),
-          Text(label, style: GoogleFonts.inter(fontSize: 9, fontWeight: FontWeight.w600, color: AppColors.textMedium), textAlign: TextAlign.center),
-          if (sublabel != null) Text(sublabel!, style: GoogleFonts.inter(fontSize: 9, color: AppColors.teal), textAlign: TextAlign.center),
+          Text(label, style: GoogleFonts.poppins(fontSize: 9, fontWeight: FontWeight.w600, color: AppColors.textMedium), textAlign: TextAlign.center),
+          if (sublabel != null) Text(sublabel!, style: GoogleFonts.poppins(fontSize: 9, color: AppColors.teal), textAlign: TextAlign.center),
         ]),
       ),
     );

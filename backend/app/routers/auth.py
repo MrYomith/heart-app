@@ -27,6 +27,15 @@ from app.schemas.auth import LoginRequest, RegisterRequest, TokenResponse, UserP
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
+def _as_aware(dt: datetime | None) -> datetime | None:
+    """Coerce a stored timestamp to UTC-aware. PostgreSQL TIMESTAMPTZ already returns
+    aware datetimes; SQLite (dev fallback) returns naive ones — treat those as UTC so
+    the lockout comparison never mixes naive and aware datetimes."""
+    if dt is not None and dt.tzinfo is None:
+        return dt.replace(tzinfo=timezone.utc)
+    return dt
+
+
 @router.post("/register", response_model=TokenResponse, status_code=201)
 def register(payload: RegisterRequest, db: Session = Depends(get_db)):
     if not payload.consent_accepted:
@@ -74,7 +83,8 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == email, User.deleted_at.is_(None)).first()
 
     # Account lockout (FR-002)
-    if user and user.locked_until and user.locked_until > now:
+    locked_until = _as_aware(user.locked_until) if user else None
+    if locked_until and locked_until > now:
         raise HTTPException(
             status.HTTP_429_TOO_MANY_REQUESTS,
             "Account temporarily locked due to failed login attempts. Try again later.",

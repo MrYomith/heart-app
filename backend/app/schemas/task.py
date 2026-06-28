@@ -13,6 +13,7 @@ class TaskOut(BaseModel):
     task_date: str | None = None
     is_done: bool = False
     priority: int = 0
+    reasoning: str | None = None  # "Why this?" — clinical reasoning (FR-160)
 
     @classmethod
     def from_row(cls, t) -> "TaskOut":
@@ -28,6 +29,7 @@ class TaskOut(BaseModel):
             task_date=t.task_date,
             is_done=t.is_done,
             priority=t.priority or 0,
+            reasoning=t.reasoning,
         )
 
 

@@ -49,7 +49,7 @@ class TaskItem extends StatelessWidget {
                   children: [
                     Text(
                       task.title,
-                      style: GoogleFonts.inter(
+                      style: GoogleFonts.poppins(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                         color: AppColors.textDark,
@@ -59,7 +59,7 @@ class TaskItem extends StatelessWidget {
                     ),
                     Text(
                       task.subtitle,
-                      style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMedium),
+                      style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textMedium),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],
@@ -73,7 +73,7 @@ class TaskItem extends StatelessWidget {
                     children: [
                       Icon(Icons.access_time_rounded, size: 12, color: _timeColor),
                       const SizedBox(width: 3),
-                      Text(task.time, style: GoogleFonts.inter(fontSize: 11, color: _timeColor, fontWeight: FontWeight.w500)),
+                      Text(task.time, style: GoogleFonts.poppins(fontSize: 11, color: _timeColor, fontWeight: FontWeight.w500)),
                     ],
                   ),
                   const SizedBox(height: 6),

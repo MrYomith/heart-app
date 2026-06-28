@@ -71,7 +71,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           ),
           child: Center(
             child: Text(label, textAlign: TextAlign.center,
-                style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.teal)),
+                style: GoogleFonts.poppins(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.teal)),
           ),
         ),
       ),
@@ -100,11 +100,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   const SizedBox(height: 24),
                   Text('Welcome back',
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.inter(fontSize: 26, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+                      style: GoogleFonts.poppins(fontSize: 26, fontWeight: FontWeight.w800, color: AppColors.textDark)),
                   const SizedBox(height: 6),
                   Text("Mio is glad to see you. Let's continue your journey.",
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.inter(fontSize: 15, color: AppColors.textMedium, height: 1.4)),
+                      style: GoogleFonts.poppins(fontSize: 15, color: AppColors.textMedium, height: 1.4)),
                   const SizedBox(height: 32),
                   MioTextField(
                     controller: _email,
@@ -131,7 +131,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     alignment: Alignment.centerRight,
                     child: TextButton(
                       onPressed: () => _comingSoon('Password reset'),
-                      child: Text('Forgot password?', style: GoogleFonts.inter(fontSize: 13.5, fontWeight: FontWeight.w600, color: AppColors.teal)),
+                      child: Text('Forgot password?', style: GoogleFonts.poppins(fontSize: 13.5, fontWeight: FontWeight.w600, color: AppColors.teal)),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -142,7 +142,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     const Expanded(child: Divider(color: AppColors.border)),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: Text('or', style: GoogleFonts.inter(fontSize: 13, color: AppColors.textLight)),
+                      child: Text('or', style: GoogleFonts.poppins(fontSize: 13, color: AppColors.textLight)),
                     ),
                     const Expanded(child: Divider(color: AppColors.border)),
                   ]),
@@ -152,7 +152,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     child: OutlinedButton.icon(
                       onPressed: () => _comingSoon('Google sign-in'),
                       icon: const Text('G', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF4285F4))),
-                      label: Text('Continue with Google', style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.textDark)),
+                      label: Text('Continue with Google', style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.textDark)),
                       style: OutlinedButton.styleFrom(
                         side: const BorderSide(color: AppColors.border, width: 1.5),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
@@ -174,11 +174,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         Row(children: [
                           const Icon(Icons.science_outlined, size: 18, color: AppColors.teal),
                           const SizedBox(width: 6),
-                          Text('Try the demo', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.teal)),
+                          Text('Try the demo', style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.teal)),
                         ]),
                         const SizedBox(height: 4),
                         Text('Explore a real patient journey — no signup needed.',
-                            style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMedium)),
+                            style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textMedium)),
                         const SizedBox(height: 10),
                         Row(children: [
                           _demoChip('🔍 Diagnosis', 'omar@example.com'),
@@ -194,13 +194,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('New here? ', style: GoogleFonts.inter(fontSize: 14.5, color: AppColors.textMedium)),
+                      Text('New here? ', style: GoogleFonts.poppins(fontSize: 14.5, color: AppColors.textMedium)),
                       GestureDetector(
                         onTap: () => Navigator.of(context).push(
                           MaterialPageRoute(builder: (_) => const RegisterScreen()),
                         ),
                         child: Text('Create account',
-                            style: GoogleFonts.inter(fontSize: 14.5, fontWeight: FontWeight.w700, color: AppColors.primary)),
+                            style: GoogleFonts.poppins(fontSize: 14.5, fontWeight: FontWeight.w700, color: AppColors.primary)),
                       ),
                     ],
                   ),

@@ -47,7 +47,7 @@ class _MobilisationScreenState extends ConsumerState<MobilisationScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.bgCard,
         leading: IconButton(icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: AppColors.textDark), onPressed: () => Navigator.pop(context)),
-        title: Text('Mobilisation', style: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+        title: Text('Mobilisation', style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w800, color: AppColors.textDark)),
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator(color: AppColors.teal))
@@ -59,9 +59,9 @@ class _MobilisationScreenState extends ConsumerState<MobilisationScreen> {
                   const MioMascot(variant: MioVariant.happy, size: 56),
                   const SizedBox(width: 14),
                   Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text('Getting moving again', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+                    Text('Getting moving again', style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.textDark)),
                     const SizedBox(height: 4),
-                    Text('$done of ${_items.length} milestones reached. Move at your own pace — small steps count.', style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMedium, height: 1.4)),
+                    Text('$done of ${_items.length} milestones reached. Move at your own pace — small steps count.', style: GoogleFonts.poppins(fontSize: 13, color: AppColors.textMedium, height: 1.4)),
                   ])),
                 ]),
               ),
@@ -91,14 +91,14 @@ class _MilestoneCard extends StatelessWidget {
       child: Row(children: [
         Icon(achieved ? Icons.check_circle_rounded : Icons.radio_button_unchecked_rounded, color: achieved ? AppColors.success : AppColors.border, size: 26),
         const SizedBox(width: 14),
-        Expanded(child: Text(label, style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.textDark, decoration: achieved ? TextDecoration.lineThrough : null))),
+        Expanded(child: Text(label, style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.textDark, decoration: achieved ? TextDecoration.lineThrough : null))),
         if (!achieved)
           GestureDetector(
             onTap: onAchieve,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: BoxDecoration(color: AppColors.teal, borderRadius: BorderRadius.circular(20)),
-              child: Text('Done', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white)),
+              child: Text('Done', style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white)),
             ),
           ),
       ]),

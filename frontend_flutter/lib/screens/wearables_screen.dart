@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../providers/patient_providers.dart';
 import '../theme/app_theme.dart';
+import '../widgets/mio_app_bar.dart';
 
 /// Wearables (FR-240–243) — connect a provider, view the latest synced metrics,
 /// and enter readings manually (the manual-entry fallback, FR-243). Native
@@ -45,7 +46,8 @@ class WearablesScreen extends ConsumerWidget {
       backgroundColor: AppColors.bg,
       appBar: AppBar(
         backgroundColor: AppColors.bgCard,
-        title: Text('Wearables & Vitals', style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+        title: Text('Wearables & Vitals', style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+        actions: mioActions(context),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: addReading, backgroundColor: AppColors.teal,
@@ -54,11 +56,11 @@ class WearablesScreen extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Text('Latest readings', style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+          Text('Latest readings', style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textDark)),
           const SizedBox(height: 10),
           summary.when(
             loading: () => const Center(child: Padding(padding: EdgeInsets.all(16), child: CircularProgressIndicator())),
-            error: (e, _) => Text('Could not load readings.', style: GoogleFonts.inter(color: AppColors.textMedium)),
+            error: (e, _) => Text('Could not load readings.', style: GoogleFonts.poppins(color: AppColors.textMedium)),
             data: (s) => s.isEmpty
                 ? _empty('No readings yet — connect a device or add one manually.')
                 : GridView.count(
@@ -70,7 +72,7 @@ class WearablesScreen extends ConsumerWidget {
                   ),
           ),
           const SizedBox(height: 20),
-          Text('Connect a device', style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+          Text('Connect a device', style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textDark)),
           const SizedBox(height: 10),
           connections.when(
             loading: () => const SizedBox.shrink(),
@@ -84,9 +86,9 @@ class WearablesScreen extends ConsumerWidget {
                     decoration: AppDecorations.card,
                     child: ListTile(
                       leading: Text(p.$2.isEmpty ? '🍎' : p.$2, style: const TextStyle(fontSize: 22)),
-                      title: Text(p.$3, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textDark)),
+                      title: Text(p.$3, style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textDark)),
                       trailing: connected[p.$1] == 'connected'
-                          ? Text('Connected', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.teal))
+                          ? Text('Connected', style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.teal))
                           : OutlinedButton(onPressed: () => connect(p.$1), child: const Text('Connect')),
                     ),
                   ),
@@ -107,17 +109,17 @@ class WearablesScreen extends ConsumerWidget {
       padding: const EdgeInsets.all(12),
       decoration: AppDecorations.card,
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.center, children: [
-        Text(label, style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMedium)),
+        Text(label, style: GoogleFonts.poppins(fontSize: 11, color: AppColors.textMedium)),
         const SizedBox(height: 4),
         Text('${(value as num).toStringAsFixed(value == value.roundToDouble() ? 0 : 1)} ${unit ?? ''}',
-            style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+            style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.textDark)),
       ]),
     );
   }
 
   Widget _empty(String msg) => Container(
         padding: const EdgeInsets.all(20), decoration: AppDecorations.card,
-        child: Text(msg, textAlign: TextAlign.center, style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMedium)),
+        child: Text(msg, textAlign: TextAlign.center, style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textMedium)),
       );
 }
 
@@ -140,7 +142,7 @@ class _ManualEntrySheetState extends State<_ManualEntrySheet> {
     return Padding(
       padding: EdgeInsets.fromLTRB(20, 20, 20, MediaQuery.of(context).viewInsets.bottom + 24),
       child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('Add a reading', style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+        Text('Add a reading', style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.textDark)),
         const SizedBox(height: 14),
         DropdownButtonFormField<String>(
           initialValue: _metric,

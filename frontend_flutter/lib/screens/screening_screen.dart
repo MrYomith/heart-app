@@ -71,11 +71,11 @@ class _ScreeningScreenState extends ConsumerState<ScreeningScreen> {
         context: context,
         builder: (ctx) => AlertDialog(
           backgroundColor: AppColors.bgCard,
-          title: Text('Score: $total · ${r.severity}', style: GoogleFonts.inter(fontWeight: FontWeight.w800)),
+          title: Text('Score: $total · ${r.severity}', style: GoogleFonts.poppins(fontWeight: FontWeight.w800)),
           content: Text(r.referral
               ? 'Based on your answers, we have notified the Psychokardiologie team — they will reach out to support you. You are not alone. 🤍'
               : 'Thank you for checking in. Keep tracking how you feel, and tell your care team any time.',
-              style: GoogleFonts.inter(fontSize: 13, color: AppColors.textDark)),
+              style: GoogleFonts.poppins(fontSize: 13, color: AppColors.textDark)),
           actions: [TextButton(onPressed: () { Navigator.pop(ctx); Navigator.pop(context); }, child: const Text('Done'))],
         ),
       );
@@ -92,13 +92,13 @@ class _ScreeningScreenState extends ConsumerState<ScreeningScreen> {
       backgroundColor: AppColors.bg,
       appBar: AppBar(
         backgroundColor: AppColors.bgCard,
-        title: Text(_title, style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+        title: Text(_title, style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.textDark)),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           Text('Over the last 2 weeks, how often have you been bothered by:',
-              style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMedium)),
+              style: GoogleFonts.poppins(fontSize: 13, color: AppColors.textMedium)),
           const SizedBox(height: 12),
           for (var i = 0; i < _questions.length; i++)
             Container(
@@ -106,12 +106,12 @@ class _ScreeningScreenState extends ConsumerState<ScreeningScreen> {
               padding: const EdgeInsets.all(14),
               decoration: AppDecorations.card,
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text('${i + 1}. ${_questions[i]}', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textDark)),
+                Text('${i + 1}. ${_questions[i]}', style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textDark)),
                 const SizedBox(height: 8),
                 Wrap(spacing: 6, runSpacing: 6, children: [
                   for (var o = 0; o < _opts.length; o++)
                     ChoiceChip(
-                      label: Text(_opts[o], style: GoogleFonts.inter(fontSize: 11)),
+                      label: Text(_opts[o], style: GoogleFonts.poppins(fontSize: 11)),
                       selected: _answers[i] == o,
                       onSelected: (_) => setState(() => _answers[i] = o),
                       selectedColor: AppColors.teal,
@@ -125,7 +125,7 @@ class _ScreeningScreenState extends ConsumerState<ScreeningScreen> {
           ElevatedButton(
             onPressed: _busy ? null : _submit,
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.teal, foregroundColor: Colors.white, minimumSize: const Size.fromHeight(48)),
-            child: Text(_busy ? 'Submitting…' : 'Submit screening', style: GoogleFonts.inter(fontWeight: FontWeight.w700)),
+            child: Text(_busy ? 'Submitting…' : 'Submit screening', style: GoogleFonts.poppins(fontWeight: FontWeight.w700)),
           ),
           const SizedBox(height: 20),
         ],

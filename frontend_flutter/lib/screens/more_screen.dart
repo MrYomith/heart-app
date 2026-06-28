@@ -6,6 +6,7 @@ import '../providers/auth_provider.dart';
 import '../providers/patient_providers.dart';
 import '../utils/responsive.dart';
 import '../widgets/progress_ring.dart';
+import '../widgets/mio_app_bar.dart';
 import 'medications_screen.dart';
 import 'messages_screen.dart';
 import 'symptoms_screen.dart';
@@ -15,6 +16,7 @@ import 'screening_screen.dart';
 import 'habits_screen.dart';
 import 'journal_screen.dart';
 import 'return_to_work_screen.dart';
+import 'settings_screens.dart';
 
 class MoreScreen extends StatelessWidget {
   const MoreScreen({super.key});
@@ -30,7 +32,8 @@ class MoreScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: AppColors.bgCard,
         automaticallyImplyLeading: false,
-        title: Text('More', style: GoogleFonts.inter(fontSize: 20 * fs, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+        title: Text('More', style: GoogleFonts.poppins(fontSize: 20 * fs, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+        actions: mioActions(context),
       ),
       body: Align(
         alignment: Alignment.topCenter,
@@ -111,10 +114,10 @@ class MoreScreen extends StatelessWidget {
       ]),
       ('Support', [
         ('🎧', 'Contact Care Team', 'Secure messaging', (_) => const MessagesScreen()),
-        ('🔔', 'Notifications', 'Manage alerts', null),
-        ('🌐', 'Language', 'English / Deutsch', null),
-        ('🔒', 'Privacy & Security', 'Manage your data', null),
-        ('❓', 'Help & FAQ', 'Get support', null),
+        ('🔔', 'Notifications', 'Manage alerts', (_) => const NotificationsSettingsScreen()),
+        ('🌐', 'Language', 'English / Deutsch', (_) => const LanguageScreen()),
+        ('🔒', 'Privacy & Security', 'Manage your data', (_) => const PrivacySecurityScreen()),
+        ('❓', 'Help & FAQ', 'Get support', (_) => const HelpFaqScreen()),
       ]),
     ];
 
@@ -131,7 +134,7 @@ class MoreScreen extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
-          child: Text(section.$1, style: GoogleFonts.inter(fontSize: 13 * fs, fontWeight: FontWeight.w700, color: AppColors.textMedium)),
+          child: Text(section.$1, style: GoogleFonts.poppins(fontSize: 13 * fs, fontWeight: FontWeight.w700, color: AppColors.textMedium)),
         ),
         Container(
           decoration: AppDecorations.card,
@@ -142,8 +145,8 @@ class MoreScreen extends StatelessWidget {
                 child: ListTile(
                   contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 2),
                   leading: Text(t.$1, style: TextStyle(fontSize: 20 * fs)),
-                  title: Text(t.$2, style: GoogleFonts.inter(fontSize: 13 * fs, fontWeight: FontWeight.w600, color: AppColors.textDark)),
-                  subtitle: Text(t.$3, style: GoogleFonts.inter(fontSize: 11 * fs, color: AppColors.textMedium)),
+                  title: Text(t.$2, style: GoogleFonts.poppins(fontSize: 13 * fs, fontWeight: FontWeight.w600, color: AppColors.textDark)),
+                  subtitle: Text(t.$3, style: GoogleFonts.poppins(fontSize: 11 * fs, color: AppColors.textMedium)),
                   trailing: const Icon(Icons.chevron_right, size: 18, color: AppColors.textLight),
                   onTap: () => open(context, t),
                 ),
@@ -160,7 +163,7 @@ class MoreScreen extends StatelessWidget {
 
   Widget _footer(double fs) {
     return Center(
-      child: Text('MioHart v1.0.0 · Made with ❤️ for your heart', style: GoogleFonts.inter(fontSize: 11 * fs, color: AppColors.textLight)),
+      child: Text('MioHart v1.0.0 · Made with ❤️ for your heart', style: GoogleFonts.poppins(fontSize: 11 * fs, color: AppColors.textLight)),
     );
   }
 }
@@ -197,13 +200,13 @@ class _ProfileCard extends ConsumerWidget {
           ),
           const SizedBox(width: 14),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.inter(fontSize: 20 * fs, fontWeight: FontWeight.w800, color: AppColors.textDark)),
-            Text('$surgery · ${user?.phaseLabel ?? ''}', maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.inter(fontSize: 12 * fs, color: AppColors.textMedium)),
+            Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.poppins(fontSize: 20 * fs, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+            Text('$surgery · ${user?.phaseLabel ?? ''}', maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.poppins(fontSize: 12 * fs, color: AppColors.textMedium)),
             const SizedBox(height: 4),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
               decoration: BoxDecoration(color: AppColors.tealLight, borderRadius: BorderRadius.circular(20)),
-              child: Text(email.isEmpty ? '🏥 Not enrolled yet' : '✉️ $email', maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.inter(fontSize: 10 * fs, fontWeight: FontWeight.w600, color: AppColors.teal)),
+              child: Text(email.isEmpty ? '🏥 Not enrolled yet' : '✉️ $email', maxLines: 1, overflow: TextOverflow.ellipsis, style: GoogleFonts.poppins(fontSize: 10 * fs, fontWeight: FontWeight.w600, color: AppColors.teal)),
             ),
           ])),
           ProgressRing(
@@ -252,10 +255,10 @@ class _WearableExpanded extends ConsumerWidget {
       padding: const EdgeInsets.all(16),
       decoration: AppDecorations.card,
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text('⌚ Wearable Data', style: GoogleFonts.inter(fontSize: 15 * fs, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+        Text('⌚ Wearable Data', style: GoogleFonts.poppins(fontSize: 15 * fs, fontWeight: FontWeight.w700, color: AppColors.textDark)),
         const SizedBox(height: 6),
         Text(connected ? 'Latest synced readings' : 'Connect a device to see your readings',
-            style: GoogleFonts.inter(fontSize: 11 * fs, color: AppColors.textMedium)),
+            style: GoogleFonts.poppins(fontSize: 11 * fs, color: AppColors.textMedium)),
         const SizedBox(height: 12),
         Wrap(
           spacing: 10,
@@ -283,17 +286,17 @@ class _SignOutButton extends ConsumerWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: Text('Sign out?', style: GoogleFonts.inter(fontWeight: FontWeight.w800, color: AppColors.textDark)),
+        title: Text('Sign out?', style: GoogleFonts.poppins(fontWeight: FontWeight.w800, color: AppColors.textDark)),
         content: Text('You can log back in anytime with your email and password.',
-            style: GoogleFonts.inter(color: AppColors.textMedium, height: 1.4)),
+            style: GoogleFonts.poppins(color: AppColors.textMedium, height: 1.4)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text('Cancel', style: GoogleFonts.inter(fontWeight: FontWeight.w600, color: AppColors.textMedium)),
+            child: Text('Cancel', style: GoogleFonts.poppins(fontWeight: FontWeight.w600, color: AppColors.textMedium)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text('Sign out', style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: AppColors.primary)),
+            child: Text('Sign out', style: GoogleFonts.poppins(fontWeight: FontWeight.w700, color: AppColors.primary)),
           ),
         ],
       ),
@@ -312,7 +315,7 @@ class _SignOutButton extends ConsumerWidget {
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 14),
         decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(14)),
-        child: Center(child: Text('Sign Out', style: GoogleFonts.inter(fontSize: 14 * fs, fontWeight: FontWeight.w700, color: AppColors.primary))),
+        child: Center(child: Text('Sign Out', style: GoogleFonts.poppins(fontSize: 14 * fs, fontWeight: FontWeight.w700, color: AppColors.primary))),
       ),
     );
   }
@@ -330,8 +333,8 @@ class _StatChip extends StatelessWidget {
       child: Column(children: [
         Text(icon, style: const TextStyle(fontSize: 18)),
         const SizedBox(height: 3),
-        Text(value, style: GoogleFonts.inter(fontSize: 12 * fs, fontWeight: FontWeight.w700, color: AppColors.textDark)),
-        Text(label, style: GoogleFonts.inter(fontSize: 9 * fs, color: AppColors.textMedium)),
+        Text(value, style: GoogleFonts.poppins(fontSize: 12 * fs, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+        Text(label, style: GoogleFonts.poppins(fontSize: 9 * fs, color: AppColors.textMedium)),
       ]),
     );
   }

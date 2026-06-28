@@ -22,7 +22,7 @@ class HabitsScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.bg,
-      appBar: AppBar(backgroundColor: AppColors.bgCard, title: Text('Healthy Habits', style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.textDark))),
+      appBar: AppBar(backgroundColor: AppColors.bgCard, title: Text('Healthy Habits', style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.textDark))),
       body: ListView(padding: const EdgeInsets.all(16), children: [
         // Weekly activity goal
         goal.when(
@@ -31,19 +31,19 @@ class HabitsScreen extends ConsumerWidget {
           data: (g) => Container(
             padding: const EdgeInsets.all(16), margin: const EdgeInsets.only(bottom: 16), decoration: AppDecorations.card,
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('Weekly activity goal', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+              Text('Weekly activity goal', style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textDark)),
               const SizedBox(height: 8),
               ClipRRect(borderRadius: BorderRadius.circular(8), child: LinearProgressIndicator(value: g.percent / 100, minHeight: 10, backgroundColor: AppColors.bg, color: AppColors.teal)),
               const SizedBox(height: 6),
-              Text('${g.minutes} / ${g.goal} active minutes', style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMedium)),
+              Text('${g.minutes} / ${g.goal} active minutes', style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textMedium)),
             ]),
           ),
         ),
-        Text("Today's habits", style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+        Text("Today's habits", style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textDark)),
         const SizedBox(height: 10),
         habits.when(
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Text('Could not load habits.', style: GoogleFonts.inter(color: AppColors.textMedium)),
+          error: (e, _) => Text('Could not load habits.', style: GoogleFonts.poppins(color: AppColors.textMedium)),
           data: (list) => Column(children: [
             for (final h in list)
               Container(
@@ -51,7 +51,7 @@ class HabitsScreen extends ConsumerWidget {
                 child: CheckboxListTile(
                   value: (h['done'] as bool?) ?? false,
                   activeColor: AppColors.teal,
-                  title: Text(_habitLabels[h['habit']] ?? (h['habit'] as String), style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textDark)),
+                  title: Text(_habitLabels[h['habit']] ?? (h['habit'] as String), style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textDark)),
                   onChanged: (v) async {
                     await repo.logHabit(h['habit'] as String, v ?? false);
                     ref.invalidate(habitsTodayProvider);
@@ -61,7 +61,7 @@ class HabitsScreen extends ConsumerWidget {
           ]),
         ),
         const SizedBox(height: 20),
-        Text('Cessation streaks', style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+        Text('Cessation streaks', style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textDark)),
         const SizedBox(height: 10),
         cessation.when(
           loading: () => const SizedBox.shrink(),
@@ -75,8 +75,8 @@ class HabitsScreen extends ConsumerWidget {
                 margin: const EdgeInsets.only(bottom: 8), decoration: AppDecorations.card,
                 child: ListTile(
                   leading: Text(emoji, style: const TextStyle(fontSize: 24)),
-                  title: Text(label, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textDark)),
-                  subtitle: days != null ? Text('$days days free 🎉', style: GoogleFonts.inter(fontSize: 12, color: AppColors.teal, fontWeight: FontWeight.w700)) : null,
+                  title: Text(label, style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textDark)),
+                  subtitle: days != null ? Text('$days days free 🎉', style: GoogleFonts.poppins(fontSize: 12, color: AppColors.teal, fontWeight: FontWeight.w700)) : null,
                   trailing: days == null
                       ? OutlinedButton(onPressed: () async { await repo.setCessation(type); ref.invalidate(cessationProvider); }, child: const Text('Start'))
                       : null,

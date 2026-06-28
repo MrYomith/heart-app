@@ -51,7 +51,7 @@ class _DeliriumScreenState extends ConsumerState<DeliriumScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.bgCard,
         leading: IconButton(icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: AppColors.textDark), onPressed: () => Navigator.pop(context)),
-        title: Text('Daily Check-in', style: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+        title: Text('Daily Check-in', style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w800, color: AppColors.textDark)),
       ),
       body: _resultMsg != null ? _result() : _form(),
     );
@@ -62,9 +62,9 @@ class _DeliriumScreenState extends ConsumerState<DeliriumScreen> {
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
           const Center(child: MioMascot(variant: MioVariant.calm, size: 76)),
           const SizedBox(height: 16),
-          Text('A quick orientation check', textAlign: TextAlign.center, style: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+          Text('A quick orientation check', textAlign: TextAlign.center, style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w800, color: AppColors.textDark)),
           const SizedBox(height: 6),
-          Text('This helps your nurse make sure your mind is recovering well after surgery.', textAlign: TextAlign.center, style: GoogleFonts.inter(fontSize: 14, color: AppColors.textMedium, height: 1.4)),
+          Text('This helps your nurse make sure your mind is recovering well after surgery.', textAlign: TextAlign.center, style: GoogleFonts.poppins(fontSize: 14, color: AppColors.textMedium, height: 1.4)),
           const SizedBox(height: 22),
           ..._questions.asMap().entries.map((e) => _QuestionCard(
                 question: e.value,
@@ -80,7 +80,7 @@ class _DeliriumScreenState extends ConsumerState<DeliriumScreen> {
               style: ElevatedButton.styleFrom(backgroundColor: AppColors.teal, disabledBackgroundColor: AppColors.teal.withValues(alpha: 0.4), foregroundColor: Colors.white, elevation: 0, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
               child: _submitting
                   ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.4, color: Colors.white))
-                  : Text(_complete ? 'Submit check-in' : 'Answer all questions', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700)),
+                  : Text(_complete ? 'Submit check-in' : 'Answer all questions', style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w700)),
             ),
           ),
         ]),
@@ -92,14 +92,14 @@ class _DeliriumScreenState extends ConsumerState<DeliriumScreen> {
           child: Column(mainAxisSize: MainAxisSize.min, children: [
             Icon(_risk ? Icons.notifications_active_rounded : Icons.check_circle_rounded, size: 72, color: _risk ? AppColors.warning : AppColors.success),
             const SizedBox(height: 18),
-            Text(_risk ? 'Your nurse will check in' : "You're doing well", textAlign: TextAlign.center, style: GoogleFonts.inter(fontSize: 21, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+            Text(_risk ? 'Your nurse will check in' : "You're doing well", textAlign: TextAlign.center, style: GoogleFonts.poppins(fontSize: 21, fontWeight: FontWeight.w800, color: AppColors.textDark)),
             const SizedBox(height: 10),
-            Text(_resultMsg!, textAlign: TextAlign.center, style: GoogleFonts.inter(fontSize: 14.5, color: AppColors.textMedium, height: 1.5)),
+            Text(_resultMsg!, textAlign: TextAlign.center, style: GoogleFonts.poppins(fontSize: 14.5, color: AppColors.textMedium, height: 1.5)),
             const SizedBox(height: 28),
             SizedBox(width: double.infinity, height: 52, child: ElevatedButton(
               onPressed: () => Navigator.pop(context),
               style: ElevatedButton.styleFrom(backgroundColor: AppColors.teal, foregroundColor: Colors.white, elevation: 0, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
-              child: Text('Done', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700)),
+              child: Text('Done', style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w700)),
             )),
           ]),
         ),
@@ -120,7 +120,7 @@ class _QuestionCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: AppDecorations.card,
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(question, style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.textDark, height: 1.35)),
+        Text(question, style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.textDark, height: 1.35)),
         const SizedBox(height: 12),
         Row(children: [
           Expanded(child: _choice('Yes', answer == true, AppColors.success, onYes)),
@@ -140,7 +140,7 @@ class _QuestionCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: selected ? color : AppColors.border, width: selected ? 2 : 1),
           ),
-          child: Center(child: Text(label, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: selected ? color : AppColors.textMedium))),
+          child: Center(child: Text(label, style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w700, color: selected ? color : AppColors.textMedium))),
         ),
       );
 }

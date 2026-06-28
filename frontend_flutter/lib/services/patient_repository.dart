@@ -324,4 +324,68 @@ class PatientRepository {
     }
     return [];
   }
+
+  // ── Quizzes & badges (FR-182/183) ─────────────────────────────────────
+  Future<List<Map<String, dynamic>>> quizzes({String? topic}) async {
+    final r = await _dio.get('/api/quizzes', queryParameters: topic != null ? {'topic': topic} : null);
+    return (r.data as List).map((e) => Map<String, dynamic>.from(e as Map)).toList();
+  }
+
+  Future<Map<String, dynamic>> quiz(String id) async {
+    final r = await _dio.get('/api/quizzes/$id');
+    return Map<String, dynamic>.from(r.data as Map);
+  }
+
+  Future<Map<String, dynamic>> submitQuiz(String id, Map<String, int> answers) async {
+    final r = await _dio.post('/api/quizzes/$id/attempt', data: {'answers': answers});
+    return Map<String, dynamic>.from(r.data as Map);
+  }
+
+  Future<List<Map<String, dynamic>>> badges() async {
+    final r = await _dio.get('/api/badges');
+    return (r.data as List).map((e) => Map<String, dynamic>.from(e as Map)).toList();
+  }
+
+  // ── Recovery guide + physiotherapy plan (FR-162/163) ──────────────────
+  Future<List<Map<String, dynamic>>> recoveryGuide() async {
+    final r = await _dio.get('/api/recovery/guide');
+    return (r.data as List).map((e) => Map<String, dynamic>.from(e as Map)).toList();
+  }
+
+  Future<List<Map<String, dynamic>>> physiotherapyPlan() async {
+    final r = await _dio.get('/api/physiotherapy/plan');
+    return (r.data as List).map((e) => Map<String, dynamic>.from(e as Map)).toList();
+  }
+
+  // ── Settings: notifications, language, privacy/data (FR-300/304/305) ───
+  Future<Map<String, dynamic>> notificationPrefs() async {
+    final r = await _dio.get('/api/settings/notifications');
+    return Map<String, dynamic>.from(r.data as Map);
+  }
+
+  Future<Map<String, dynamic>> updateNotificationPrefs({
+    required List<String> mutedCategories,
+    required String quietStart,
+    required String quietEnd,
+  }) async {
+    final r = await _dio.put('/api/settings/notifications', data: {
+      'muted_categories': mutedCategories,
+      'quiet_hours_start': quietStart,
+      'quiet_hours_end': quietEnd,
+    });
+    return Map<String, dynamic>.from(r.data as Map);
+  }
+
+  Future<void> setLocale(String locale) async {
+    await _dio.patch('/api/settings/locale', data: {'locale': locale});
+  }
+
+  Future<Map<String, dynamic>> exportMyData() async {
+    final r = await _dio.post('/api/settings/data-export');
+    return Map<String, dynamic>.from(r.data as Map);
+  }
+
+  Future<void> deleteMyAccount() async {
+    await _dio.post('/api/settings/data-deletion', data: {'confirm': true});
+  }
 }

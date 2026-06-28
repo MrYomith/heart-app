@@ -33,13 +33,13 @@ class AppTheme {
         seedColor: AppColors.primary,
         surface: AppColors.bg,
       ),
-      textTheme: GoogleFonts.interTextTheme(),
+      textTheme: GoogleFonts.poppinsTextTheme(),
       appBarTheme: AppBarTheme(
         backgroundColor: AppColors.bgCard,
         foregroundColor: AppColors.textDark,
         elevation: 0,
         surfaceTintColor: Colors.transparent,
-        titleTextStyle: GoogleFonts.inter(
+        titleTextStyle: GoogleFonts.poppins(
           fontSize: 18,
           fontWeight: FontWeight.w800,
           color: AppColors.textDark,
@@ -65,16 +65,16 @@ class AppTheme {
 
 // Reusable style helpers
 class AppTextStyles {
-  static TextStyle heading1 = GoogleFonts.inter(fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.textDark);
-  static TextStyle heading2 = GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.textDark);
-  static TextStyle heading3 = GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.textDark);
-  static TextStyle body = GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w400, color: AppColors.textMedium);
-  static TextStyle bodyBold = GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textDark);
-  static TextStyle caption = GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w400, color: AppColors.textMedium);
-  static TextStyle captionBold = GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.textMedium);
-  static TextStyle label = GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w500, color: AppColors.textMedium);
-  static TextStyle primary = GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.primary);
-  static TextStyle teal = GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.teal);
+  static TextStyle heading1 = GoogleFonts.poppins(fontSize: 22, fontWeight: FontWeight.w800, color: AppColors.textDark);
+  static TextStyle heading2 = GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.textDark);
+  static TextStyle heading3 = GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.textDark);
+  static TextStyle body = GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w400, color: AppColors.textMedium);
+  static TextStyle bodyBold = GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textDark);
+  static TextStyle caption = GoogleFonts.poppins(fontSize: 11, fontWeight: FontWeight.w400, color: AppColors.textMedium);
+  static TextStyle captionBold = GoogleFonts.poppins(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.textMedium);
+  static TextStyle label = GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w500, color: AppColors.textMedium);
+  static TextStyle primary = GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.primary);
+  static TextStyle teal = GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.teal);
 }
 
 // Reusable decoration helpers

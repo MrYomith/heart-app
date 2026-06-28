@@ -19,6 +19,7 @@ class UserPublic(BaseModel):
     email: str
     name: str
     role: str
+    locale: str = "de"
     onboarding_complete: bool
     current_phase: str | None = None
     journey_progress: float = 0.0
@@ -41,6 +42,7 @@ class UserPublic(BaseModel):
             email=u.email,
             name=u.name,
             role=u.role.value if u.role else "patient",
+            locale=getattr(u, "locale", None) or "de",
             onboarding_complete=u.onboarding_complete,
             current_phase=u.current_phase.value if u.current_phase else None,
             journey_progress=u.journey_progress or 0.0,

@@ -62,14 +62,14 @@ class _NutritionScreenState extends ConsumerState<NutritionScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.bgCard,
         leading: IconButton(icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: AppColors.textDark), onPressed: () => Navigator.pop(context)),
-        title: Text('Nutrition', style: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+        title: Text('Nutrition', style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w800, color: AppColors.textDark)),
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator(color: AppColors.teal))
           : ListView(padding: const EdgeInsets.all(20), children: [
-              Text("Today's nutrition", style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+              Text("Today's nutrition", style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.textDark)),
               const SizedBox(height: 4),
-              Text('Good nutrition powers your healing. Aim for $_proteinTarget g protein and $_hydrationTarget glasses of fluid.', style: GoogleFonts.inter(fontSize: 13.5, color: AppColors.textMedium, height: 1.4)),
+              Text('Good nutrition powers your healing. Aim for $_proteinTarget g protein and $_hydrationTarget glasses of fluid.', style: GoogleFonts.poppins(fontSize: 13.5, color: AppColors.textMedium, height: 1.4)),
               const SizedBox(height: 20),
               _StepperCard(icon: '🥩', label: 'Protein', unit: 'g', value: _protein, step: 5, target: _proteinTarget, onChanged: (v) => setState(() => _protein = v)),
               _StepperCard(icon: '💧', label: 'Hydration', unit: 'glasses', value: _hydration, step: 1, target: _hydrationTarget, onChanged: (v) => setState(() => _hydration = v)),
@@ -82,8 +82,8 @@ class _NutritionScreenState extends ConsumerState<NutritionScreen> {
                   const Text('🚽', style: TextStyle(fontSize: 22)),
                   const SizedBox(width: 12),
                   Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text('Bowel movement today', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textDark)),
-                    Text('Important after surgery', style: GoogleFonts.inter(fontSize: 11.5, color: AppColors.textMedium)),
+                    Text('Bowel movement today', style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+                    Text('Important after surgery', style: GoogleFonts.poppins(fontSize: 11.5, color: AppColors.textMedium)),
                   ])),
                   Switch(value: _bowel, activeThumbColor: AppColors.teal, onChanged: (v) => setState(() => _bowel = v)),
                 ]),
@@ -94,7 +94,7 @@ class _NutritionScreenState extends ConsumerState<NutritionScreen> {
                 style: ElevatedButton.styleFrom(backgroundColor: AppColors.teal, foregroundColor: Colors.white, elevation: 0, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
                 child: _saving
                     ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.4, color: Colors.white))
-                    : Text('Save', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700)),
+                    : Text('Save', style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w700)),
               )),
             ]),
     );
@@ -119,8 +119,8 @@ class _StepperCard extends StatelessWidget {
           Text(icon, style: const TextStyle(fontSize: 22)),
           const SizedBox(width: 12),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(label, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textDark)),
-            Text('$value / $target $unit', style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMedium)),
+            Text(label, style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+            Text('$value / $target $unit', style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textMedium)),
           ])),
           _btn(Icons.remove, () => onChanged((value - step).clamp(0, 9999))),
           const SizedBox(width: 8),

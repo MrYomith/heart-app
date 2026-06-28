@@ -88,11 +88,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   const SizedBox(height: 20),
                   Text('Create your account',
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.inter(fontSize: 25, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+                      style: GoogleFonts.poppins(fontSize: 25, fontWeight: FontWeight.w800, color: AppColors.textDark)),
                   const SizedBox(height: 6),
                   Text("Mio will guide you through every step of your heart journey.",
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.inter(fontSize: 15, color: AppColors.textMedium, height: 1.4)),
+                      style: GoogleFonts.poppins(fontSize: 15, color: AppColors.textMedium, height: 1.4)),
                   const SizedBox(height: 28),
                   MioTextField(
                     controller: _name,
@@ -131,7 +131,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       const SizedBox(width: 6),
                       Expanded(
                         child: Text('At least 12 characters, with an uppercase, lowercase, number and symbol.',
-                            style: GoogleFonts.inter(
+                            style: GoogleFonts.poppins(
                                 fontSize: 12,
                                 color: _passwordStrong ? AppColors.success : AppColors.textMedium)),
                       ),
@@ -154,7 +154,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           child: Padding(
                             padding: const EdgeInsets.only(top: 12),
                             child: Text('I agree to the Terms of Service and Privacy Policy, and consent to MioHeart processing my health data to support my recovery.',
-                                style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMedium, height: 1.45)),
+                                style: GoogleFonts.poppins(fontSize: 13, color: AppColors.textMedium, height: 1.45)),
                           ),
                         ),
                       ],
@@ -167,11 +167,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('Already have an account? ', style: GoogleFonts.inter(fontSize: 14.5, color: AppColors.textMedium)),
+                      Text('Already have an account? ', style: GoogleFonts.poppins(fontSize: 14.5, color: AppColors.textMedium)),
                       GestureDetector(
                         onTap: () => Navigator.of(context).pop(),
                         child: Text('Log in',
-                            style: GoogleFonts.inter(fontSize: 14.5, fontWeight: FontWeight.w700, color: AppColors.primary)),
+                            style: GoogleFonts.poppins(fontSize: 14.5, fontWeight: FontWeight.w700, color: AppColors.primary)),
                       ),
                     ],
                   ),

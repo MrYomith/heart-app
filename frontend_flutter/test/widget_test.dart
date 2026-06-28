@@ -1,30 +1,21 @@
-// This is a basic Flutter widget test.
+// Smoke test: the app boots into a MaterialApp without throwing.
 //
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
+// We pump a single frame (not pumpAndSettle) because the AuthGate kicks off an
+// async auth check on start; settling would wait on that network/storage work.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:miohart/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('App boots into a MaterialApp', (WidgetTester tester) async {
+    await tester.pumpWidget(const ProviderScope(child: MioHartApp()));
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // The root MaterialApp is present and titled correctly.
+    final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
+    expect(app.title, 'MioHart');
+    expect(app.debugShowCheckedModeBanner, isFalse);
   });
 }

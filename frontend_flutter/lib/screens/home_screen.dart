@@ -14,8 +14,6 @@ import 'calendar_screen.dart';
 import 'emotional_checkin_screen.dart';
 import 'pain_tracking_screen.dart';
 import 'medications_screen.dart';
-import 'breathing_screen.dart';
-import 'eras_screen.dart';
 import 'wearables_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -38,13 +36,27 @@ class HomeScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // ── Hero ─────────────────────────────────────
+                  // ── Branded top bar (logo + bell + avatar) ────
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(pad, 8, pad, 4),
+                    child: const _TopBar(),
+                  ),
+                  // ── Hero (with journey-path illustration, like the mockup) ──
                   Container(
                     color: AppColors.bgBanner,
-                    padding: EdgeInsets.fromLTRB(pad, isWide ? 24 : 20, pad, isWide ? 24 : 20),
-                    child: isWide
-                        ? _HeroWide(fs: fs)
-                        : _HeroPhone(fs: fs),
+                    child: Stack(
+                      children: [
+                        Positioned(
+                          right: 0, bottom: 0, top: 0,
+                          child: Image.asset('assets/mio/hero_path.png',
+                              fit: BoxFit.cover, errorBuilder: (_, __, ___) => const SizedBox.shrink()),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(pad, isWide ? 24 : 20, pad, isWide ? 24 : 20),
+                          child: isWide ? _HeroWide(fs: fs) : _HeroPhone(fs: fs),
+                        ),
+                      ],
+                    ),
                   ),
 
                   // ── Quote ────────────────────────────────────
@@ -59,9 +71,9 @@ class HomeScreen extends StatelessWidget {
                     ),
                     child: Row(
                       children: [
-                        Text('"', style: GoogleFonts.inter(fontSize: 24 * fs, color: AppColors.primary, height: 0.8)),
+                        Text('"', style: GoogleFonts.poppins(fontSize: 24 * fs, color: AppColors.primary, height: 0.8)),
                         const SizedBox(width: 4),
-                        Expanded(child: Text('Small steps today, stronger heart tomorrow. 🤍', style: GoogleFonts.inter(fontSize: 13 * fs, fontStyle: FontStyle.italic, color: AppColors.textDark))),
+                        Expanded(child: Text('Small steps today, stronger heart tomorrow. 🤍', style: GoogleFonts.poppins(fontSize: 13 * fs, fontStyle: FontStyle.italic, color: AppColors.textDark))),
                       ],
                     ),
                   ),
@@ -80,7 +92,7 @@ class HomeScreen extends StatelessWidget {
                   SizedBox(height: isWide ? 20 : 16),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: pad),
-                    child: Text('Quick Access', style: GoogleFonts.inter(fontSize: 17 * fs, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+                    child: Text('Quick Access', style: GoogleFonts.poppins(fontSize: 17 * fs, fontWeight: FontWeight.w700, color: AppColors.textDark)),
                   ),
                   const SizedBox(height: 10),
                   Padding(
@@ -103,8 +115,8 @@ class HomeScreen extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Every action you take now', style: GoogleFonts.inter(fontSize: 13 * fs, color: AppColors.tealDark)),
-                                Text('is building your stronger tomorrow.', style: GoogleFonts.inter(fontSize: 13 * fs, fontWeight: FontWeight.w700, color: AppColors.tealDark)),
+                                Text('Every action you take now', style: GoogleFonts.poppins(fontSize: 13 * fs, color: AppColors.tealDark)),
+                                Text('is building your stronger tomorrow.', style: GoogleFonts.poppins(fontSize: 13 * fs, fontWeight: FontWeight.w700, color: AppColors.tealDark)),
                               ],
                             ),
                           ),
@@ -123,6 +135,47 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
+// ─── Branded top bar ──────────────────────────────────────────────────────────
+
+class _TopBar extends ConsumerWidget {
+  const _TopBar();
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Row(
+      children: [
+        // MioHart wordmark
+        RichText(
+          text: TextSpan(children: [
+            TextSpan(text: 'Mio', style: GoogleFonts.baloo2(fontSize: 24, fontWeight: FontWeight.w800, color: AppColors.primary)),
+            TextSpan(text: 'Hart', style: GoogleFonts.baloo2(fontSize: 24, fontWeight: FontWeight.w800, color: AppColors.textMedium)),
+          ]),
+        ),
+        const Spacer(),
+        // Notification bell with badge
+        Stack(clipBehavior: Clip.none, children: [
+          const Icon(Icons.notifications_none_rounded, size: 26, color: AppColors.textDark),
+          Positioned(
+            right: -2, top: -2,
+            child: Container(
+              padding: const EdgeInsets.all(4),
+              decoration: const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle),
+              constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+              child: const Text('3', textAlign: TextAlign.center, style: TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: Colors.white, height: 1)),
+            ),
+          ),
+        ]),
+        const SizedBox(width: 14),
+        // Profile avatar
+        const CircleAvatar(
+          radius: 18,
+          backgroundColor: AppColors.tealLight,
+          child: Icon(Icons.person_rounded, size: 20, color: AppColors.teal),
+        ),
+      ],
+    );
+  }
+}
+
 // ─── Hero variants ────────────────────────────────────────────────────────────
 
 class _HeroPhone extends StatelessWidget {
@@ -133,13 +186,13 @@ class _HeroPhone extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const MioMascot(variant: MioVariant.happy, size: 84),
-        const SizedBox(width: 12),
+        const MioMascot(variant: MioVariant.defaultMio, size: 132),
+        const SizedBox(width: 10),
         Expanded(child: _HeroText(fs: fs)),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.8), borderRadius: BorderRadius.circular(20)),
-          child: Text('☀️ 15°C', style: GoogleFonts.inter(fontSize: 12 * fs, fontWeight: FontWeight.w600, color: AppColors.textDark)),
+          child: Text('☀️ 15°C', style: GoogleFonts.poppins(fontSize: 12 * fs, fontWeight: FontWeight.w600, color: AppColors.textDark)),
         ),
       ],
     );
@@ -153,7 +206,7 @@ class _HeroWide extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        MioMascot(variant: MioVariant.happy, size: Responsive.isLarge(context) ? 120 : 96),
+        MioMascot(variant: MioVariant.defaultMio, size: Responsive.isLarge(context) ? 150 : 120),
         const SizedBox(width: 20),
         Expanded(child: _HeroText(fs: fs)),
         const SizedBox(width: 16),
@@ -189,23 +242,23 @@ class _HeroText extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(_greeting(), style: GoogleFonts.inter(fontSize: 13 * fs, color: AppColors.textMedium)),
+        Text(_greeting(), style: GoogleFonts.poppins(fontSize: 13 * fs, color: AppColors.textMedium)),
         Row(children: [
           Flexible(
             child: Text(name,
                 maxLines: 1, overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.inter(fontSize: 22 * fs, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+                style: GoogleFonts.poppins(fontSize: 22 * fs, fontWeight: FontWeight.w800, color: AppColors.textDark)),
           ),
           const SizedBox(width: 4),
           const Text('🤍', style: TextStyle(fontSize: 16)),
         ]),
         const SizedBox(height: 6),
-        Text("You're doing something amazing for your heart. We're in this together.", style: GoogleFonts.inter(fontSize: 12 * fs, color: AppColors.textMedium, height: 1.5)),
+        Text("You're doing something amazing for your heart. We're in this together.", style: GoogleFonts.poppins(fontSize: 12 * fs, color: AppColors.textMedium, height: 1.5)),
         const SizedBox(height: 10),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
           decoration: BoxDecoration(color: AppColors.tealLight, borderRadius: BorderRadius.circular(20)),
-          child: Text('🌱 $phaseLabel', style: GoogleFonts.inter(fontSize: 11 * fs, fontWeight: FontWeight.w600, color: AppColors.teal)),
+          child: Text('🌱 $phaseLabel', style: GoogleFonts.poppins(fontSize: 11 * fs, fontWeight: FontWeight.w600, color: AppColors.teal)),
         ),
       ],
     );
@@ -222,8 +275,8 @@ class _WeatherStatCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.8), borderRadius: BorderRadius.circular(20)),
       child: Column(children: [
-        Text(value, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textDark)),
-        Text(label, style: GoogleFonts.inter(fontSize: 9, color: AppColors.textMedium)),
+        Text(value, style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textDark)),
+        Text(label, style: GoogleFonts.poppins(fontSize: 9, color: AppColors.textMedium)),
       ]),
     );
   }
@@ -285,12 +338,12 @@ class _TodayPlanCard extends ConsumerWidget {
               Flexible(
                 child: Text(all.isEmpty ? "Today's Plan" : "Today's Plan · $doneCount/${all.length}",
                     maxLines: 1, overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.inter(fontSize: 14 * fs, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+                    style: GoogleFonts.poppins(fontSize: 14 * fs, fontWeight: FontWeight.w700, color: AppColors.textDark)),
               ),
               const SizedBox(width: 6),
               GestureDetector(
                 onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const TodayPlanScreen())),
-                child: Text('View all', style: GoogleFonts.inter(fontSize: 12 * fs, fontWeight: FontWeight.w600, color: AppColors.teal)),
+                child: Text('View all', style: GoogleFonts.poppins(fontSize: 12 * fs, fontWeight: FontWeight.w600, color: AppColors.teal)),
               ),
             ],
           ),
@@ -298,7 +351,7 @@ class _TodayPlanCard extends ConsumerWidget {
           if (preview.isEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
-              child: Text('No tasks yet', style: GoogleFonts.inter(fontSize: 12 * fs, color: AppColors.textLight)),
+              child: Text('No tasks yet', style: GoogleFonts.poppins(fontSize: 12 * fs, color: AppColors.textLight)),
             )
           else
             ...preview.map((t) => _MiniTaskRow(task: t, fs: fs)),
@@ -337,25 +390,25 @@ class _ProgressCard extends ConsumerWidget {
               Flexible(
                 child: Text('📈 Progress',
                     maxLines: 1, overflow: TextOverflow.ellipsis,
-                    style: GoogleFonts.inter(fontSize: 14 * fs, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+                    style: GoogleFonts.poppins(fontSize: 14 * fs, fontWeight: FontWeight.w700, color: AppColors.textDark)),
               ),
               const SizedBox(width: 6),
               GestureDetector(
                 onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const JourneyScreen())),
-                child: Text('Journey', style: GoogleFonts.inter(fontSize: 12 * fs, fontWeight: FontWeight.w600, color: AppColors.teal)),
+                child: Text('Journey', style: GoogleFonts.poppins(fontSize: 12 * fs, fontWeight: FontWeight.w600, color: AppColors.teal)),
               ),
             ],
           ),
           const SizedBox(height: 10),
           ProgressRing(value: progress.toDouble(), max: 100, size: Responsive.value(context, phone: 80.0, tablet: 90.0), label: '$progress%', sublabel: 'of journey'),
           const SizedBox(height: 8),
-          Text(phaseLabel, style: GoogleFonts.inter(fontSize: 11 * fs, fontWeight: FontWeight.w700, color: AppColors.teal), textAlign: TextAlign.center),
+          Text(phaseLabel, style: GoogleFonts.poppins(fontSize: 11 * fs, fontWeight: FontWeight.w700, color: AppColors.teal), textAlign: TextAlign.center),
           if (nextLabel.isNotEmpty)
-            Text('Next: $nextLabel', style: GoogleFonts.inter(fontSize: 10 * fs, color: AppColors.textMedium), textAlign: TextAlign.center),
+            Text('Next: $nextLabel', style: GoogleFonts.poppins(fontSize: 10 * fs, color: AppColors.textMedium), textAlign: TextAlign.center),
           if (total > 0)
             Padding(
               padding: const EdgeInsets.only(top: 2),
-              child: Text('$doneToday/$total tasks done today', style: GoogleFonts.inter(fontSize: 9.5 * fs, color: AppColors.textLight), textAlign: TextAlign.center),
+              child: Text('$doneToday/$total tasks done today', style: GoogleFonts.poppins(fontSize: 9.5 * fs, color: AppColors.textLight), textAlign: TextAlign.center),
             ),
         ],
       ),
@@ -386,13 +439,13 @@ class _WearableCard extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('⌚ Wearables', style: GoogleFonts.inter(fontSize: 14 * fs, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+            Text('⌚ Wearables', style: GoogleFonts.poppins(fontSize: 14 * fs, fontWeight: FontWeight.w700, color: AppColors.textDark)),
             const SizedBox(height: 10),
             summary.when(
               loading: () => const Padding(padding: EdgeInsets.all(8), child: Center(child: SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)))),
-              error: (e, _) => Text('Tap to connect a device', style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMedium)),
+              error: (e, _) => Text('Tap to connect a device', style: GoogleFonts.poppins(fontSize: 11, color: AppColors.textMedium)),
               data: (s) => s.isEmpty
-                  ? Text('No readings yet — tap to add', style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMedium))
+                  ? Text('No readings yet — tap to add', style: GoogleFonts.poppins(fontSize: 11, color: AppColors.textMedium))
                   : Column(children: [
                       _StatRow(Icons.favorite_rounded, AppColors.primary, 'Heart Rate', _fmt(s, 'heart_rate', 'bpm')),
                       _StatRow(Icons.directions_walk_rounded, AppColors.teal, 'Steps', _fmt(s, 'steps', '')),
@@ -420,8 +473,8 @@ class _StatRow extends StatelessWidget {
       child: Row(children: [
         Icon(icon, size: 15, color: color),
         const SizedBox(width: 6),
-        Expanded(child: Text(label, style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMedium))),
-        Text(value, style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+        Expanded(child: Text(label, style: GoogleFonts.poppins(fontSize: 11, color: AppColors.textMedium))),
+        Text(value, style: GoogleFonts.poppins(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.textDark)),
       ]),
     );
   }
@@ -443,8 +496,8 @@ class _MiniTaskRow extends ConsumerWidget {
           Expanded(child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(task.title, style: GoogleFonts.inter(fontSize: 11 * fs, fontWeight: FontWeight.w600, color: AppColors.textDark), overflow: TextOverflow.ellipsis),
-              Text(task.subtitle, style: GoogleFonts.inter(fontSize: 10 * fs, color: AppColors.textMedium), overflow: TextOverflow.ellipsis),
+              Text(task.title, style: GoogleFonts.poppins(fontSize: 11 * fs, fontWeight: FontWeight.w600, color: AppColors.textDark), overflow: TextOverflow.ellipsis),
+              Text(task.subtitle, style: GoogleFonts.poppins(fontSize: 10 * fs, color: AppColors.textMedium), overflow: TextOverflow.ellipsis),
             ],
           )),
           AnimatedContainer(
@@ -472,24 +525,26 @@ class _QuickActionsGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cols = Responsive.gridCols(context, phone: 4, fold: 6, tablet: 8);
+    // Matches the Home mockup: Emotional · Medications · Calendar · Symptoms /
+    // Goals · Wearables · Glucose · Contact Team.
     final actions = <(IconData, Color, String, String, Widget)>[
       (Icons.sentiment_satisfied_rounded, AppColors.teal, 'Emotional\nCheck-in', 'How are you\nfeeling?', const EmotionalCheckinScreen()),
-      (Icons.medication_rounded, AppColors.primary, 'Medications', 'Tap to view\n& mark taken', const MedicationsScreen()),
-      (Icons.calendar_month_rounded, AppColors.teal, 'Calendar', 'Appointments\n& plan', const CalendarScreen()),
-      (Icons.monitor_heart_rounded, AppColors.primary, 'Pain Check', 'Log how you\nfeel', const PainTrackingScreen()),
-      (Icons.checklist_rounded, AppColors.teal, 'Surgery Prep', 'ERAS\nchecklist', const ErasScreen()),
+      (Icons.medication_rounded, const Color(0xFF8E7CC3), 'Medications', 'Tap to view\n& mark taken', const MedicationsScreen()),
+      (Icons.calendar_month_rounded, AppColors.primary, 'Calendar', 'Appointments\n& plan', const CalendarScreen()),
+      (Icons.monitor_heart_rounded, AppColors.primary, 'Symptoms', 'No alerts\ntoday', const PainTrackingScreen()),
+      (Icons.track_changes_rounded, const Color(0xFFE6A23C), 'Goals', 'Stay active,\neat well', const TodayPlanScreen()),
       (Icons.watch_rounded, AppColors.teal, 'Wearables', 'Devices &\nreadings', const WearablesScreen()),
-      (Icons.air_rounded, AppColors.teal, 'Breathing', 'Guided\ncoach', const BreathingScreen()),
-      (Icons.headset_mic_rounded, AppColors.primary, 'Contact\nTeam', "We're here", const MessagesScreen()),
+      (Icons.water_drop_rounded, const Color(0xFF8E7CC3), 'Glucose', 'Last reading\n& trend', const WearablesScreen()),
+      (Icons.headset_mic_rounded, const Color(0xFF5B9BD5), 'Contact\nTeam', "We're here\nto help", const MessagesScreen()),
     ];
 
     return GridView.count(
       crossAxisCount: cols,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      mainAxisSpacing: 10,
-      crossAxisSpacing: 10,
-      childAspectRatio: cols > 5 ? 0.80 : 0.74,
+      mainAxisSpacing: 12,
+      crossAxisSpacing: 12,
+      childAspectRatio: cols > 5 ? 0.74 : 0.66,
       children: actions.map((a) => GestureDetector(
         onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => a.$5)),
         child: Container(
@@ -498,22 +553,22 @@ class _QuickActionsGrid extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 4, offset: const Offset(0, 2))],
           ),
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 6),
           child: Column(mainAxisAlignment: MainAxisAlignment.center, mainAxisSize: MainAxisSize.min, children: [
             Container(
-              width: 40 * fs, height: 40 * fs,
-              decoration: BoxDecoration(color: a.$2.withValues(alpha: 0.12), shape: BoxShape.circle),
-              child: Icon(a.$1, size: 21 * fs, color: a.$2),
+              width: 48 * fs, height: 48 * fs,
+              decoration: BoxDecoration(color: a.$2.withValues(alpha: 0.14), shape: BoxShape.circle),
+              child: Icon(a.$1, size: 24 * fs, color: a.$2),
             ),
-            const SizedBox(height: 5),
+            const SizedBox(height: 9),
             Flexible(
               child: Text(a.$3, maxLines: 2, overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.inter(fontSize: 10 * fs, fontWeight: FontWeight.w700, color: AppColors.textDark, height: 1.15), textAlign: TextAlign.center),
+                  style: GoogleFonts.poppins(fontSize: 10 * fs, fontWeight: FontWeight.w700, color: AppColors.textDark, height: 1.15), textAlign: TextAlign.center),
             ),
             const SizedBox(height: 2),
             Flexible(
               child: Text(a.$4, maxLines: 2, overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.inter(fontSize: 9 * fs, color: AppColors.textMedium, height: 1.15), textAlign: TextAlign.center),
+                  style: GoogleFonts.poppins(fontSize: 9 * fs, color: AppColors.textMedium, height: 1.15), textAlign: TextAlign.center),
             ),
           ]),
         ),

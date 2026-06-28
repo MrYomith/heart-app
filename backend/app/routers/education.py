@@ -4,28 +4,25 @@
   Patient: browse published content (filtered to their surgery type), stream
            media, track progress, favourite.
 
-Media is stored locally under uploads/education/ now (S3-swappable later — only
-the storage helper + the media route change).
+Media goes through the swappable storage backend (local filesystem or S3 — see
+app/core/storage.py); the DB stores only the storage reference.
 """
-import shutil
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
-from fastapi.responses import FileResponse
+from fastapi.responses import RedirectResponse, Response
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.core.auth import get_current_user
+from app.core.storage import storage
 from app.database import get_db
 from app.enums import ContentTopic, ContentType, UserRole
 from app.models import ContentProgress, EducationContent, User
 
 router = APIRouter(prefix="/api", tags=["education"])
-
-UPLOAD_DIR = Path(__file__).resolve().parents[2] / "uploads" / "education"
-UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def _staff(user: User = Depends(get_current_user)) -> User:
@@ -42,7 +39,11 @@ def _out(c: EducationContent) -> dict:
         "category": c.category, "has_media": bool(c.s3_key),
         "has_german_subtitles": c.has_german_subtitles, "sort_order": c.sort_order,
         "published": c.published,
-        "media_url": f"/api/education/media/{c.id}" if c.s3_key else None,
+        # Externally-hosted media is returned directly; uploaded files stream via our route.
+        "media_url": (
+            c.s3_key if (c.s3_key or "").startswith("http")
+            else (f"/api/education/media/{c.id}" if c.s3_key else None)
+        ),
     }
 
 
@@ -118,10 +119,10 @@ def admin_upload(content_id: uuid.UUID, file: UploadFile = File(...), staff: Use
     if not c:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Content not found.")
     ext = Path(file.filename or "").suffix[:10]
-    dest = UPLOAD_DIR / f"{content_id}{ext}"
-    with dest.open("wb") as f:
-        shutil.copyfileobj(file.file, f)
-    c.s3_key = str(dest.relative_to(UPLOAD_DIR.parents[1]))  # store relative to uploads/
+    c.s3_key = storage.save(
+        f"education/{content_id}{ext}", file.file.read(),
+        content_type=file.content_type or "application/octet-stream",
+    )
     db.commit()
     return {"id": str(c.id), "media_url": f"/api/education/media/{c.id}", "stored": c.s3_key}
 
@@ -170,10 +171,14 @@ def stream_media(content_id: uuid.UUID, db: Session = Depends(get_db)):
     if c.s3_key.startswith("http"):
         # External hosted media — the client should use the URL directly.
         raise HTTPException(status.HTTP_409_CONFLICT, "External media; use media_url field.")
-    path = UPLOAD_DIR.parents[1] / c.s3_key
-    if not path.exists():
+    # S3 backend can hand back a presigned URL; otherwise stream the bytes.
+    presigned = storage.url(c.s3_key)
+    if presigned:
+        return RedirectResponse(presigned)
+    data = storage.read(c.s3_key)
+    if data is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "File missing.")
-    return FileResponse(path)
+    return Response(content=data, media_type="application/octet-stream")
 
 
 class ProgressIn(BaseModel):

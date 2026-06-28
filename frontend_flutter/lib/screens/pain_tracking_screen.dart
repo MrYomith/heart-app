@@ -53,7 +53,7 @@ class _PainTrackingScreenState extends ConsumerState<PainTrackingScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.bgCard,
         leading: IconButton(icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: AppColors.textDark), onPressed: () => Navigator.pop(context)),
-        title: Text('Pain Check', style: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+        title: Text('Pain Check', style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w800, color: AppColors.textDark)),
       ),
       body: _submitted ? _confirmation() : _form(),
     );
@@ -65,9 +65,9 @@ class _PainTrackingScreenState extends ConsumerState<PainTrackingScreen> {
           const SizedBox(height: 8),
           const Center(child: MioMascot(variant: MioVariant.medical, size: 84)),
           const SizedBox(height: 18),
-          Text('How is your pain right now?', textAlign: TextAlign.center, style: GoogleFonts.inter(fontSize: 21, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+          Text('How is your pain right now?', textAlign: TextAlign.center, style: GoogleFonts.poppins(fontSize: 21, fontWeight: FontWeight.w800, color: AppColors.textDark)),
           const SizedBox(height: 6),
-          Text('0 = no pain, 10 = worst pain. Be honest — this helps your nurse care for you.', textAlign: TextAlign.center, style: GoogleFonts.inter(fontSize: 14, color: AppColors.textMedium, height: 1.4)),
+          Text('0 = no pain, 10 = worst pain. Be honest — this helps your nurse care for you.', textAlign: TextAlign.center, style: GoogleFonts.poppins(fontSize: 14, color: AppColors.textMedium, height: 1.4)),
           const SizedBox(height: 28),
           _PainSlider(label: 'At rest', value: _rest, color: _painColor(_rest), onChanged: (v) => setState(() => _rest = v)),
           _PainSlider(label: 'When coughing', value: _cough, color: _painColor(_cough), onChanged: (v) => setState(() => _cough = v)),
@@ -81,7 +81,7 @@ class _PainTrackingScreenState extends ConsumerState<PainTrackingScreen> {
               child: Row(children: [
                 const Icon(Icons.notifications_active_rounded, color: AppColors.primaryDark, size: 20),
                 const SizedBox(width: 10),
-                Expanded(child: Text('A score of 7 or higher will alert your nurse right away.', style: GoogleFonts.inter(fontSize: 13, color: AppColors.primaryDark, fontWeight: FontWeight.w600))),
+                Expanded(child: Text('A score of 7 or higher will alert your nurse right away.', style: GoogleFonts.poppins(fontSize: 13, color: AppColors.primaryDark, fontWeight: FontWeight.w600))),
               ]),
             ),
           SizedBox(
@@ -91,7 +91,7 @@ class _PainTrackingScreenState extends ConsumerState<PainTrackingScreen> {
               style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, foregroundColor: Colors.white, elevation: 0, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
               child: _submitting
                   ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.4, color: Colors.white))
-                  : Text('Submit pain scores', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700)),
+                  : Text('Submit pain scores', style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w700)),
             ),
           ),
         ]),
@@ -103,13 +103,13 @@ class _PainTrackingScreenState extends ConsumerState<PainTrackingScreen> {
           child: Column(mainAxisSize: MainAxisSize.min, children: [
             Icon(_nurseAlerted ? Icons.notifications_active_rounded : Icons.check_circle_rounded, size: 72, color: _nurseAlerted ? AppColors.primary : AppColors.success),
             const SizedBox(height: 18),
-            Text(_nurseAlerted ? 'Your nurse has been alerted' : 'Pain scores saved', textAlign: TextAlign.center, style: GoogleFonts.inter(fontSize: 21, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+            Text(_nurseAlerted ? 'Your nurse has been alerted' : 'Pain scores saved', textAlign: TextAlign.center, style: GoogleFonts.poppins(fontSize: 21, fontWeight: FontWeight.w800, color: AppColors.textDark)),
             const SizedBox(height: 10),
             Text(
               _nurseAlerted
                   ? "Because your pain is high, we've notified your nurse and they'll check on you shortly. Hang in there. 🤍"
                   : 'Thank you. Keeping track helps your care team manage your comfort.',
-              textAlign: TextAlign.center, style: GoogleFonts.inter(fontSize: 14.5, color: AppColors.textMedium, height: 1.5),
+              textAlign: TextAlign.center, style: GoogleFonts.poppins(fontSize: 14.5, color: AppColors.textMedium, height: 1.5),
             ),
             const SizedBox(height: 28),
             SizedBox(
@@ -117,7 +117,7 @@ class _PainTrackingScreenState extends ConsumerState<PainTrackingScreen> {
               child: ElevatedButton(
                 onPressed: () => Navigator.pop(context),
                 style: ElevatedButton.styleFrom(backgroundColor: AppColors.teal, foregroundColor: Colors.white, elevation: 0, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
-                child: Text('Done', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700)),
+                child: Text('Done', style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w700)),
               ),
             ),
           ]),
@@ -140,11 +140,11 @@ class _PainSlider extends StatelessWidget {
       decoration: AppDecorations.card,
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text(label, style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+          Text(label, style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textDark)),
           Container(
             width: 40, height: 40,
             decoration: BoxDecoration(shape: BoxShape.circle, color: color.withValues(alpha: 0.15), border: Border.all(color: color, width: 2)),
-            child: Center(child: Text('${value.round()}', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w800, color: color))),
+            child: Center(child: Text('${value.round()}', style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w800, color: color))),
           ),
         ]),
         SliderTheme(

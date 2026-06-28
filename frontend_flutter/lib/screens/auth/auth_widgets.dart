@@ -35,7 +35,7 @@ class MioTextField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+        Text(label, style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textDark)),
         const SizedBox(height: 8),
         TextField(
           controller: controller,
@@ -43,10 +43,10 @@ class MioTextField extends StatelessWidget {
           keyboardType: keyboardType,
           textInputAction: textInputAction,
           onSubmitted: onSubmitted,
-          style: GoogleFonts.inter(fontSize: 16, color: AppColors.textDark),
+          style: GoogleFonts.poppins(fontSize: 16, color: AppColors.textDark),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: GoogleFonts.inter(fontSize: 15, color: AppColors.textLight),
+            hintStyle: GoogleFonts.poppins(fontSize: 15, color: AppColors.textLight),
             prefixIcon: Icon(icon, color: AppColors.teal, size: 22),
             suffixIcon: suffix,
             errorText: errorText,
@@ -103,7 +103,7 @@ class MioPrimaryButton extends StatelessWidget {
                 width: 24, height: 24,
                 child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white),
               )
-            : Text(label, style: GoogleFonts.inter(fontSize: 17, fontWeight: FontWeight.w700)),
+            : Text(label, style: GoogleFonts.poppins(fontSize: 17, fontWeight: FontWeight.w700)),
       ),
     );
   }
@@ -131,7 +131,7 @@ class MioErrorBanner extends StatelessWidget {
           const Icon(Icons.error_outline_rounded, color: AppColors.primaryDark, size: 20),
           const SizedBox(width: 10),
           Expanded(
-            child: Text(message!, style: GoogleFonts.inter(fontSize: 13.5, color: AppColors.primaryDark, fontWeight: FontWeight.w600)),
+            child: Text(message!, style: GoogleFonts.poppins(fontSize: 13.5, color: AppColors.primaryDark, fontWeight: FontWeight.w600)),
           ),
         ],
       ),

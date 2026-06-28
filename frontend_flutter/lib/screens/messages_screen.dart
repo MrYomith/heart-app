@@ -67,7 +67,7 @@ class _MessagesScreenState extends ConsumerState<MessagesScreen> {
               onSubmitted: (_) => _sendInline(),
               decoration: InputDecoration(
                 hintText: 'Message your care team…',
-                hintStyle: GoogleFonts.inter(fontSize: 13, color: AppColors.textLight),
+                hintStyle: GoogleFonts.poppins(fontSize: 13, color: AppColors.textLight),
                 filled: true,
                 fillColor: AppColors.bg,
                 contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
@@ -125,7 +125,7 @@ class _MessagesScreenState extends ConsumerState<MessagesScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: AppColors.bgCard,
-        title: Text('Message your care team', style: GoogleFonts.inter(fontWeight: FontWeight.w700)),
+        title: Text('Message your care team', style: GoogleFonts.poppins(fontWeight: FontWeight.w700)),
         content: TextField(
           controller: controller,
           autofocus: true,
@@ -230,8 +230,8 @@ class _MessagesScreenState extends ConsumerState<MessagesScreen> {
     title: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Messages', style: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.w800, color: AppColors.textDark)),
-        Text('Your care team communication', style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMedium)),
+        Text('Messages', style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+        Text('Your care team communication', style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textMedium)),
       ],
     ),
     actions: [
@@ -255,8 +255,8 @@ class _MessagesScreenState extends ConsumerState<MessagesScreen> {
           const SizedBox(width: 4),
           Expanded(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('Your Care Team', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textDark)),
-              Text('3 specialists · ~2h response', style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMedium)),
+              Text('Your Care Team', style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+              Text('3 specialists · ~2h response', style: GoogleFonts.poppins(fontSize: 11, color: AppColors.textMedium)),
             ]),
           ),
           GestureDetector(
@@ -264,7 +264,7 @@ class _MessagesScreenState extends ConsumerState<MessagesScreen> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(20)),
-              child: Text('+ New', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.white)),
+              child: Text('+ New', style: GoogleFonts.poppins(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.white)),
             ),
           ),
         ],
@@ -292,7 +292,7 @@ class _MessagesScreenState extends ConsumerState<MessagesScreen> {
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: active ? AppColors.teal : AppColors.border),
               ),
-              child: Text(cat, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: active ? Colors.white : AppColors.textMedium)),
+              child: Text(cat, style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w600, color: active ? Colors.white : AppColors.textMedium)),
             ),
           );
         },
@@ -308,7 +308,7 @@ class _MessagesScreenState extends ConsumerState<MessagesScreen> {
       return Center(
         child: Padding(
           padding: const EdgeInsets.all(32),
-          child: Text('No messages yet', style: GoogleFonts.inter(fontSize: 14, color: AppColors.textLight)),
+          child: Text('No messages yet', style: GoogleFonts.poppins(fontSize: 14, color: AppColors.textLight)),
         ),
       );
     }
@@ -342,12 +342,12 @@ class _MessagesScreenState extends ConsumerState<MessagesScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(msg.sender, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.textDark)),
-                        Text(msg.sentAt, style: GoogleFonts.inter(fontSize: 11, color: AppColors.textLight)),
+                        Text(msg.sender, style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+                        Text(msg.sentAt, style: GoogleFonts.poppins(fontSize: 11, color: AppColors.textLight)),
                       ],
                     ),
-                    Text(msg.subject, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.teal)),
-                    Text(msg.preview, style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMedium), maxLines: 2, overflow: TextOverflow.ellipsis),
+                    Text(msg.subject, style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.teal)),
+                    Text(msg.preview, style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textMedium), maxLines: 2, overflow: TextOverflow.ellipsis),
                   ]),
                 ),
                 if (!msg.isRead)
@@ -372,15 +372,15 @@ class _MessagesScreenState extends ConsumerState<MessagesScreen> {
       decoration: BoxDecoration(color: AppColors.bgCard, borderRadius: BorderRadius.circular(16), border: Border.all(color: AppColors.border)),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Expanded(child: Text(_selected!.subject, style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textDark))),
+          Expanded(child: Text(_selected!.subject, style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textDark))),
           GestureDetector(onTap: () => setState(() => _selected = null), child: const Icon(Icons.close, size: 18, color: AppColors.textLight)),
         ]),
-        Text('From: ${_selected!.sender}', style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMedium)),
+        Text('From: ${_selected!.sender}', style: GoogleFonts.poppins(fontSize: 11, color: AppColors.textMedium)),
         const SizedBox(height: 8),
-        Text(_selected!.body.isNotEmpty ? _selected!.body : _selected!.preview, style: GoogleFonts.inter(fontSize: 13, color: AppColors.textDark, height: 1.5)),
+        Text(_selected!.body.isNotEmpty ? _selected!.body : _selected!.preview, style: GoogleFonts.poppins(fontSize: 13, color: AppColors.textDark, height: 1.5)),
         const SizedBox(height: 10),
         Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-          TextButton(onPressed: () => _compose(), child: Text('Reply', style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: AppColors.teal))),
+          TextButton(onPressed: () => _compose(), child: Text('Reply', style: GoogleFonts.poppins(fontWeight: FontWeight.w700, color: AppColors.teal))),
         ]),
       ]),
     );
@@ -400,8 +400,8 @@ class _MessagesScreenState extends ConsumerState<MessagesScreen> {
           ),
           const SizedBox(width: 14),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(_selected!.sender, style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.textDark)),
-            Text(_selected!.sentAt, style: GoogleFonts.inter(fontSize: 12, color: AppColors.textLight)),
+            Text(_selected!.sender, style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+            Text(_selected!.sentAt, style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textLight)),
           ])),
           GestureDetector(
             onTap: () => setState(() => _selected = null),
@@ -409,13 +409,13 @@ class _MessagesScreenState extends ConsumerState<MessagesScreen> {
           ),
         ]),
         const SizedBox(height: 16),
-        Text(_selected!.subject, style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.teal)),
+        Text(_selected!.subject, style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.teal)),
         const SizedBox(height: 12),
         Container(height: 1, color: AppColors.border),
         const SizedBox(height: 16),
         Text(
           _selected!.body.isNotEmpty ? _selected!.body : _selected!.preview,
-          style: GoogleFonts.inter(fontSize: 15, color: AppColors.textDark, height: 1.7),
+          style: GoogleFonts.poppins(fontSize: 15, color: AppColors.textDark, height: 1.7),
         ),
         const SizedBox(height: 24),
         Row(children: [
@@ -425,7 +425,7 @@ class _MessagesScreenState extends ConsumerState<MessagesScreen> {
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 decoration: BoxDecoration(color: AppColors.teal, borderRadius: BorderRadius.circular(12)),
-                child: Center(child: Text('Reply', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white))),
+                child: Center(child: Text('Reply', style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white))),
               ),
             ),
           ),
@@ -433,7 +433,7 @@ class _MessagesScreenState extends ConsumerState<MessagesScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(border: Border.all(color: AppColors.border), borderRadius: BorderRadius.circular(12)),
-            child: Text('Archive', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textMedium)),
+            child: Text('Archive', style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textMedium)),
           ),
         ]),
       ]),
@@ -445,7 +445,7 @@ class _MessagesScreenState extends ConsumerState<MessagesScreen> {
       child: Column(mainAxisSize: MainAxisSize.min, children: [
         const Text('💬', style: TextStyle(fontSize: 48)),
         const SizedBox(height: 12),
-        Text('Select a message to read', style: GoogleFonts.inter(fontSize: 15, color: AppColors.textMedium)),
+        Text('Select a message to read', style: GoogleFonts.poppins(fontSize: 15, color: AppColors.textMedium)),
       ]),
     );
   }

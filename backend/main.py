@@ -1,7 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from app.core.config import CORS_ORIGINS, IS_PRODUCTION
 from app.routers import auth, onboarding, enrollment, users, tasks, journey, medications, messages, appointments, progress, vitals, breathing
-from app.routers import recovery, stage, wound, clinician, clinical_intake, wellbeing, clinician_manage, admin, education, wearables, food, content
+from app.routers import recovery, stage, wound, clinician, clinical_intake, wellbeing, clinician_manage, admin, education, wearables, food, content, quizzes, recovery_plan, settings
 
 # Schema is managed by Alembic migrations (run `alembic upgrade head`), not create_all.
 
@@ -9,21 +10,32 @@ app = FastAPI(
     title="MioHart API",
     description="Backend API for the MioHart heart surgery companion app",
     version="1.0.0",
+    # Hide interactive docs in production (don't expose the schema publicly).
+    docs_url=None if IS_PRODUCTION else "/docs",
+    redoc_url=None if IS_PRODUCTION else "/redoc",
+    openapi_url=None if IS_PRODUCTION else "/openapi.json",
 )
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-        "http://localhost:8080",  # Flutter web dev
-        "http://localhost:5173",  # Vite clinician dashboard
-        "http://127.0.0.1:5173",
-    ],
+    allow_origins=CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def security_headers(request: Request, call_next):
+    """Baseline security headers on every response (NFR security)."""
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "no-referrer"
+    response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
+    if IS_PRODUCTION:
+        response.headers["Strict-Transport-Security"] = "max-age=63072000; includeSubDomains"
+    return response
 
 app.include_router(auth.router)
 app.include_router(onboarding.router)
@@ -50,6 +62,9 @@ app.include_router(admin.router)
 app.include_router(education.router)
 app.include_router(wearables.router)
 app.include_router(food.router)
+app.include_router(quizzes.router)
+app.include_router(recovery_plan.router)
+app.include_router(settings.router)
 app.include_router(content.router)
 
 

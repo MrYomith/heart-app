@@ -27,7 +27,7 @@ class TodayPlanScreen extends ConsumerWidget {
           icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: AppColors.textDark),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text("Today's Plan", style: GoogleFonts.inter(fontSize: 20 * fs, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+        title: Text("Today's Plan", style: GoogleFonts.poppins(fontSize: 20 * fs, fontWeight: FontWeight.w800, color: AppColors.textDark)),
       ),
       body: tasksAsync.when(
         loading: () => const Center(child: CircularProgressIndicator(color: AppColors.teal)),
@@ -58,20 +58,87 @@ class TodayPlanScreen extends ConsumerWidget {
               MioMascot(variant: MioVariant.happy, size: isWide ? 88 : 72),
               const SizedBox(width: 14),
               Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text('Hi $name! 👋', style: GoogleFonts.inter(fontSize: (isWide ? 19 : 17) * fs, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+                Text('Hi $name! 👋', style: GoogleFonts.poppins(fontSize: (isWide ? 19 : 17) * fs, fontWeight: FontWeight.w800, color: AppColors.textDark)),
                 const SizedBox(height: 4),
-                Text('Here is your personalised plan for today.', style: GoogleFonts.inter(fontSize: 12 * fs, color: AppColors.textMedium)),
+                Text('Here is your personalised plan for today.', style: GoogleFonts.poppins(fontSize: 12 * fs, color: AppColors.textMedium)),
               ])),
               const SizedBox(width: 10),
               ProgressRing(value: done.toDouble(), max: total == 0 ? 1 : total.toDouble(), size: ringSize, label: '$done/$total', sublabel: 'Tasks'),
             ]),
           ),
+          if (total > 0)
+            Padding(
+              padding: EdgeInsets.fromLTRB(pad, 12, pad, 0),
+              child: Row(children: [
+                Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text("Today's most important steps", style: GoogleFonts.poppins(fontSize: 14 * fs, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+                  Text("Focus on these. You've got this!", style: GoogleFonts.poppins(fontSize: 11 * fs, color: AppColors.textMedium)),
+                ])),
+                GestureDetector(
+                  onTap: () => _showWhy(context, tasks, fs),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(color: AppColors.tealLight, borderRadius: BorderRadius.circular(20)),
+                    child: Row(mainAxisSize: MainAxisSize.min, children: [
+                      const Icon(Icons.info_outline_rounded, size: 14, color: AppColors.tealDark),
+                      const SizedBox(width: 4),
+                      Text('Why these?', style: GoogleFonts.poppins(fontSize: 11 * fs, fontWeight: FontWeight.w700, color: AppColors.tealDark)),
+                    ]),
+                  ),
+                ),
+              ]),
+            ),
           Expanded(
             child: total == 0
                 ? _EmptyState(fs: fs)
                 : (isWide ? _wideList(context, tasks, toggle, pad, fs) : _phoneList(context, tasks, toggle, pad, fs)),
           ),
         ]),
+      ),
+    );
+  }
+
+  /// Mio explains the clinical reasoning behind today's tasks (FR-160).
+  void _showWhy(BuildContext context, List<Task> tasks, double fs) {
+    final withReason = tasks.where((t) => (t.reasoning ?? '').isNotEmpty).toList();
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.bgCard,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) => DraggableScrollableSheet(
+        initialChildSize: 0.6, maxChildSize: 0.9, minChildSize: 0.4, expand: false,
+        builder: (ctx, scroll) => ListView(
+          controller: scroll,
+          padding: const EdgeInsets.all(20),
+          children: [
+            Row(children: [
+              const MioMascot(variant: MioVariant.defaultMio, size: 48),
+              const SizedBox(width: 12),
+              Expanded(child: Text("Why these tasks today?", style: GoogleFonts.poppins(fontSize: 17 * fs, fontWeight: FontWeight.w800, color: AppColors.textDark))),
+            ]),
+            const SizedBox(height: 6),
+            Text("Here's the thinking behind your plan — every step has a reason.",
+                style: GoogleFonts.poppins(fontSize: 12 * fs, color: AppColors.textMedium)),
+            const SizedBox(height: 16),
+            if (withReason.isEmpty)
+              Text("Your plan is tailored to your current recovery stage.", style: GoogleFonts.poppins(fontSize: 13 * fs, color: AppColors.textMedium))
+            else
+              for (final t in withReason)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 14),
+                  child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text(t.icon, style: const TextStyle(fontSize: 22)),
+                    const SizedBox(width: 12),
+                    Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Text(t.title, style: GoogleFonts.poppins(fontSize: 13 * fs, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+                      const SizedBox(height: 2),
+                      Text(t.reasoning!, style: GoogleFonts.poppins(fontSize: 12 * fs, color: AppColors.textMedium, height: 1.4)),
+                    ])),
+                  ]),
+                ),
+          ],
+        ),
       ),
     );
   }
@@ -114,8 +181,8 @@ class TodayPlanScreen extends ConsumerWidget {
           Text('✅', style: TextStyle(fontSize: 26 * fs)),
           const SizedBox(width: 12),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text("You're doing great!", style: GoogleFonts.inter(fontSize: 14 * fs, fontWeight: FontWeight.w700, color: AppColors.tealDark)),
-            Text('Every step you take is building your recovery.', style: GoogleFonts.inter(fontSize: 12 * fs, color: AppColors.teal)),
+            Text("You're doing great!", style: GoogleFonts.poppins(fontSize: 14 * fs, fontWeight: FontWeight.w700, color: AppColors.tealDark)),
+            Text('Every step you take is building your recovery.', style: GoogleFonts.poppins(fontSize: 12 * fs, color: AppColors.teal)),
           ])),
           const MioMascot(variant: MioVariant.celebrate, size: 50),
         ]),
@@ -132,9 +199,9 @@ class _EmptyState extends StatelessWidget {
           child: Column(mainAxisSize: MainAxisSize.min, children: [
             const MioMascot(variant: MioVariant.calm, size: 80),
             const SizedBox(height: 16),
-            Text('No tasks for today yet', style: GoogleFonts.inter(fontSize: 16 * fs, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+            Text('No tasks for today yet', style: GoogleFonts.poppins(fontSize: 16 * fs, fontWeight: FontWeight.w700, color: AppColors.textDark)),
             const SizedBox(height: 6),
-            Text('Your plan will appear here each morning.', textAlign: TextAlign.center, style: GoogleFonts.inter(fontSize: 13 * fs, color: AppColors.textMedium)),
+            Text('Your plan will appear here each morning.', textAlign: TextAlign.center, style: GoogleFonts.poppins(fontSize: 13 * fs, color: AppColors.textMedium)),
           ]),
         ),
       );
@@ -148,7 +215,7 @@ class _ErrorState extends StatelessWidget {
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           const Icon(Icons.cloud_off_rounded, size: 48, color: AppColors.textLight),
           const SizedBox(height: 12),
-          Text("Couldn't load your plan", style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: AppColors.textDark)),
+          Text("Couldn't load your plan", style: GoogleFonts.poppins(fontWeight: FontWeight.w700, color: AppColors.textDark)),
           const SizedBox(height: 12),
           OutlinedButton(onPressed: onRetry, child: const Text('Try again')),
         ]),

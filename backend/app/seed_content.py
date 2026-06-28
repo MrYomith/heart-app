@@ -96,6 +96,29 @@ _ac("support_resource", "community", "Patient community", "Real recovery stories
 _ac("support_resource", "carer", "Carer & family support", "Guidance and education for the people supporting your recovery.", "👨‍👩‍👧", sort=3)
 
 
+# Playable demo media. These are real, publicly-streamable files standing in for the
+# final cardiac-education assets (swap the URLs when the real media pack arrives).
+# Videos: Google's public sample bucket. Audio: SoundHelix public samples.
+# Guides/infographics link to a reputable real resource (British Heart Foundation).
+_VIDEO_BASE = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/"
+_VIDEO_FILES = [
+    "BigBuckBunny.mp4", "ElephantsDream.mp4", "ForBiggerBlazes.mp4", "ForBiggerEscapes.mp4",
+    "ForBiggerFun.mp4", "ForBiggerJoyrides.mp4", "ForBiggerMeltdowns.mp4", "Sintel.mp4",
+    "SubaruOutbackOnStreetAndDirt.mp4", "TearsOfSteel.mp4", "VolkswagenGTIReview.mp4",
+    "WeAreGoingOnBullrun.mp4", "WhatCarCanYouGetForAGrand.mp4",
+]
+_AUDIO_TMPL = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-{}.mp3"
+_GUIDE_URL = "https://www.bhf.org.uk/informationsupport/treatments/heart-surgery"
+
+
+def _media_for(ctype, vi: int, ai: int) -> str:
+    if ctype == V:
+        return _VIDEO_BASE + _VIDEO_FILES[vi % len(_VIDEO_FILES)]
+    if ctype == A:
+        return _AUDIO_TMPL.format((ai % 16) + 1)
+    return _GUIDE_URL  # guides + infographics → real reference resource
+
+
 # ── education_content: (title, type, topic, stage, duration_min, category, sort) ──
 EDU: list[tuple] = [
     ("How your heart works", V, UH, "diagnosis", 4, "Heart basics", 0),
@@ -125,7 +148,7 @@ EDU: list[tuple] = [
 
 def seed():
     db: Session = SessionLocal()
-    added_ac = added_edu = 0
+    added_ac = added_edu = backfilled_edu = 0
     try:
         # app_content — keyed by (category, item_key), global (hospital_id null)
         existing_ac = {(c.category, c.item_key) for c in db.query(AppContent.category, AppContent.item_key).all()}
@@ -135,20 +158,33 @@ def seed():
             db.add(AppContent(locale="en", published=True, hospital_id=None, **it))
             added_ac += 1
 
-        # education_content — keyed by title
-        existing_edu = {t for (t,) in db.query(EducationContent.title).all()}
+        # education_content — keyed by title. Existing rows get their media backfilled.
+        existing_edu = {c.title: c for c in db.query(EducationContent).all()}
+        vi = ai = 0
         for title, ctype, topic, stage, mins, cat, sort in EDU:
-            if title in existing_edu:
+            media = _media_for(ctype, vi, ai)
+            if ctype == V:
+                vi += 1
+            elif ctype == A:
+                ai += 1
+
+            row = existing_edu.get(title)
+            if row is not None:
+                if not row.s3_key:  # backfill media onto an already-seeded row
+                    row.s3_key = media
+                    backfilled_edu += 1
                 continue
+
             db.add(EducationContent(
                 title=title, type=ctype, topic=topic, stage=stage,
-                duration_sec=(mins * 60 if mins else None), category=cat,
+                duration_sec=(mins * 60 if mins else None), category=cat, s3_key=media,
                 surgery_types=None, has_german_subtitles=True, sort_order=sort, published=True,
             ))
             added_edu += 1
 
         db.commit()
-        print(f"Seeded content: +{added_ac} app_content items, +{added_edu} education items.")
+        print(f"Seeded content: +{added_ac} app_content items, +{added_edu} education items, "
+              f"{backfilled_edu} education media backfilled.")
     except Exception as e:
         db.rollback()
         print(f"Content seeding failed: {e}")

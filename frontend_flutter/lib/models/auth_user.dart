@@ -4,6 +4,7 @@ class AuthUser {
   final String email;
   final String name;
   final String role;
+  final String locale;
   final bool onboardingComplete;
   final String? currentPhase;
   final double journeyProgress;
@@ -21,6 +22,7 @@ class AuthUser {
     required this.email,
     required this.name,
     required this.role,
+    this.locale = 'de',
     required this.onboardingComplete,
     this.currentPhase,
     this.journeyProgress = 0.0,
@@ -39,6 +41,7 @@ class AuthUser {
         email: json['email'] as String,
         name: json['name'] as String,
         role: json['role'] as String? ?? 'patient',
+        locale: json['locale'] as String? ?? 'de',
         onboardingComplete: json['onboarding_complete'] as bool? ?? false,
         currentPhase: json['current_phase'] as String?,
         journeyProgress: (json['journey_progress'] as num?)?.toDouble() ?? 0.0,

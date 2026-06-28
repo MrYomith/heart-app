@@ -40,14 +40,14 @@ class SurgeryDayScreen extends ConsumerWidget {
       subtitle: 'We are with you every step',
       iconEmoji: '🏥',
       heroBg: const Color(0xFFFFF0F0),
-      mioVariant: MioVariant.calm,
+      mioVariant: MioVariant.medical,
       heroMsg: '${daysUntil == 0 ? "Today is the day." : "Almost there."}\nYou are in safe hands. 🤍',
       heroSub: 'Your surgical team is ready. Trust the process.',
       mottoMsg: 'Courage is moving forward despite fear. 💙',
       sideNav: const [
-        SideNavItem('⏰', 'Surgery\nCountdown'),
-        SideNavItem('🍽️', 'Fasting\nSchedule'),
+        SideNavItem('🍽️', 'Fasting &\nCHO'),
         SideNavItem('👨‍👩‍👧', 'Family\nContact'),
+        SideNavItem('🎙️', 'Voice\nMemo'),
         SideNavItem('🧘', 'Calm &\nBreathing'),
         SideNavItem('➡️', 'What\nHappens'),
         SideNavItem('💌', 'Personal\nMessage'),
@@ -62,29 +62,29 @@ class SurgeryDayScreen extends ConsumerWidget {
           ),
           // Countdown — from the patient's real surgery date
           PhaseSection(
-            title: '⏰ A. Surgery Countdown',
+            title: '⏰ Surgery Countdown',
             background: const Color(0xFFFFF0F0),
             child: Column(
               children: [
-                Text(countdownLabel, style: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.w800, color: AppColors.primary)),
+                Text(countdownLabel, style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w800, color: AppColors.primary)),
                 const SizedBox(height: 6),
                 Text(user?.surgeryDate != null ? 'Surgery date: ${user!.surgeryDate}' : 'No surgery date set yet',
-                    style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMedium)),
+                    style: GoogleFonts.poppins(fontSize: 11, color: AppColors.textMedium)),
               ],
             ),
           ),
 
           PhaseSection(
-            title: '🍽️ B. Fasting Schedule (ERAS)',
+            title: '🍽️ A. Fasting & Carbohydrate Loading',
             child: fasting.isEmpty
-                ? Text('Your fasting schedule will be confirmed by your care team.', style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMedium))
+                ? Text('Your fasting schedule will be confirmed by your care team.', style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textMedium))
                 : Column(children: [
                     for (final f in fasting) _FastingRow((f['emoji'] as String?) ?? '🍽️', f['title'] as String? ?? ''),
                   ]),
           ),
 
           PhaseSection(
-            title: '👨‍👩‍👧 C. Family & Care Team',
+            title: '👨‍👩‍👧 B. Family Contact Reminder',
             background: const Color(0xFFF0FDF9),
             child: Column(
               children: [
@@ -95,21 +95,35 @@ class SurgeryDayScreen extends ConsumerWidget {
           ),
 
           PhaseSection(
-            title: '🧘 E. Calm & Breathing',
+            title: '🎙️ C. Voice Memo for Family',
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Record a message for your loved ones to listen to while they wait.',
+                    style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textMedium)),
+                const SizedBox(height: 10),
+                const PhaseActionRow(icon: '🎙️', label: 'Record a voice message'),
+                const PhaseActionRow(icon: '▶️', label: 'My recordings'),
+              ],
+            ),
+          ),
+
+          PhaseSection(
+            title: '🧘 D. Calm & Breathing',
             background: const Color(0xFFF8F6FF),
             child: Column(
               children: [
                 const Text('🌬️', style: TextStyle(fontSize: 40)),
                 const SizedBox(height: 8),
-                Text('4-7-8 Breathing', style: GoogleFonts.inter(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textDark)),
-                Text('Inhale 4s → Hold 7s → Exhale 8s', style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMedium)),
+                Text('4-7-8 Breathing', style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+                Text('Inhale 4s → Hold 7s → Exhale 8s', style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textMedium)),
                 const SizedBox(height: 10),
                 GestureDetector(
                   onTap: () => _push(context, const BreathingScreen()),
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
                     decoration: BoxDecoration(color: AppColors.teal, borderRadius: BorderRadius.circular(24)),
-                    child: Text('Start Breathing Exercise', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white)),
+                    child: Text('Start Breathing Exercise', style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white)),
                   ),
                 ),
               ],
@@ -117,7 +131,7 @@ class SurgeryDayScreen extends ConsumerWidget {
           ),
 
           PhaseSection(
-            title: '➡️ F. What Happens Next',
+            title: '➡️ E. What Happens Next',
             child: Column(
               children: [
                 const _WhatHappensRow('1', 'Pre-op preparation & IV line', '45 min'),
@@ -131,22 +145,22 @@ class SurgeryDayScreen extends ConsumerWidget {
           ),
 
           PhaseSection(
-            title: '💌 G. Personal Message',
+            title: '💌 F. Personal Message from Your Team',
             background: const Color(0xFFFFF0F0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('"$surgeonMsg"', style: GoogleFonts.inter(fontSize: 12, fontStyle: FontStyle.italic, color: AppColors.textDark, height: 1.6)),
+                Text('"$surgeonMsg"', style: GoogleFonts.poppins(fontSize: 12, fontStyle: FontStyle.italic, color: AppColors.textDark, height: 1.6)),
                 const SizedBox(height: 8),
-                Text('— ${user?.surgeonName ?? "Your Care Team"}', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.primary)),
+                Text('— ${user?.surgeonName ?? "Your Care Team"}', style: GoogleFonts.poppins(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.primary)),
               ],
             ),
           ),
 
           PhaseSection(
-            title: '📋 H. Important Reminders',
+            title: '📋 G. Important Reminders',
             child: reminders.isEmpty
-                ? Text('Your care team will add any surgery-day reminders here.', style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMedium))
+                ? Text('Your care team will add any surgery-day reminders here.', style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textMedium))
                 : Column(children: [for (final r in reminders) CheckRow(label: r['title'] as String? ?? '')]),
           ),
         ],
@@ -169,7 +183,7 @@ class _FastingRow extends StatelessWidget {
         children: [
           Text(emoji, style: const TextStyle(fontSize: 16)),
           const SizedBox(width: 8),
-          Expanded(child: Text(label, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textDark))),
+          Expanded(child: Text(label, style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textDark))),
         ],
       ),
     );
@@ -191,11 +205,11 @@ class _WhatHappensRow extends StatelessWidget {
           Container(
             width: 22, height: 22,
             decoration: const BoxDecoration(shape: BoxShape.circle, color: AppColors.teal),
-            child: Center(child: Text(step, style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w700, color: Colors.white))),
+            child: Center(child: Text(step, style: GoogleFonts.poppins(fontSize: 10, fontWeight: FontWeight.w700, color: Colors.white))),
           ),
           const SizedBox(width: 8),
-          Expanded(child: Text(label, style: GoogleFonts.inter(fontSize: 12, color: AppColors.textDark))),
-          Text(duration, style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w600, color: AppColors.teal)),
+          Expanded(child: Text(label, style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textDark))),
+          Text(duration, style: GoogleFonts.poppins(fontSize: 10, fontWeight: FontWeight.w600, color: AppColors.teal)),
         ],
       ),
     );

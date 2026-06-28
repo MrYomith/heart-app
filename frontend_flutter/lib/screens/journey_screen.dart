@@ -7,6 +7,7 @@ import '../providers/auth_provider.dart';
 import '../providers/patient_providers.dart';
 import '../utils/responsive.dart';
 import '../widgets/mio_mascot.dart';
+import '../widgets/mio_app_bar.dart';
 import 'phases/diagnosis_screen.dart';
 import 'phases/preop_screen.dart';
 import 'phases/surgery_day_screen.dart';
@@ -69,10 +70,11 @@ class JourneyScreen extends ConsumerWidget {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Heart Surgery Journey', style: GoogleFonts.inter(fontSize: 20 * fs, fontWeight: FontWeight.w800, color: AppColors.textDark)),
-            Text('Your recovery roadmap', style: GoogleFonts.inter(fontSize: 12 * fs, color: AppColors.textMedium)),
+            Text('Heart Surgery Journey', style: GoogleFonts.poppins(fontSize: 20 * fs, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+            Text('Your recovery roadmap', style: GoogleFonts.poppins(fontSize: 12 * fs, color: AppColors.textMedium)),
           ],
         ),
+        actions: mioActions(context),
       ),
       body: Column(
         children: [
@@ -86,7 +88,7 @@ class JourneyScreen extends ConsumerWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text('Your Journey Progress', style: GoogleFonts.inter(fontSize: 15 * fs, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+                    Text('Your Journey Progress', style: GoogleFonts.poppins(fontSize: 15 * fs, fontWeight: FontWeight.w800, color: AppColors.textDark)),
                     const SizedBox(height: 4),
                     ClipRRect(
                       borderRadius: BorderRadius.circular(4),
@@ -98,7 +100,7 @@ class JourneyScreen extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Text('$progress% complete — ${user?.phaseLabel ?? ''}', style: GoogleFonts.inter(fontSize: 11 * fs, color: AppColors.textMedium)),
+                    Text('$progress% complete — ${user?.phaseLabel ?? ''}', style: GoogleFonts.poppins(fontSize: 11 * fs, color: AppColors.textMedium)),
                   ]),
                 ),
               ],
@@ -113,7 +115,7 @@ class JourneyScreen extends ConsumerWidget {
                 constraints: BoxConstraints(maxWidth: Responsive.maxWidth(context)),
                 child: journeyAsync.when(
                   loading: () => const Center(child: CircularProgressIndicator(color: AppColors.teal)),
-                  error: (e, _) => Center(child: Text("Couldn't load your journey", style: GoogleFonts.inter(color: AppColors.textMedium))),
+                  error: (e, _) => Center(child: Text("Couldn't load your journey", style: GoogleFonts.poppins(color: AppColors.textMedium))),
                   data: (phases) => isWide
                       ? _buildGridList(context, phases, pad, fs)
                       : _buildTimelineList(context, phases, pad, fs),
@@ -248,24 +250,24 @@ class _PhaseCardGrid extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(color: statusColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(20)),
-                child: Text(statusLabel, style: GoogleFonts.inter(fontSize: 10 * fs, fontWeight: FontWeight.w700, color: statusColor)),
+                child: Text(statusLabel, style: GoogleFonts.poppins(fontSize: 10 * fs, fontWeight: FontWeight.w700, color: statusColor)),
               ),
             ]),
             const SizedBox(height: 8),
-            Text(phase.label, style: GoogleFonts.inter(fontSize: 14 * fs, fontWeight: FontWeight.w700, color: AppColors.textDark)),
-            if (phase.subtitle != null) Text(phase.subtitle!, style: GoogleFonts.inter(fontSize: 11 * fs, color: AppColors.textMedium)),
-            if (phase.date != null) Text(phase.date!, style: GoogleFonts.inter(fontSize: 10 * fs, color: AppColors.textLight)),
+            Text(phase.label, style: GoogleFonts.poppins(fontSize: 14 * fs, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+            if (phase.subtitle != null) Text(phase.subtitle!, style: GoogleFonts.poppins(fontSize: 11 * fs, color: AppColors.textMedium)),
+            if (phase.date != null) Text(phase.date!, style: GoogleFonts.poppins(fontSize: 10 * fs, color: AppColors.textLight)),
             const Spacer(),
             if (phase.mioMessage.isNotEmpty)
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(color: AppColors.bgTeal, borderRadius: BorderRadius.circular(8)),
-                child: Text(phase.mioMessage, style: GoogleFonts.inter(fontSize: 10 * fs, fontStyle: FontStyle.italic, color: AppColors.teal), maxLines: 2, overflow: TextOverflow.ellipsis),
+                child: Text(phase.mioMessage, style: GoogleFonts.poppins(fontSize: 10 * fs, fontStyle: FontStyle.italic, color: AppColors.teal), maxLines: 2, overflow: TextOverflow.ellipsis),
               ),
             if (dest != null) ...[
               const SizedBox(height: 8),
               Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-                Text('Open →', style: GoogleFonts.inter(fontSize: 11 * fs, fontWeight: FontWeight.w700, color: AppColors.teal)),
+                Text('Open →', style: GoogleFonts.poppins(fontSize: 11 * fs, fontWeight: FontWeight.w700, color: AppColors.teal)),
               ]),
             ],
           ],
@@ -287,16 +289,16 @@ class _PhaseCardContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        Expanded(child: Text(phase.label, style: GoogleFonts.inter(fontSize: 14 * fs, fontWeight: FontWeight.w700, color: AppColors.textDark))),
+        Expanded(child: Text(phase.label, style: GoogleFonts.poppins(fontSize: 14 * fs, fontWeight: FontWeight.w700, color: AppColors.textDark))),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
           decoration: BoxDecoration(color: statusColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(20)),
-          child: Text(statusLabel, style: GoogleFonts.inter(fontSize: 10 * fs, fontWeight: FontWeight.w700, color: statusColor)),
+          child: Text(statusLabel, style: GoogleFonts.poppins(fontSize: 10 * fs, fontWeight: FontWeight.w700, color: statusColor)),
         ),
       ]),
       const SizedBox(height: 4),
-      if (phase.subtitle != null) Text(phase.subtitle!, style: GoogleFonts.inter(fontSize: 12 * fs, color: AppColors.textMedium)),
-      if (phase.date != null) Text(phase.date!, style: GoogleFonts.inter(fontSize: 11 * fs, color: AppColors.textLight)),
+      if (phase.subtitle != null) Text(phase.subtitle!, style: GoogleFonts.poppins(fontSize: 12 * fs, color: AppColors.textMedium)),
+      if (phase.date != null) Text(phase.date!, style: GoogleFonts.poppins(fontSize: 11 * fs, color: AppColors.textLight)),
       if (phase.mioMessage.isNotEmpty) ...[
         const SizedBox(height: 8),
         Container(
@@ -305,14 +307,14 @@ class _PhaseCardContent extends StatelessWidget {
           child: Row(children: [
             const Text('🫀', style: TextStyle(fontSize: 14)),
             const SizedBox(width: 6),
-            Expanded(child: Text(phase.mioMessage, style: GoogleFonts.inter(fontSize: 11 * fs, fontStyle: FontStyle.italic, color: AppColors.teal))),
+            Expanded(child: Text(phase.mioMessage, style: GoogleFonts.poppins(fontSize: 11 * fs, fontStyle: FontStyle.italic, color: AppColors.teal))),
           ]),
         ),
       ],
       if (dest != null) ...[
         const SizedBox(height: 8),
         Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-          Text('Open phase', style: GoogleFonts.inter(fontSize: 11 * fs, fontWeight: FontWeight.w700, color: AppColors.teal)),
+          Text('Open phase', style: GoogleFonts.poppins(fontSize: 11 * fs, fontWeight: FontWeight.w700, color: AppColors.teal)),
           const SizedBox(width: 4),
           const Icon(Icons.chevron_right, size: 16, color: AppColors.teal),
         ]),

@@ -90,7 +90,7 @@ class _MainScaffoldState extends State<MainScaffold> {
                         ),
                         if (extended) ...[
                           const SizedBox(height: 6),
-                          Text('MioHart', style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.primary)),
+                          Text('MioHart', style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w800, color: AppColors.primary)),
                         ],
                       ],
                     ),
@@ -124,7 +124,7 @@ class _MainScaffoldState extends State<MainScaffold> {
                         decoration: BoxDecoration(color: AppColors.tealLight, borderRadius: BorderRadius.circular(12)),
                         child: Text(
                           '"Small steps today, stronger heart tomorrow. 🤍"',
-                          style: GoogleFonts.inter(fontSize: 10, fontStyle: FontStyle.italic, color: AppColors.teal, height: 1.4),
+                          style: GoogleFonts.poppins(fontSize: 10, fontStyle: FontStyle.italic, color: AppColors.teal, height: 1.4),
                         ),
                       ),
                     ),
@@ -177,12 +177,12 @@ class _RailItem extends StatelessWidget {
             ? Row(children: [
                 Icon(icon, size: 22, color: color),
                 const SizedBox(width: 12),
-                Text(label, style: GoogleFonts.inter(fontSize: 13, fontWeight: selected ? FontWeight.w700 : FontWeight.w500, color: color)),
+                Text(label, style: GoogleFonts.poppins(fontSize: 13, fontWeight: selected ? FontWeight.w700 : FontWeight.w500, color: color)),
               ])
             : Column(mainAxisSize: MainAxisSize.min, children: [
                 Icon(icon, size: 24, color: color),
                 const SizedBox(height: 3),
-                Text(label, style: GoogleFonts.inter(fontSize: 9, fontWeight: selected ? FontWeight.w700 : FontWeight.w500, color: color)),
+                Text(label, style: GoogleFonts.poppins(fontSize: 9, fontWeight: selected ? FontWeight.w700 : FontWeight.w500, color: color)),
               ]),
       ),
     );
@@ -246,7 +246,7 @@ class _NavTab extends StatelessWidget {
           children: [
             Icon(icon, size: 22, color: active ? activeColor : AppColors.textLight),
             const SizedBox(height: 3),
-            Text(label, style: GoogleFonts.inter(fontSize: 10, fontWeight: active ? FontWeight.w700 : FontWeight.w500, color: active ? activeColor : AppColors.textLight)),
+            Text(label, style: GoogleFonts.poppins(fontSize: 10, fontWeight: active ? FontWeight.w700 : FontWeight.w500, color: active ? activeColor : AppColors.textLight)),
           ],
         ),
       ),
@@ -282,7 +282,7 @@ class _CenterMioButton extends StatelessWidget {
               child: const Center(child: Text('🫀', style: TextStyle(fontSize: 22))),
             ),
             const SizedBox(height: 2),
-            Text('MioHart', style: GoogleFonts.inter(fontSize: 9, fontWeight: FontWeight.w700, color: AppColors.primary)),
+            Text('MioHart', style: GoogleFonts.poppins(fontSize: 9, fontWeight: FontWeight.w700, color: AppColors.primary)),
           ],
         ),
       ),

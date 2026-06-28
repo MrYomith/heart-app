@@ -82,8 +82,8 @@ class ThrivingScreen extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Congratulations! 🎉', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w800, color: Colors.white)),
-                      Text("You've completed your heart surgery journey and you're now thriving!", style: GoogleFonts.inter(fontSize: 11, color: Colors.white.withValues(alpha: 0.9), height: 1.4)),
+                      Text('Congratulations! 🎉', style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w800, color: Colors.white)),
+                      Text("You've completed your heart surgery journey and you're now thriving!", style: GoogleFonts.poppins(fontSize: 11, color: Colors.white.withValues(alpha: 0.9), height: 1.4)),
                     ],
                   ),
                 ),
@@ -96,7 +96,7 @@ class ThrivingScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Ongoing management goals:', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+                Text('Ongoing management goals:', style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.textDark)),
                 const SizedBox(height: 6),
                 _GoalRow('Blood pressure', '< 130/80 mmHg', bp, vitals['bp_systolic'] != null),
                 _GoalRow('LDL Cholesterol', '< 1.8 mmol/L', v('ldl'), vitals['ldl'] != null),
@@ -224,7 +224,7 @@ class ThrivingScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Your remarkable journey:', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+                Text('Your remarkable journey:', style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.textDark)),
                 const SizedBox(height: 8),
                 _MilestoneRow('🏥', 'Surgery', user?.surgeryDate ?? '—'),
                 _MilestoneRow('🏠', 'Discharged home', user?.dischargeDate ?? '—'),
@@ -237,7 +237,7 @@ class ThrivingScreen extends ConsumerWidget {
                     gradient: const LinearGradient(colors: [Color(0xFF4A7C79), Color(0xFF6BA39D)]),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Center(child: Text('Download My Recovery Story', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white))),
+                  child: Center(child: Text('Download My Recovery Story', style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white))),
                 ),
               ],
             ),
@@ -262,8 +262,8 @@ class _GoalRow extends StatelessWidget {
       decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: AppColors.border))),
       child: Row(
         children: [
-          Expanded(child: Text(metric, style: GoogleFonts.inter(fontSize: 12, color: AppColors.textDark))),
-          Text(current, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700, color: achieved ? AppColors.success : AppColors.primary)),
+          Expanded(child: Text(metric, style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textDark))),
+          Text(current, style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w700, color: achieved ? AppColors.success : AppColors.primary)),
           const SizedBox(width: 6),
           Icon(achieved ? Icons.check_circle : Icons.arrow_forward, size: 14, color: achieved ? AppColors.success : AppColors.primary),
         ],
@@ -287,9 +287,9 @@ class _FitnessCard extends StatelessWidget {
       child: Column(
         children: [
           Text(icon, style: const TextStyle(fontSize: 20)),
-          Text(value, style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.teal)),
-          Text(label, style: GoogleFonts.inter(fontSize: 9, color: AppColors.textMedium), textAlign: TextAlign.center),
-          Text(sub, style: GoogleFonts.inter(fontSize: 9, color: AppColors.textLight)),
+          Text(value, style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.teal)),
+          Text(label, style: GoogleFonts.poppins(fontSize: 9, color: AppColors.textMedium), textAlign: TextAlign.center),
+          Text(sub, style: GoogleFonts.poppins(fontSize: 9, color: AppColors.textLight)),
         ],
       ),
     );
@@ -310,8 +310,8 @@ class _WellbeingCard extends StatelessWidget {
       child: Column(
         children: [
           Text(icon, style: const TextStyle(fontSize: 18)),
-          Text(value, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.textDark)),
-          Text(label, style: GoogleFonts.inter(fontSize: 9, color: AppColors.textMedium)),
+          Text(value, style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+          Text(label, style: GoogleFonts.poppins(fontSize: 9, color: AppColors.textMedium)),
         ],
       ),
     );
@@ -329,8 +329,8 @@ class _InfoRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
-          SizedBox(width: 80, child: Text(label, style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMedium))),
-          Expanded(child: Text(value, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textDark))),
+          SizedBox(width: 80, child: Text(label, style: GoogleFonts.poppins(fontSize: 11, color: AppColors.textMedium))),
+          Expanded(child: Text(value, style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textDark))),
         ],
       ),
     );
@@ -352,8 +352,8 @@ class _CheckupRow extends StatelessWidget {
         children: [
           Icon(done ? Icons.check_circle : Icons.schedule, size: 16, color: done ? AppColors.success : AppColors.textLight),
           const SizedBox(width: 8),
-          Expanded(child: Text(label, style: GoogleFonts.inter(fontSize: 12, color: AppColors.textDark))),
-          Text(date, style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w600, color: AppColors.teal)),
+          Expanded(child: Text(label, style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textDark))),
+          Text(date, style: GoogleFonts.poppins(fontSize: 10, fontWeight: FontWeight.w600, color: AppColors.teal)),
         ],
       ),
     );
@@ -374,8 +374,8 @@ class _MilestoneRow extends StatelessWidget {
         children: [
           Text(icon, style: const TextStyle(fontSize: 16)),
           const SizedBox(width: 8),
-          Expanded(child: Text(label, style: GoogleFonts.inter(fontSize: 12, color: AppColors.textDark))),
-          Text(date, style: GoogleFonts.inter(fontSize: 10, color: AppColors.textLight)),
+          Expanded(child: Text(label, style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textDark))),
+          Text(date, style: GoogleFonts.poppins(fontSize: 10, color: AppColors.textLight)),
         ],
       ),
     );

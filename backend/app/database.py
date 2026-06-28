@@ -14,7 +14,17 @@ if DATABASE_URL:
     # Normalise the scheme SQLAlchemy expects for psycopg2.
     if DATABASE_URL.startswith("postgres://"):
         DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
-    engine = create_engine(DATABASE_URL, pool_pre_ping=True)
+    # The Neon DB is remote (Frankfurt) — each round-trip is ~1.7s from afar.
+    # pool_pre_ping adds an extra SELECT 1 before every checkout (+1 round-trip
+    # per request); disabling it and keeping a warm, recycled pool removes that
+    # tax. pool_recycle stays under Neon's idle timeout so connections stay live.
+    engine = create_engine(
+        DATABASE_URL,
+        pool_pre_ping=False,
+        pool_size=5,
+        max_overflow=10,
+        pool_recycle=280,
+    )
     IS_POSTGRES = True
 else:
     engine = create_engine(

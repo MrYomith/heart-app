@@ -57,7 +57,7 @@ class _ErasScreenState extends ConsumerState<ErasScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.bgCard,
         leading: IconButton(icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: AppColors.textDark), onPressed: () => Navigator.pop(context)),
-        title: Text('Surgery Prep', style: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+        title: Text('Surgery Prep', style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w800, color: AppColors.textDark)),
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator(color: AppColors.teal))
@@ -70,9 +70,9 @@ class _ErasScreenState extends ConsumerState<ErasScreen> {
                   ProgressRing(value: _overall.toDouble(), max: 100, size: 86, label: '$_overall%', sublabel: 'ready'),
                   const SizedBox(width: 18),
                   Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text('Your surgery readiness', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+                    Text('Your surgery readiness', style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.textDark)),
                     const SizedBox(height: 4),
-                    Text('Complete each area below. Every step makes your surgery and recovery safer.', style: GoogleFonts.inter(fontSize: 13, color: AppColors.textMedium, height: 1.4)),
+                    Text('Complete each area below. Every step makes your surgery and recovery safer.', style: GoogleFonts.poppins(fontSize: 13, color: AppColors.textMedium, height: 1.4)),
                   ])),
                 ]),
               ),
@@ -107,8 +107,8 @@ class _ErasCard extends StatelessWidget {
           Text(icon, style: const TextStyle(fontSize: 24)),
           const SizedBox(width: 12),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(label, style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textDark)),
-            Text(done ? 'Complete ✓' : '$progress%', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: done ? AppColors.success : AppColors.textMedium)),
+            Text(label, style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+            Text(done ? 'Complete ✓' : '$progress%', style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w600, color: done ? AppColors.success : AppColors.textMedium)),
           ])),
           _btn(Icons.remove, onMinus),
           const SizedBox(width: 8),

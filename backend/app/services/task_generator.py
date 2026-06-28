@@ -61,6 +61,19 @@ _TEMPLATES: dict[PhaseKey, list[tuple]] = {
 }
 
 
+# "Why this?" — clinical reasoning Mio shows per task category (FR-160).
+_REASONING: dict = {
+    C.breathing: "Deep breathing re-expands your lungs and lowers the risk of chest infection after surgery.",
+    C.activity: "Gentle movement improves circulation, prevents clots, and rebuilds your strength safely.",
+    C.nutrition: "Good protein and nutrients give your heart and tissues what they need to heal.",
+    C.hydration: "Staying hydrated supports your circulation and helps your medications work well.",
+    C.medication: "Taking your medicines on time protects your heart and your surgical result.",
+    C.emotional: "Checking in on your mood helps us support you — recovery is emotional as well as physical.",
+    C.education: "Understanding your journey reduces anxiety and helps you make confident decisions.",
+    C.wound: "Watching your wound means we catch any concern early and keep healing on track.",
+}
+
+
 def ensure_today_tasks(db: Session, user: User, day: str) -> list[Task]:
     """Return the user's tasks for `day`, generating a phase-appropriate plan
     (persisted) if none exist yet. Only generates for the current calendar day
@@ -80,7 +93,7 @@ def ensure_today_tasks(db: Session, user: User, day: str) -> list[Task]:
         Task(
             user_id=user.id, title=t[0], subtitle=t[1], icon=t[2], category=t[3],
             scheduled_time=t[4], time_color=t[5], is_done=False, priority=i + 1,
-            phase=phase.value, task_date=day,
+            phase=phase.value, task_date=day, reasoning=_REASONING.get(t[3]),
         )
         for i, t in enumerate(templates)
     ]

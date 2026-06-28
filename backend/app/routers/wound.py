@@ -1,11 +1,11 @@
 """Wound photo log (FR-104).
 
-Local-storage stand-in for S3: images are written under backend/uploads/wound/ and
-returned base64 for in-app display. Swapping to encrypted S3 later only changes the
-storage helpers — the API shape stays the same. Day-3 dressing lock per the PRD.
+Images go through the swappable storage backend (local filesystem or S3 — see
+app/core/storage.py) and are returned base64 for in-app display. The DB stores only
+the storage reference, so switching to encrypted S3 is a config change. Day-3
+dressing lock per the PRD.
 """
 import base64
-import os
 import uuid
 from datetime import date, datetime, timezone
 
@@ -13,15 +13,12 @@ from fastapi import APIRouter, Depends, File, UploadFile
 from sqlalchemy.orm import Session
 
 from app.core.auth import get_current_user
+from app.core.storage import storage
 from app.database import get_db
 from app.models import User, WoundPhoto
 from app.schemas.wound import WoundPhotoOut, WoundStatusOut
 
 router = APIRouter(prefix="/api/wound-photos", tags=["wound"])
-
-_BACKEND_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-UPLOAD_DIR = os.path.join(_BACKEND_ROOT, "uploads", "wound")
-os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 DRESSING_LOCK_DAYS = 3
 
@@ -36,9 +33,10 @@ def _day_and_lock(user: User) -> tuple[int | None, bool]:
 
 def _to_out(row: WoundPhoto, include_image: bool) -> WoundPhotoOut:
     image_b64 = None
-    if include_image and row.s3_key and os.path.exists(row.s3_key):
-        with open(row.s3_key, "rb") as f:
-            image_b64 = base64.b64encode(f.read()).decode()
+    if include_image and row.s3_key:
+        data = storage.read(row.s3_key)
+        if data is not None:
+            image_b64 = base64.b64encode(data).decode()
     return WoundPhotoOut(
         id=str(row.id),
         day_post_op=row.day_post_op,
@@ -76,10 +74,8 @@ async def upload_photo(file: UploadFile = File(...), user: User = Depends(get_cu
     now = datetime.now(timezone.utc)
     day, _ = _day_and_lock(user)
     fid = uuid.uuid4()
-    path = os.path.join(UPLOAD_DIR, f"{fid}.jpg")
-    with open(path, "wb") as f:
-        f.write(await file.read())
-    row = WoundPhoto(id=fid, user_id=user.id, s3_key=path, day_post_op=day, is_locked=False, uploaded_at=now)
+    ref = storage.save(f"wound/{fid}.jpg", await file.read(), content_type=file.content_type or "image/jpeg")
+    row = WoundPhoto(id=fid, user_id=user.id, s3_key=ref, day_post_op=day, is_locked=False, uploaded_at=now)
     db.add(row)
     db.commit()
     db.refresh(row)

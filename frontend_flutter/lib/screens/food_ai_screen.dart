@@ -47,7 +47,7 @@ class _FoodAiScreenState extends ConsumerState<FoodAiScreen> {
       backgroundColor: AppColors.bg,
       appBar: AppBar(
         backgroundColor: AppColors.bgCard,
-        title: Text('Log a Meal', style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+        title: Text('Log a Meal', style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.textDark)),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -80,7 +80,7 @@ class _FoodAiScreenState extends ConsumerState<FoodAiScreen> {
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(12)),
-              child: Text(_error!, style: GoogleFonts.inter(fontSize: 12, color: AppColors.textDark)),
+              child: Text(_error!, style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textDark)),
             ),
           if (_result != null) _ResultCard(result: _result!),
         ],
@@ -104,8 +104,8 @@ class _ResultCard extends StatelessWidget {
     final items = (result['items'] as List?)?.cast<String>() ?? [];
     final heartHealthy = (result['heart_healthy'] as bool?) ?? false;
     Widget stat(String label, String value) => Column(children: [
-          Text(value, style: GoogleFonts.inter(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.teal)),
-          Text(label, style: GoogleFonts.inter(fontSize: 10, color: AppColors.textMedium)),
+          Text(value, style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.teal)),
+          Text(label, style: GoogleFonts.poppins(fontSize: 10, color: AppColors.textMedium)),
         ]);
     return Container(
       padding: const EdgeInsets.all(16),
@@ -115,11 +115,11 @@ class _ResultCard extends StatelessWidget {
           Text(heartHealthy ? '💚' : '⚠️', style: const TextStyle(fontSize: 22)),
           const SizedBox(width: 8),
           Text(heartHealthy ? 'Heart-healthy meal' : 'Eat in moderation',
-              style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+              style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textDark)),
         ]),
         if (items.isNotEmpty) ...[
           const SizedBox(height: 8),
-          Text(items.join(' · '), style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMedium)),
+          Text(items.join(' · '), style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textMedium)),
         ],
         const Divider(height: 22),
         Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
@@ -134,11 +134,11 @@ class _ResultCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(color: AppColors.tealLight, borderRadius: BorderRadius.circular(10)),
-            child: Text('💡 ${result['notes']}', style: GoogleFonts.inter(fontSize: 12, color: AppColors.tealDark)),
+            child: Text('💡 ${result['notes']}', style: GoogleFonts.poppins(fontSize: 12, color: AppColors.tealDark)),
           ),
         ],
         const SizedBox(height: 10),
-        Text('Logged to your nutrition tracker ✓', style: GoogleFonts.inter(fontSize: 11, color: AppColors.teal, fontWeight: FontWeight.w600)),
+        Text('Logged to your nutrition tracker ✓', style: GoogleFonts.poppins(fontSize: 11, color: AppColors.teal, fontWeight: FontWeight.w600)),
       ]),
     );
   }

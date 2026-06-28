@@ -133,6 +133,22 @@ final weeklyGoalProvider = FutureProvider<({int minutes, int goal, int percent})
   return ref.watch(patientRepositoryProvider).weeklyActivityGoal();
 });
 
+final quizzesProvider = FutureProvider<List<Map<String, dynamic>>>((ref) {
+  return ref.watch(patientRepositoryProvider).quizzes();
+});
+
+final badgesProvider = FutureProvider<List<Map<String, dynamic>>>((ref) {
+  return ref.watch(patientRepositoryProvider).badges();
+});
+
+final recoveryGuideProvider = FutureProvider<List<Map<String, dynamic>>>((ref) {
+  return ref.watch(patientRepositoryProvider).recoveryGuide();
+});
+
+final physioPlanProvider = FutureProvider<List<Map<String, dynamic>>>((ref) {
+  return ref.watch(patientRepositoryProvider).physiotherapyPlan();
+});
+
 /// Admin-managed content by (category, stage).
 final contentProvider = FutureProvider.family<List<Map<String, dynamic>>, ({String category, String? stage})>((ref, args) {
   return ref.watch(patientRepositoryProvider).content(args.category, stage: args.stage);
@@ -141,4 +157,9 @@ final contentProvider = FutureProvider.family<List<Map<String, dynamic>>, ({Stri
 /// Latest value per vital type (clinician-entered labs + patient/wearable readings).
 final latestVitalsProvider = FutureProvider<Map<String, dynamic>>((ref) {
   return ref.watch(patientRepositoryProvider).latestVitals();
+});
+
+/// Notification preferences (quiet hours + muted categories).
+final notificationPrefsProvider = FutureProvider<Map<String, dynamic>>((ref) {
+  return ref.watch(patientRepositoryProvider).notificationPrefs();
 });

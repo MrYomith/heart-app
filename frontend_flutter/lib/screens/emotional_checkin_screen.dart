@@ -73,7 +73,7 @@ class _EmotionalCheckinScreenState extends ConsumerState<EmotionalCheckinScreen>
       appBar: AppBar(
         backgroundColor: AppColors.bgCard,
         leading: IconButton(icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: AppColors.textDark), onPressed: () => Navigator.pop(context)),
-        title: Text('Daily Check-in', style: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+        title: Text('Daily Check-in', style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w800, color: AppColors.textDark)),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -84,13 +84,13 @@ class _EmotionalCheckinScreenState extends ConsumerState<EmotionalCheckinScreen>
           Text(
             _submitted ? 'Thank you for checking in 🤍' : 'How are you feeling today, $name?',
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(fontSize: 21, fontWeight: FontWeight.w800, color: AppColors.textDark),
+            style: GoogleFonts.poppins(fontSize: 21, fontWeight: FontWeight.w800, color: AppColors.textDark),
           ),
           const SizedBox(height: 8),
           Text(
             _submitted ? "I've saved how you're feeling. Come back anytime." : 'Tap the face that matches your mood right now.',
             textAlign: TextAlign.center,
-            style: GoogleFonts.inter(fontSize: 14.5, color: AppColors.textMedium, height: 1.4),
+            style: GoogleFonts.poppins(fontSize: 14.5, color: AppColors.textMedium, height: 1.4),
           ),
           const SizedBox(height: 28),
 
@@ -113,7 +113,7 @@ class _EmotionalCheckinScreenState extends ConsumerState<EmotionalCheckinScreen>
                     child: Center(child: Text(m.$2, style: TextStyle(fontSize: sel ? 30 : 26))),
                   ),
                   const SizedBox(height: 6),
-                  Text(m.$3, style: GoogleFonts.inter(fontSize: 11, fontWeight: sel ? FontWeight.w700 : FontWeight.w500, color: sel ? m.$4 : AppColors.textMedium)),
+                  Text(m.$3, style: GoogleFonts.poppins(fontSize: 11, fontWeight: sel ? FontWeight.w700 : FontWeight.w500, color: sel ? m.$4 : AppColors.textMedium)),
                 ]),
               );
             }).toList(),
@@ -127,7 +127,7 @@ class _EmotionalCheckinScreenState extends ConsumerState<EmotionalCheckinScreen>
               child: Row(children: [
                 const Icon(Icons.favorite_rounded, color: AppColors.teal, size: 20),
                 const SizedBox(width: 10),
-                Expanded(child: Text(_careMessage!, style: GoogleFonts.inter(fontSize: 13.5, color: AppColors.tealDark, height: 1.4))),
+                Expanded(child: Text(_careMessage!, style: GoogleFonts.poppins(fontSize: 13.5, color: AppColors.tealDark, height: 1.4))),
               ]),
             ),
             const SizedBox(height: 20),
@@ -147,13 +147,13 @@ class _EmotionalCheckinScreenState extends ConsumerState<EmotionalCheckinScreen>
                 ),
                 child: _submitting
                     ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(strokeWidth: 2.4, color: Colors.white))
-                    : Text('Save check-in', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700)),
+                    : Text('Save check-in', style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w700)),
               ),
             ),
 
           const SizedBox(height: 32),
           // 30-day trend
-          Text('Your mood · last 30 days', style: GoogleFonts.inter(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+          Text('Your mood · last 30 days', style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.textDark)),
           const SizedBox(height: 12),
           _MoodTrend(points: _trend),
         ]),
@@ -180,7 +180,7 @@ class _MoodTrend extends StatelessWidget {
       return Container(
         padding: const EdgeInsets.all(20),
         decoration: AppDecorations.card,
-        child: Center(child: Text('No check-ins yet — your trend will grow here.', style: GoogleFonts.inter(fontSize: 13, color: AppColors.textLight))),
+        child: Center(child: Text('No check-ins yet — your trend will grow here.', style: GoogleFonts.poppins(fontSize: 13, color: AppColors.textLight))),
       );
     }
     return Container(
@@ -200,7 +200,7 @@ class _MoodTrend extends StatelessWidget {
                   children: [
                     Container(height: h, decoration: BoxDecoration(color: _color(p.value), borderRadius: BorderRadius.circular(4))),
                     const SizedBox(height: 4),
-                    Text('${p.date.day}', style: GoogleFonts.inter(fontSize: 8, color: AppColors.textLight)),
+                    Text('${p.date.day}', style: GoogleFonts.poppins(fontSize: 8, color: AppColors.textLight)),
                   ],
                 ),
               ),

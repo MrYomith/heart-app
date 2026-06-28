@@ -28,7 +28,7 @@ class DiagnosisScreen extends ConsumerWidget {
       subtitle: 'Understanding your heart condition',
       iconEmoji: '🔍',
       heroBg: const Color(0xFFFFEDEB),
-      mioVariant: MioVariant.calm,
+      mioVariant: MioVariant.defaultMio,
       heroMsg: 'Mio is here with you through this.\nYou are not alone.',
       heroSub: 'This is the beginning of your healing journey.',
       mottoMsg: 'Knowledge is power. 💙',
@@ -60,9 +60,9 @@ class DiagnosisScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Your diagnosis: $diagnosis', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.primary)),
+                Text('Your diagnosis: $diagnosis', style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.primary)),
                 const SizedBox(height: 6),
-                Text('Your surgeon will walk you through what this means for you. Tap below to learn more or ask a question.', style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMedium, height: 1.5)),
+                Text('Your surgeon will walk you through what this means for you. Tap below to learn more or ask a question.', style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textMedium, height: 1.5)),
                 const SizedBox(height: 8),
                 PhaseActionRow(icon: '📄', label: 'View Your Full Diagnosis Report', onTap: () => _push(context, const LearnScreen())),
                 PhaseActionRow(icon: '🎬', label: 'Watch: What is Open-Heart Surgery?', onTap: () => _push(context, const LearnScreen())),
@@ -79,7 +79,7 @@ class DiagnosisScreen extends ConsumerWidget {
               children: [
                 const MoodCheckIn(),
                 const SizedBox(height: 8),
-                Text("It's okay to feel scared or uncertain. Your feelings are valid.", style: GoogleFonts.inter(fontSize: 11, fontStyle: FontStyle.italic, color: AppColors.teal, height: 1.5), textAlign: TextAlign.center),
+                Text("It's okay to feel scared or uncertain. Your feelings are valid.", style: GoogleFonts.poppins(fontSize: 11, fontStyle: FontStyle.italic, color: AppColors.teal, height: 1.5), textAlign: TextAlign.center),
               ],
             ),
           ),
@@ -101,9 +101,9 @@ class DiagnosisScreen extends ConsumerWidget {
               children: [
                 ref.watch(medicationsProvider).when(
                   loading: () => const Padding(padding: EdgeInsets.all(8), child: Center(child: CircularProgressIndicator())),
-                  error: (e, _) => Text('Could not load medications.', style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMedium)),
+                  error: (e, _) => Text('Could not load medications.', style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textMedium)),
                   data: (meds) => meds.isEmpty
-                      ? Text('No medications recorded yet — your care team will add them.', style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMedium))
+                      ? Text('No medications recorded yet — your care team will add them.', style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textMedium))
                       : Column(children: [for (final m in meds) _MedRow(m.name, m.dose, m.schedule)]),
                 ),
               ],
@@ -126,7 +126,7 @@ class DiagnosisScreen extends ConsumerWidget {
             title: '🏃 F. Physical Activity',
             child: Column(
               children: [
-                Text('Aim for 30 minutes of walking daily.', style: GoogleFonts.inter(fontSize: 12, color: AppColors.textMedium)),
+                Text('Aim for 30 minutes of walking daily.', style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textMedium)),
                 const SizedBox(height: 6),
                 PhaseActionRow(icon: '🎯', label: 'Set Activity Goals', onTap: () => _push(context, const HabitsScreen())),
                 PhaseActionRow(icon: '📋', label: 'Safe Exercises for Heart Patients', onTap: () => _push(context, const LearnScreen())),
@@ -140,7 +140,7 @@ class DiagnosisScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Stopping smoking reduces surgery risk by 40%.', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.primary)),
+                Text('Stopping smoking reduces surgery risk by 40%.', style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.primary)),
                 const SizedBox(height: 6),
                 PhaseActionRow(icon: '🛑', label: 'Quit Smoking Support', onTap: () => _push(context, const HabitsScreen())),
                 const PhaseActionRow(icon: '📞', label: 'Quitline: 137 848'),
@@ -196,8 +196,8 @@ class _MedRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('$name $dose', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textDark)),
-                Text(schedule, style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMedium)),
+                Text('$name $dose', style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textDark)),
+                Text(schedule, style: GoogleFonts.poppins(fontSize: 11, color: AppColors.textMedium)),
               ],
             ),
           ),
@@ -225,8 +225,8 @@ class _TimelineRow extends StatelessWidget {
             decoration: BoxDecoration(shape: BoxShape.circle, color: done ? AppColors.success : AppColors.border),
           ),
           const SizedBox(width: 8),
-          SizedBox(width: 60, child: Text(time, style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w700, color: AppColors.textMedium))),
-          Expanded(child: Text(label, style: GoogleFonts.inter(fontSize: 12, color: AppColors.textDark))),
+          SizedBox(width: 60, child: Text(time, style: GoogleFonts.poppins(fontSize: 10, fontWeight: FontWeight.w700, color: AppColors.textMedium))),
+          Expanded(child: Text(label, style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textDark))),
         ],
       ),
     );

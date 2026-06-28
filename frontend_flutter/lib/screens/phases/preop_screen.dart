@@ -32,7 +32,7 @@ class PreopScreen extends ConsumerWidget {
       subtitle: 'Getting ready for your surgery',
       iconEmoji: '📋',
       heroBg: const Color(0xFFF0FDF9),
-      mioVariant: MioVariant.medical,
+      mioVariant: MioVariant.defaultMio,
       heroMsg: "Let's prepare you for the\nbest possible surgery outcome.",
       heroSub: heroSub,
       mottoMsg: 'Prepared patients recover faster. 💪',
@@ -43,10 +43,13 @@ class PreopScreen extends ConsumerWidget {
       ],
       sideNav: const [
         SideNavItem('✅', 'ERAS\nChecklist'),
-        SideNavItem('📹', 'Telemedicine'),
+        SideNavItem('📹', 'Telemedicine\n& Contact'),
         SideNavItem('🏋️', 'Physical\nOptim.'),
+        SideNavItem('🫁', 'Respiratory\nPrehab'),
         SideNavItem('🥦', 'Nutrition &\nHydration'),
         SideNavItem('😴', 'Sleep'),
+        SideNavItem('📚', 'Surgical\nEducation'),
+        SideNavItem('🤝', 'Shared\nDecisions'),
         SideNavItem('🗓️', 'Surgery\nPlan'),
       ],
       sections: Column(
@@ -75,8 +78,8 @@ class PreopScreen extends ConsumerWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(user?.surgeonName ?? 'Your care team', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.textDark)),
-                          Text('Message available', style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMedium)),
+                          Text(user?.surgeonName ?? 'Your care team', style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+                          Text('Message available', style: GoogleFonts.poppins(fontSize: 11, color: AppColors.textMedium)),
                         ],
                       ),
                     ),
@@ -85,7 +88,7 @@ class PreopScreen extends ConsumerWidget {
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                         decoration: BoxDecoration(color: AppColors.teal, borderRadius: BorderRadius.circular(20)),
-                        child: Text('Join Call', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.white)),
+                        child: Text('Join Call', style: GoogleFonts.poppins(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.white)),
                       ),
                     ),
                   ],
@@ -108,11 +111,25 @@ class PreopScreen extends ConsumerWidget {
           ),
 
           PhaseSection(
-            title: '🥦 D. Nutrition & Hydration',
+            title: '🫁 D. Respiratory Prehabilitation',
+            background: const Color(0xFFEFF6FF),
+            child: Column(
+              children: [
+                const PhaseActionRow(icon: '🫁', label: 'Incentive spirometry — 3× per day'),
+                const PhaseActionRow(icon: '🌬️', label: 'Breathing control — 10 min per day'),
+                const PhaseActionRow(icon: '😤', label: 'Cough training — twice daily'),
+                const SizedBox(height: 4),
+                PhaseActionRow(icon: '▶️', label: 'Open breathing coach', onTap: () => _push(context, const BreathingScreen())),
+              ],
+            ),
+          ),
+
+          PhaseSection(
+            title: '🥦 E. Nutrition & Hydration',
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Pre-surgery nutrition plan:', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.textDark)),
+                Text('Pre-surgery nutrition plan:', style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.textDark)),
                 const SizedBox(height: 6),
                 const PhaseActionRow(icon: '🥤', label: 'Carbohydrate drink tonight (10pm)'),
                 const PhaseActionRow(icon: '🍽️', label: 'Light dinner only (by 8pm)'),
@@ -123,7 +140,7 @@ class PreopScreen extends ConsumerWidget {
           ),
 
           PhaseSection(
-            title: '😴 E. Sleep & Rest',
+            title: '😴 F. Sleep Optimisation',
             background: const Color(0xFFF8F6FF),
             child: Column(
               children: [
@@ -135,8 +152,8 @@ class PreopScreen extends ConsumerWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Aim for 7–8h', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.textDark)),
-                          Text('Good sleep before surgery aids recovery', style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMedium)),
+                          Text('Aim for 7–8h', style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+                          Text('Good sleep before surgery aids recovery', style: GoogleFonts.poppins(fontSize: 11, color: AppColors.textMedium)),
                         ],
                       ),
                     ),
@@ -149,7 +166,31 @@ class PreopScreen extends ConsumerWidget {
           ),
 
           PhaseSection(
-            title: '🗓️ F. Surgery Plan Overview',
+            title: '📚 G. Surgical Education',
+            child: Column(
+              children: [
+                PhaseActionRow(icon: '🎬', label: 'What happens on surgery day', onTap: () => _push(context, const LearnScreen())),
+                PhaseActionRow(icon: '🏥', label: 'ICU & recovery explained', onTap: () => _push(context, const LearnScreen())),
+                PhaseActionRow(icon: '🩺', label: 'Tubes, lines & drains', onTap: () => _push(context, const LearnScreen())),
+                PhaseActionRow(icon: '💊', label: 'Pain management', onTap: () => _push(context, const LearnScreen())),
+              ],
+            ),
+          ),
+
+          PhaseSection(
+            title: '🤝 H. Shared Decision-Making',
+            background: const Color(0xFFF8F6FF),
+            child: Column(
+              children: [
+                PhaseActionRow(icon: '🎯', label: 'My goals & concerns', onTap: () => _push(context, const MessagesScreen())),
+                PhaseActionRow(icon: '❓', label: 'Questions for my surgeon', onTap: () => _push(context, const MessagesScreen())),
+                PhaseActionRow(icon: '⚖️', label: 'Understanding risks & benefits', onTap: () => _push(context, const LearnScreen())),
+              ],
+            ),
+          ),
+
+          PhaseSection(
+            title: '🗓️ I. Surgery Plan Overview',
             child: Column(
               children: [
                 _InfoRow('Hospital', _orNot(user?.hospitalName)),
@@ -164,7 +205,7 @@ class PreopScreen extends ConsumerWidget {
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(10)),
-                    child: Center(child: Text('Download Surgery Pack', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white))),
+                    child: Center(child: Text('Download Surgery Pack', style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white))),
                   ),
                 ),
               ],
@@ -246,8 +287,8 @@ class _ProgressRow extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(label, style: GoogleFonts.inter(fontSize: 12, color: AppColors.textDark)),
-              Text('$percent%', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.teal)),
+              Text(label, style: GoogleFonts.poppins(fontSize: 12, color: AppColors.textDark)),
+              Text('$percent%', style: GoogleFonts.poppins(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.teal)),
             ],
           ),
           const SizedBox(height: 4),
@@ -272,8 +313,8 @@ class _InfoRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: Row(
         children: [
-          SizedBox(width: 100, child: Text(label, style: GoogleFonts.inter(fontSize: 11, color: AppColors.textMedium))),
-          Expanded(child: Text(value, style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textDark))),
+          SizedBox(width: 100, child: Text(label, style: GoogleFonts.poppins(fontSize: 11, color: AppColors.textMedium))),
+          Expanded(child: Text(value, style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textDark))),
         ],
       ),
     );

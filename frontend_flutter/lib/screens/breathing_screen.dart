@@ -83,7 +83,7 @@ class _BreathingScreenState extends ConsumerState<BreathingScreen> with SingleTi
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20, color: AppColors.textDark), onPressed: () => Navigator.pop(context)),
-        title: Text('Breathing Coach', style: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.w800, color: AppColors.textDark)),
+        title: Text('Breathing Coach', style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w800, color: AppColors.textDark)),
       ),
       body: SafeArea(
         child: Column(
@@ -93,7 +93,7 @@ class _BreathingScreenState extends ConsumerState<BreathingScreen> with SingleTi
               child: Text(
                 'Slow, gentle breaths help your lungs recover and lower stress. Follow the circle for $_targetBreaths breaths.',
                 textAlign: TextAlign.center,
-                style: GoogleFonts.inter(fontSize: 14, color: AppColors.textMedium, height: 1.4),
+                style: GoogleFonts.poppins(fontSize: 14, color: AppColors.textMedium, height: 1.4),
               ),
             ),
             Expanded(
@@ -118,10 +118,10 @@ class _BreathingScreenState extends ConsumerState<BreathingScreen> with SingleTi
                         ),
                       ),
                       const SizedBox(height: 28),
-                      Text(_phaseText, style: GoogleFonts.inter(fontSize: 20, fontWeight: FontWeight.w700, color: AppColors.tealDark)),
+                      Text(_phaseText, style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.w700, color: AppColors.tealDark)),
                       const SizedBox(height: 8),
                       Text(_running ? 'Breath $_breaths of $_targetBreaths' : 'Today: $_todayCount of $_target sessions',
-                          style: GoogleFonts.inter(fontSize: 14, color: AppColors.textMedium)),
+                          style: GoogleFonts.poppins(fontSize: 14, color: AppColors.textMedium)),
                     ]);
                   },
                 ),
@@ -135,12 +135,12 @@ class _BreathingScreenState extends ConsumerState<BreathingScreen> with SingleTi
                     ? ElevatedButton(
                         onPressed: () => Navigator.pop(context),
                         style: ElevatedButton.styleFrom(backgroundColor: AppColors.teal, foregroundColor: Colors.white, elevation: 0, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
-                        child: Text('Done', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700)),
+                        child: Text('Done', style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w700)),
                       )
                     : ElevatedButton(
                         onPressed: _running ? _finish : _start,
                         style: ElevatedButton.styleFrom(backgroundColor: _running ? AppColors.warning : AppColors.primary, foregroundColor: Colors.white, elevation: 0, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
-                        child: Text(_running ? 'Finish early' : 'Start breathing', style: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w700)),
+                        child: Text(_running ? 'Finish early' : 'Start breathing', style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w700)),
                       ),
               ),
             ),
