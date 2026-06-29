@@ -16,8 +16,13 @@ const _prodApi = 'http://ec2-3-86-212-253.compute-1.amazonaws.com';
 String _resolveBaseUrl() {
   const override = String.fromEnvironment('API_BASE');
   if (override.isNotEmpty) return override;
+  if (kIsWeb) {
+    // Release web (Netlify) → same-origin: a Netlify proxy forwards /api & /auth
+    // to the EC2 backend server-side, avoiding HTTPS→HTTP mixed-content blocks.
+    // Debug web → local dev server.
+    return kReleaseMode ? '' : 'http://localhost:8000';
+  }
   if (kReleaseMode) return _prodApi; // APK / release → live backend
-  if (kIsWeb) return 'http://localhost:8000';
   if (Platform.isAndroid) return 'http://10.0.2.2:8000'; // Android emulator → host
   return 'http://localhost:8000'; // iOS simulator, macOS
 }

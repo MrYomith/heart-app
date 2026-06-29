@@ -1,0 +1,27 @@
+# Netlify config for the MioHart Flutter web app.
+#
+# The browser only ever talks to HTTPS Netlify. These rewrites proxy the API
+# calls to the HTTP EC2 backend server-side, so there is no mixed-content block
+# and no CORS preflight (same-origin from the browser's point of view).
+
+[build]
+  publish = "build/web"
+
+# --- API proxy (must come before the SPA fallback) ---
+[[redirects]]
+  from = "/api/*"
+  to = "http://ec2-3-86-212-253.compute-1.amazonaws.com/api/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/auth/*"
+  to = "http://ec2-3-86-212-253.compute-1.amazonaws.com/auth/:splat"
+  status = 200
+  force = true
+
+# --- SPA fallback: serve real asset files first, else index.html ---
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
